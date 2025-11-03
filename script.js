@@ -1,434 +1,296 @@
-class BendyCalendar {
+class BendyTimeline {
     constructor() {
-        this.monthsTrack = document.getElementById('monthsTrack');
-        this.tooltip = document.getElementById('eventTooltip');
-        this.currentPosition = 0;
-        this.monthWidth = 280;
-        this.gap = 30;
-        this.compactMode = false;
-        this.activeFilter = 'all';
+        this.events = [];
+        this.filteredEvents = [];
+        this.pinnedEvents = new Set();
+        this.currentFilter = 'all';
+        this.searchTerm = '';
+        
+        this.filmStrip = document.getElementById('filmStrip');
+        this.pinnedList = document.getElementById('pinnedList');
+        this.searchInput = document.getElementById('searchInput');
+        
         this.isDragging = false;
         this.startX = 0;
-        this.currentX = 0;
+        this.scrollLeft = 0;
+        this.autoScrollInterval = null;
+        this.inactivityTimer = null;
         
         this.init();
     }
-
-    init() {
-        this.generateMonths();
+    
+    async init() {
+        await this.loadEvents();
         this.setupEventListeners();
-        this.centerOnCurrentMonth();
+        this.renderTimeline();
+        this.startAutoScroll();
     }
-
-    generateMonths() {
-        // Создаем только месяцы, в которых есть события
-        const monthsWithEvents = this.getMonthsWithEvents();
-        
-        monthsWithEvents.forEach(({ year, month }) => {
-            const monthElement = this.createMonthElement(year, month);
-            this.monthsTrack.appendChild(monthElement);
-        });
-    }
-
-    getMonthsWithEvents() {
-        const monthsSet = new Set();
-        
-        eventsData.forEach(event => {
-            const date = new Date(event.date);
-            const year = date.getFullYear();
-            const month = date.getMonth();
-            monthsSet.add(`${year}-${month}`);
-        });
-        
-        // Преобразуем обратно в массив объектов
-        return Array.from(monthsSet).map(monthStr => {
-            const [year, month] = monthStr.split('-').map(Number);
-            return { year, month };
-        }).sort((a, b) => {
-            // Сортируем по дате
-            return new Date(a.year, a.month) - new Date(b.year, b.month);
-        });
-    }
-
-    createMonthElement(year, month) {
-        const monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 
-                           'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
-        
-        const monthDiv = document.createElement('div');
-        monthDiv.className = 'month';
-        monthDiv.dataset.year = year;
-        monthDiv.dataset.month = month;
-        
-        const firstDay = new Date(year, month, 1).getDay();
-        const daysInMonth = new Date(year, month + 1, 0).getDate();
-        const today = new Date();
-        
-        let html = `
-            <div class="month-header">${monthNames[month]} ${year}</div>
-            <div class="days-grid">
-        `;
-        
-        // Дни недели
-        const dayNames = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
-        dayNames.forEach(day => {
-            html += `<div class="day-header">${day}</div>`;
-        });
-        
-        // Пустые ячейки перед первым днем
-        for (let i = 0; i < firstDay; i++) {
-            html += '<div class="day other-month"></div>';
+    
+    async loadEvents() {
+        try {
+            const response = await fetch('events.json');
+            const data = await response.json();
+            this.events = data.events.map(event => ({
+                ...event,
+                date: new Date(event.date),
+                id: this.generateId(event)
+            }));
+            this.filteredEvents = [...this.events];
+        } catch (error) {
+            console.error('Ошибка загрузки событий:', error);
         }
-        
-        // Дни месяца
-        let hasEvents = false;
-        for (let day = 1; day <= daysInMonth; day++) {
-            const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-            const dayEvents = this.getEventsForDate(dateStr);
-            const isToday = year === today.getFullYear() && month === today.getMonth() && day === today.getDate();
-            
-            let dayClass = 'day';
-            if (isToday) dayClass += ' today';
-            if (dayEvents.length > 0) {
-                dayClass += ' has-event';
-                // Добавляем класс для каждого типа события
-                dayEvents.forEach(event => {
-                    dayClass += ` event-${event.type}`;
-                });
-                hasEvents = true;
-            }
-            
-            html += `<div class="${dayClass}" data-date="${dateStr}">${day}</div>`;
-        }
-        
-        // Пустые ячейки после последнего дня
-        const lastDay = new Date(year, month, daysInMonth).getDay();
-        for (let i = lastDay + 1; i < 7; i++) {
-            html += '<div class="day other-month"></div>';
-        }
-        
-        html += '</div>';
-        monthDiv.innerHTML = html;
-        
-        if (hasEvents) {
-            monthDiv.classList.add('has-events');
-        }
-        
-        return monthDiv;
     }
-
-    getEventsForDate(dateStr) {
-        return eventsData.filter(event => {
-            if (this.activeFilter !== 'all' && event.type !== this.activeFilter) {
-                return false;
-            }
-            return event.date === dateStr;
-        });
+    
+    generateId(event) {
+        return `${event.date.getTime()}-${event.title}`;
     }
-
+    
     setupEventListeners() {
-        // Навигационные кнопки
-        document.querySelector('.prev').addEventListener('click', () => this.scroll(-1));
-        document.querySelector('.next').addEventListener('click', () => this.scroll(1));
-        
         // Фильтры
         document.querySelectorAll('.filter-btn').forEach(btn => {
-            if (btn.id !== 'compactMode') {
-                btn.addEventListener('click', (e) => {
-                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-                    e.target.classList.add('active');
-                    this.activeFilter = e.target.dataset.filter;
-                    this.updateCalendar();
-                });
-            }
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                this.currentFilter = e.target.dataset.filter;
+                this.applyFilters();
+            });
         });
         
-        // Компактный режим
-        document.getElementById('compactMode').addEventListener('click', () => {
-            this.compactMode = !this.compactMode;
-            document.getElementById('compactMode').classList.toggle('active');
-            document.querySelector('.calendar-container').classList.toggle('compact');
+        // Поиск
+        this.searchInput.addEventListener('input', (e) => {
+            this.searchTerm = e.target.value.toLowerCase();
+            this.applyFilters();
         });
         
-        // Переход к дате
-        document.getElementById('goToDate').addEventListener('click', () => {
-            this.goToSelectedDate();
-        });
-
-        // Кнопка "Сегодня"
-        document.getElementById('todayBtn').addEventListener('click', () => {
-            this.centerOnCurrentMonth();
-        });
-        
-        // События дней
-        this.monthsTrack.addEventListener('mouseover', (e) => {
-            const dayElement = e.target.closest('.day');
-            if (dayElement && dayElement.dataset.date) {
-                this.showTooltip(dayElement, dayElement.dataset.date);
-            }
-        });
-        
-        this.monthsTrack.addEventListener('mouseout', () => {
-            this.hideTooltip();
-        });
-
-        // Свайпы
-        this.setupSwipe();
-        
-        // Ресайз
-        window.addEventListener('resize', () => {
-            this.updateActiveMonth();
-        });
-    }
-
-    scroll(direction) {
-        const scrollAmount = (this.monthWidth + this.gap) * direction;
-        this.currentPosition += scrollAmount;
-        this.updatePosition();
-        this.snapToMonth();
-    }
-
-    updatePosition() {
-        this.monthsTrack.style.transform = `translateX(${this.currentPosition}px)`;
-    }
-
-    setupSwipe() {
-        const track = this.monthsTrack;
-
-        track.addEventListener('mousedown', (e) => {
+        // Перетаскивание плёнки
+        this.filmStrip.addEventListener('mousedown', (e) => {
+            this.stopAutoScroll();
             this.isDragging = true;
-            this.startX = e.clientX;
-            this.currentX = this.currentPosition;
-            track.style.transition = 'none';
-            e.preventDefault();
+            this.startX = e.pageX - this.filmStrip.offsetLeft;
+            this.scrollLeft = this.filmStrip.scrollLeft;
+            this.filmStrip.style.cursor = 'grabbing';
         });
-
+        
         document.addEventListener('mousemove', (e) => {
             if (!this.isDragging) return;
-            const delta = e.clientX - this.startX;
-            this.currentPosition = this.currentX + delta;
-            this.updatePosition();
+            e.preventDefault();
+            const x = e.pageX - this.filmStrip.offsetLeft;
+            const walk = (x - this.startX) * 2;
+            this.filmStrip.scrollLeft = this.scrollLeft - walk;
         });
-
+        
         document.addEventListener('mouseup', () => {
-            if (!this.isDragging) return;
             this.isDragging = false;
-            track.style.transition = 'transform 0.3s ease';
-            this.snapToMonth();
+            this.filmStrip.style.cursor = 'grab';
+            this.resetInactivityTimer();
         });
-
-        // Touch events
-        track.addEventListener('touchstart', (e) => {
-            this.isDragging = true;
-            this.startX = e.touches[0].clientX;
-            this.currentX = this.currentPosition;
-            track.style.transition = 'none';
+        
+        // Прокрутка колёсиком
+        this.filmStrip.addEventListener('wheel', (e) => {
+            this.stopAutoScroll();
+            this.filmStrip.scrollLeft += e.deltaY;
+            e.preventDefault();
+            this.resetInactivityTimer();
         });
-
-        document.addEventListener('touchmove', (e) => {
-            if (!this.isDragging) return;
-            const delta = e.touches[0].clientX - this.startX;
-            this.currentPosition = this.currentX + delta;
-            this.updatePosition();
-        });
-
-        document.addEventListener('touchend', () => {
-            if (!this.isDragging) return;
-            this.isDragging = false;
-            track.style.transition = 'transform 0.3s ease';
-            this.snapToMonth();
-        });
+        
+        // Восстановление автопрокрутки при отсутствии активности
+        this.resetInactivityTimer();
     }
-
-    snapToMonth() {
-        const months = Array.from(document.querySelectorAll('.month'));
-        if (months.length === 0) return;
-
-        const containerCenter = window.innerWidth / 2;
+    
+    applyFilters() {
+        this.filteredEvents = this.events.filter(event => {
+            const matchesFilter = this.currentFilter === 'all' || event.type === this.currentFilter;
+            const matchesSearch = !this.searchTerm || 
+                event.title.toLowerCase().includes(this.searchTerm) ||
+                event.description.toLowerCase().includes(this.searchTerm);
+            return matchesFilter && matchesSearch;
+        });
+        this.renderTimeline();
+    }
+    
+    renderTimeline() {
+        // Группировка событий по месяцам
+        const eventsByMonth = this.groupEventsByMonth(this.filteredEvents);
         
-        let closestMonth = null;
-        let minDistance = Infinity;
+        this.filmStrip.innerHTML = '';
         
-        months.forEach(month => {
-            const rect = month.getBoundingClientRect();
-            const monthCenter = rect.left + rect.width / 2;
-            const distance = Math.abs(containerCenter - monthCenter);
+        Object.keys(eventsByMonth).sort().forEach(monthKey => {
+            const [year, month] = monthKey.split('-');
+            const monthEvents = eventsByMonth[monthKey];
             
-            if (distance < minDistance) {
-                minDistance = distance;
-                closestMonth = month;
-            }
-        });
-        
-        if (closestMonth) {
-            const targetPosition = -closestMonth.offsetLeft + (window.innerWidth - closestMonth.offsetWidth) / 2;
-            this.animateToPosition(targetPosition);
-        }
-    }
-
-    animateToPosition(targetPosition) {
-        this.currentPosition = targetPosition;
-        this.updatePosition();
-        this.updateActiveMonth();
-    }
-
-    updateActiveMonth() {
-        const months = document.querySelectorAll('.month');
-        const containerCenter = window.innerWidth / 2;
-        
-        months.forEach(month => {
-            const rect = month.getBoundingClientRect();
-            const monthCenter = rect.left + rect.width / 2;
-            const distance = Math.abs(containerCenter - monthCenter);
+            const frame = document.createElement('div');
+            frame.className = 'film-frame';
             
-            month.classList.toggle('active', distance < rect.width / 2);
-        });
-    }
-
-    showTooltip(dayElement, dateStr) {
-        const events = this.getEventsForDate(dateStr);
-        if (events.length === 0) return;
-        
-        let tooltipHTML = '';
-        events.forEach(event => {
-            tooltipHTML += `
-                <div class="event-item">
-                    <h3>${event.title}</h3>
-                    <span class="event-type ${event.type}">${this.getTypeLabel(event.type)}</span>
-                    <p>${event.description}</p>
-                </div>
+            const header = document.createElement('div');
+            header.className = 'frame-header';
+            header.innerHTML = `
+                <div class="month">${this.getMonthName(month)}</div>
+                <div class="year">${year}</div>
             `;
-        });
-        
-        this.tooltip.innerHTML = tooltipHTML;
-        this.tooltip.classList.add('visible');
-        
-        const rect = dayElement.getBoundingClientRect();
-        const tooltipRect = this.tooltip.getBoundingClientRect();
-        
-        // Позиционирование тултипа
-        let left = rect.left;
-        let top = rect.bottom + 10;
-        
-        // Проверяем, чтобы тултип не выходил за экран
-        if (left + tooltipRect.width > window.innerWidth) {
-            left = window.innerWidth - tooltipRect.width - 20;
-        }
-        
-        if (top + tooltipRect.height > window.innerHeight) {
-            top = rect.top - tooltipRect.height - 10;
-        }
-        
-        this.tooltip.style.left = Math.max(10, left) + 'px';
-        this.tooltip.style.top = Math.max(10, top) + 'px';
-    }
-
-    hideTooltip() {
-        this.tooltip.classList.remove('visible');
-    }
-
-    getTypeLabel(type) {
-        const labels = {
-            'game': 'Игра',
-            'trailer': 'Трейлер',
-            'announcement': 'Анонс',
-            'future': 'Будущее'
-        };
-        return labels[type] || type;
-    }
-
-    centerOnCurrentMonth() {
-        const today = new Date();
-        const currentYear = today.getFullYear();
-        const currentMonth = today.getMonth();
-        
-        const currentMonthElement = document.querySelector(`.month[data-year="${currentYear}"][data-month="${currentMonth}"]`);
-        
-        if (currentMonthElement) {
-            const targetPosition = -currentMonthElement.offsetLeft + (window.innerWidth - currentMonthElement.offsetWidth) / 2;
-            this.animateToPosition(targetPosition);
-        } else {
-            // Если текущего месяца нет в отображаемых, показываем самый близкий
-            this.showClosestMonth(currentYear, currentMonth);
-        }
-    }
-
-    showClosestMonth(targetYear, targetMonth) {
-        const months = Array.from(document.querySelectorAll('.month'));
-        if (months.length === 0) return;
-
-        const targetDate = new Date(targetYear, targetMonth);
-        
-        let closestMonth = null;
-        let minDiff = Infinity;
-        
-        months.forEach(month => {
-            const monthYear = parseInt(month.dataset.year);
-            const monthMonth = parseInt(month.dataset.month);
-            const monthDate = new Date(monthYear, monthMonth);
-            const diff = Math.abs(targetDate - monthDate);
             
-            if (diff < minDiff) {
-                minDiff = diff;
-                closestMonth = month;
-            }
-        });
-        
-        if (closestMonth) {
-            const targetPosition = -closestMonth.offsetLeft + (window.innerWidth - closestMonth.offsetWidth) / 2;
-            this.animateToPosition(targetPosition);
-        }
-    }
-
-    goToSelectedDate() {
-        const input = document.getElementById('monthInput');
-        const [year, month] = input.value.split('-').map(Number);
-        
-        const targetMonthElement = document.querySelector(`.month[data-year="${year}"][data-month="${month - 1}"]`);
-        
-        if (targetMonthElement) {
-            const targetPosition = -targetMonthElement.offsetLeft + (window.innerWidth - targetMonthElement.offsetWidth) / 2;
-            this.animateToPosition(targetPosition);
-        } else {
-            this.showClosestMonth(year, month - 1);
-        }
-    }
-
-    updateCalendar() {
-        const months = document.querySelectorAll('.month');
-        months.forEach(month => {
-            const year = parseInt(month.dataset.year);
-            const monthNum = parseInt(month.dataset.month);
-            const days = month.querySelectorAll('.day[data-date]');
+            const content = document.createElement('div');
+            content.className = 'frame-content';
             
-            let monthHasEvents = false;
-            
-            days.forEach(day => {
-                const dateStr = day.dataset.date;
-                const events = this.getEventsForDate(dateStr);
+            monthEvents.forEach(event => {
+                const eventDay = document.createElement('div');
+                eventDay.className = `event-day has-event event-type-${event.type}`;
+                eventDay.setAttribute('data-date', event.date.toISOString().split('T')[0]);
                 
-                // Обновляем классы событий
-                day.classList.remove('has-event', 'event-game', 'event-trailer', 'event-announcement', 'event-future');
+                eventDay.innerHTML = `
+                    <div class="day-number">${event.date.getDate()}</div>
+                    <div class="event-marker">${this.getEventIcon(event.type)}</div>
+                    <div class="event-preview">${event.title}</div>
+                `;
                 
-                if (events.length > 0) {
-                    day.classList.add('has-event');
-                    events.forEach(event => {
-                        day.classList.add(`event-${event.type}`);
-                    });
-                    monthHasEvents = true;
-                }
+                // Всплывающее окно при наведении
+                eventDay.addEventListener('mouseenter', (e) => {
+                    this.showTooltip(e, event);
+                });
+                
+                eventDay.addEventListener('mouseleave', () => {
+                    this.hideTooltip();
+                });
+                
+                content.appendChild(eventDay);
             });
             
-            // Обновляем статус месяца
-            if (monthHasEvents) {
-                month.classList.add('has-events');
-            } else {
-                month.classList.remove('has-events');
+            frame.appendChild(header);
+            frame.appendChild(content);
+            this.filmStrip.appendChild(frame);
+        });
+    }
+    
+    groupEventsByMonth(events) {
+        return events.reduce((groups, event) => {
+            const key = `${event.date.getFullYear()}-${event.date.getMonth()}`;
+            if (!groups[key]) {
+                groups[key] = [];
+            }
+            groups[key].push(event);
+            return groups;
+        }, {});
+    }
+    
+    getMonthName(month) {
+        const months = [
+            'ЯНВАРЬ', 'ФЕВРАЛЬ', 'МАРТ', 'АПРЕЛЬ', 'МАЙ', 'ИЮНЬ',
+            'ИЮЛЬ', 'АВГУСТ', 'СЕНТЯБРЬ', 'ОКТЯБРЬ', 'НОЯБРЬ', 'ДЕКАБРЬ'
+        ];
+        return months[parseInt(month)];
+    }
+    
+    getEventIcon(type) {
+        const icons = {
+            game: '🎮',
+            trailer: '🎥',
+            teaser: '📢',
+            announcement: '⭐'
+        };
+        return icons[type] || '⭐';
+    }
+    
+    showTooltip(event, eventData) {
+        this.hideTooltip();
+        
+        const tooltip = document.createElement('div');
+        tooltip.className = 'event-tooltip';
+        tooltip.innerHTML = `
+            <h4>${eventData.title}</h4>
+            <p>${eventData.description}</p>
+            <button class="pin-btn" data-id="${eventData.id}">
+                ${this.pinnedEvents.has(eventData.id) ? '★ Открепить' : '☆ Закрепить'}
+            </button>
+        `;
+        
+        const rect = event.target.getBoundingClientRect();
+        tooltip.style.left = '0';
+        tooltip.style.top = '100%';
+        
+        event.target.appendChild(tooltip);
+        
+        // Обработчик кнопки закрепления
+        tooltip.querySelector('.pin-btn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.togglePinEvent(eventData);
+        });
+    }
+    
+    hideTooltip() {
+        const existingTooltip = document.querySelector('.event-tooltip');
+        if (existingTooltip) {
+            existingTooltip.remove();
+        }
+    }
+    
+    togglePinEvent(event) {
+        if (this.pinnedEvents.has(event.id)) {
+            this.pinnedEvents.delete(event.id);
+        } else {
+            this.pinnedEvents.add(event.id);
+        }
+        this.updatePinnedEvents();
+        this.renderTimeline(); // Обновляем тултипы
+    }
+    
+    updatePinnedEvents() {
+        this.pinnedList.innerHTML = '';
+        
+        this.pinnedEvents.forEach(eventId => {
+            const event = this.events.find(e => e.id === eventId);
+            if (event) {
+                const pinnedEvent = document.createElement('div');
+                pinnedEvent.className = 'pinned-event';
+                pinnedEvent.innerHTML = `
+                    <div class="pinned-event-info">
+                        <div class="pinned-event-title">${event.title}</div>
+                        <div class="pinned-event-date">${event.date.toLocaleDateString('ru-RU')}</div>
+                    </div>
+                    <button class="unpin-btn" data-id="${event.id}">×</button>
+                `;
+                
+                pinnedEvent.querySelector('.unpin-btn').addEventListener('click', () => {
+                    this.pinnedEvents.delete(event.id);
+                    this.updatePinnedEvents();
+                    this.renderTimeline();
+                });
+                
+                this.pinnedList.appendChild(pinnedEvent);
             }
         });
+    }
+    
+    startAutoScroll() {
+        this.autoScrollInterval = setInterval(() => {
+            const currentScroll = this.filmStrip.scrollLeft;
+            const maxScroll = this.filmStrip.scrollWidth - this.filmStrip.clientWidth;
+            
+            if (currentScroll < maxScroll) {
+                this.filmStrip.scrollLeft += 1;
+            } else {
+                this.filmStrip.scrollLeft = 0;
+            }
+        }, 30);
+    }
+    
+    stopAutoScroll() {
+        if (this.autoScrollInterval) {
+            clearInterval(this.autoScrollInterval);
+            this.autoScrollInterval = null;
+        }
+    }
+    
+    resetInactivityTimer() {
+        if (this.inactivityTimer) {
+            clearTimeout(this.inactivityTimer);
+        }
+        
+        this.inactivityTimer = setTimeout(() => {
+            this.startAutoScroll();
+        }, 10000); // 10 секунд бездействия
     }
 }
 
-// Инициализация календаря
+// Инициализация при загрузке страницы
 document.addEventListener('DOMContentLoaded', () => {
-    new BendyCalendar();
+    new BendyTimeline();
 });
