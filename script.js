@@ -3,32 +3,43 @@ class BendyCalendar {
         this.monthsTrack = document.getElementById('monthsTrack');
         this.tooltip = document.getElementById('eventTooltip');
         this.currentPosition = 0;
-        this.monthWidth = 300;
-        this.gap = 50;
+        this.monthWidth = 320;
+        this.gap = 40;
         this.compactMode = false;
         this.activeFilter = 'all';
+        this.monthsWithEvents = new Set();
         
         this.init();
     }
 
     init() {
+        this.calculateMonthsWithEvents();
         this.generateMonths();
         this.setupEventListeners();
         this.centerOnCurrentMonth();
     }
 
+    calculateMonthsWithEvents() {
+        eventsData.forEach(event => {
+            const date = new Date(event.date);
+            const monthKey = `${date.getFullYear()}-${date.getMonth()}`;
+            this.monthsWithEvents.add(monthKey);
+        });
+    }
+
     generateMonths() {
         const startYear = 2017;
         const endYear = 2025;
-        const today = new Date();
         
         for (let year = startYear; year <= endYear; year++) {
             for (let month = 0; month < 12; month++) {
-                const monthDate = new Date(year, month, 1);
-                if (monthDate > new Date(2025, 11, 31)) break;
+                const monthKey = `${year}-${month}`;
                 
-                const monthElement = this.createMonthElement(year, month);
-                this.monthsTrack.appendChild(monthElement);
+                // Показываем только месяцы с событиями
+                if (this.monthsWithEvents.has(monthKey)) {
+                    const monthElement = this.createMonthElement(year, month);
+                    this.monthsTrack.appendChild(monthElement);
+                }
             }
         }
     }
@@ -130,6 +141,11 @@ class BendyCalendar {
         document.getElementById('goToDate').addEventListener('click', () => {
             this.goToSelectedDate();
         });
+
+        // Кнопка "Сегодня"
+        document.getElementById('todayBtn').addEventListener('click', () => {
+            this.centerOnCurrentMonth();
+        });
         
         // Свайпы
         this.setupSwipe();
@@ -144,6 +160,10 @@ class BendyCalendar {
         this.monthsTrack.addEventListener('mouseout', () => {
             this.hideTooltip();
         });
+
+        // Обновление активного месяца при скролле
+        window.addEventListener('scroll', () => this.updateActiveMonth());
+        window.addEventListener('resize', () => this.updateActiveMonth());
     }
 
     scroll(direction) {
@@ -189,8 +209,22 @@ class BendyCalendar {
         this.tooltip.classList.add('visible');
         
         const rect = dayElement.getBoundingClientRect();
-        this.tooltip.style.left = rect.left + 'px';
-        this.tooltip.style.top = (rect.bottom + 10) + 'px';
+        const tooltipRect = this.tooltip.getBoundingClientRect();
+        
+        // Позиционируем тултип так, чтобы он не выходил за экран
+        let left = rect.left;
+        let top = rect.bottom + 10;
+        
+        if (left + tooltipRect.width > window.innerWidth) {
+            left = window.innerWidth - tooltipRect.width - 20;
+        }
+        
+        if (top + tooltipRect.height > window.innerHeight) {
+            top = rect.top - tooltipRect.height - 10;
+        }
+        
+        this.tooltip.style.left = left + 'px';
+        this.tooltip.style.top = top + 'px';
     }
 
     hideTooltip() {
@@ -199,10 +233,10 @@ class BendyCalendar {
 
     getTypeLabel(type) {
         const labels = {
-            'game': 'Игра',
-            'trailer': 'Трейлер',
-            'announcement': 'Анонс',
-            'future': 'Будущее'
+            'game': '🎮 Игра',
+            'trailer': '🎬 Трейлер',
+            'announcement': '📢 Анонс',
+            'future': '🔮 Будущее'
         };
         return labels[type] || type;
     }
@@ -229,7 +263,7 @@ class BendyCalendar {
         document.addEventListener('mouseup', () => {
             if (!isDragging) return;
             isDragging = false;
-            this.monthsTrack.style.transition = 'transform 0.5s ease';
+            this.monthsTrack.style.transition = 'transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
             this.snapToMonth();
         });
 
@@ -251,7 +285,7 @@ class BendyCalendar {
         document.addEventListener('touchend', () => {
             if (!isDragging) return;
             isDragging = false;
-            this.monthsTrack.style.transition = 'transform 0.5s ease';
+            this.monthsTrack.style.transition = 'transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
             this.snapToMonth();
         });
     }
@@ -276,32 +310,41 @@ class BendyCalendar {
         
         if (closestMonth) {
             const targetPosition = -closestMonth.offsetLeft + (window.innerWidth - closestMonth.offsetWidth) / 2;
-            this.currentPosition = targetPosition;
-            this.updatePosition();
+            this.animateToPosition(targetPosition);
         }
+    }
+
+    animateToPosition(targetPosition) {
+        this.currentPosition = targetPosition;
+        this.updatePosition();
     }
 
     centerOnCurrentMonth() {
         const today = new Date();
-        const currentMonthElement = document.querySelector(`.month[data-year="${today.getFullYear()}"][data-month="${today.getMonth()}"]`);
+        const currentMonthKey = `${today.getFullYear()}-${today.getMonth()}`;
         
-        if (currentMonthElement) {
-            const targetPosition = -currentMonthElement.offsetLeft + (window.innerWidth - currentMonthElement.offsetWidth) / 2;
-            this.currentPosition = targetPosition;
-            this.updatePosition();
+        if (this.monthsWithEvents.has(currentMonthKey)) {
+            const currentMonthElement = document.querySelector(`.month[data-year="${today.getFullYear()}"][data-month="${today.getMonth()}"]`);
+            
+            if (currentMonthElement) {
+                const targetPosition = -currentMonthElement.offsetLeft + (window.innerWidth - currentMonthElement.offsetWidth) / 2;
+                this.animateToPosition(targetPosition);
+            }
         }
     }
 
     goToSelectedDate() {
         const input = document.getElementById('monthInput');
         const [year, month] = input.value.split('-').map(Number);
+        const monthKey = `${year}-${month - 1}`;
         
-        const targetMonthElement = document.querySelector(`.month[data-year="${year}"][data-month="${month - 1}"]`);
-        
-        if (targetMonthElement) {
-            const targetPosition = -targetMonthElement.offsetLeft + (window.innerWidth - targetMonthElement.offsetWidth) / 2;
-            this.currentPosition = targetPosition;
-            this.updatePosition();
+        if (this.monthsWithEvents.has(monthKey)) {
+            const targetMonthElement = document.querySelector(`.month[data-year="${year}"][data-month="${month - 1}"]`);
+            
+            if (targetMonthElement) {
+                const targetPosition = -targetMonthElement.offsetLeft + (window.innerWidth - targetMonthElement.offsetWidth) / 2;
+                this.animateToPosition(targetPosition);
+            }
         }
     }
 
