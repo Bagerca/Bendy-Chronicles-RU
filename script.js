@@ -1,10 +1,7 @@
-// Убедимся, что переменная bendyEvents не объявлена здесь
-// Вся логика работы с календарем
-
 // Переменные для управления плёнкой
 let isDragging = false;
 let startX;
-let scrollLeft;
+let startScrollLeft;
 let velocity = 0;
 let lastX;
 let lastTime;
@@ -49,6 +46,9 @@ function generateFilmFrames() {
     const filmStrip = document.getElementById('filmStrip');
     const startYear = 2017;
     const endYear = 2025;
+    
+    // Очищаем плёнку
+    filmStrip.innerHTML = '';
     
     for (let year = startYear; year <= endYear; year++) {
         // Добавляем разделитель года
@@ -106,6 +106,7 @@ function createFilmFrame(date, event) {
 // Настройка перетаскивания плёнки
 function setupFilmDrag() {
     const filmStrip = document.getElementById('filmStrip');
+    const filmContainer = document.querySelector('.film-container');
     
     filmStrip.addEventListener('mousedown', startDrag);
     filmStrip.addEventListener('touchstart', startDragTouch);
@@ -115,13 +116,16 @@ function setupFilmDrag() {
     
     document.addEventListener('mouseup', endDrag);
     document.addEventListener('touchend', endDrag);
+    
+    // Предотвращаем стандартное поведение браузера
+    filmStrip.addEventListener('dragstart', (e) => e.preventDefault());
 }
 
 function startDrag(e) {
     isDragging = true;
     const filmStrip = document.getElementById('filmStrip');
-    startX = e.pageX - filmStrip.offsetLeft;
-    scrollLeft = filmStrip.scrollLeft;
+    startX = e.clientX;
+    startScrollLeft = filmStrip.scrollLeft;
     lastX = startX;
     lastTime = Date.now();
     
@@ -129,29 +133,33 @@ function startDrag(e) {
     filmStrip.style.transition = 'none';
     
     cancelAnimationFrame(animationFrame);
+    
+    e.preventDefault();
 }
 
 function startDragTouch(e) {
     isDragging = true;
     const filmStrip = document.getElementById('filmStrip');
-    startX = e.touches[0].pageX - filmStrip.offsetLeft;
-    scrollLeft = filmStrip.scrollLeft;
+    startX = e.touches[0].clientX;
+    startScrollLeft = filmStrip.scrollLeft;
     lastX = startX;
     lastTime = Date.now();
     
     filmStrip.style.transition = 'none';
     
     cancelAnimationFrame(animationFrame);
+    
+    e.preventDefault();
 }
 
 function drag(e) {
     if (!isDragging) return;
-    e.preventDefault();
     
     const filmStrip = document.getElementById('filmStrip');
-    const x = e.pageX - filmStrip.offsetLeft;
-    const walk = (x - startX) * 2;
-    filmStrip.scrollLeft = scrollLeft - walk;
+    const x = e.clientX;
+    const walk = (x - startX) * 2; // Умножаем для более быстрого скролла
+    
+    filmStrip.scrollLeft = startScrollLeft - walk;
     
     // Расчет скорости для инерции
     const currentTime = Date.now();
@@ -164,16 +172,18 @@ function drag(e) {
     
     lastX = x;
     lastTime = currentTime;
+    
+    e.preventDefault();
 }
 
 function dragTouch(e) {
     if (!isDragging) return;
-    e.preventDefault();
     
     const filmStrip = document.getElementById('filmStrip');
-    const x = e.touches[0].pageX - filmStrip.offsetLeft;
+    const x = e.touches[0].clientX;
     const walk = (x - startX) * 2;
-    filmStrip.scrollLeft = scrollLeft - walk;
+    
+    filmStrip.scrollLeft = startScrollLeft - walk;
     
     // Расчет скорости для инерции
     const currentTime = Date.now();
@@ -186,6 +196,8 @@ function dragTouch(e) {
     
     lastX = x;
     lastTime = currentTime;
+    
+    e.preventDefault();
 }
 
 function endDrag() {
@@ -199,11 +211,11 @@ function endDrag() {
 
 function applyInertia() {
     const filmStrip = document.getElementById('filmStrip');
-    const friction = 0.95;
+    const friction = 0.92; // Увеличим трение для более плавной остановки
     
     function animate() {
-        if (Math.abs(velocity) > 0.1) {
-            filmStrip.scrollLeft -= velocity * 20;
+        if (Math.abs(velocity) > 0.01) {
+            filmStrip.scrollLeft -= velocity * 25;
             velocity *= friction;
             animationFrame = requestAnimationFrame(animate);
         }
@@ -214,12 +226,15 @@ function applyInertia() {
 
 // Настройка скролла колесом мыши
 function setupWheelScroll() {
-    const filmContainer = document.querySelector('.film-container');
+    const filmStrip = document.getElementById('filmStrip');
     
-    filmContainer.addEventListener('wheel', (e) => {
+    filmStrip.addEventListener('wheel', (e) => {
         e.preventDefault();
-        const filmStrip = document.getElementById('filmStrip');
         filmStrip.scrollLeft += e.deltaY * 2;
+        
+        // Добавляем небольшую инерцию для колеса
+        velocity = e.deltaY * 0.1;
+        applyInertia();
     });
 }
 
@@ -237,7 +252,7 @@ function scrollToYear(year) {
     }
     
     if (targetElement) {
-        const containerWidth = document.querySelector('.film-container').offsetWidth;
+        const containerWidth = filmStrip.clientWidth;
         const targetPosition = targetElement.offsetLeft - containerWidth / 2 + targetElement.offsetWidth / 2;
         
         // Анимация с ускорением и замедлением
