@@ -1,196 +1,235 @@
-// Данные событий
-const bendyEvents = {
-    "2017-02-10": {
-        type: "game_release",
-        title: "Bendy and the Ink Machine - Chapter 1",
-        description: "Релиз Главы 1: Moving Pictures (ПК, демо-версия)",
-        link: "https://store.steampowered.com/app/622650/Bendy_and_the_Ink_Machine/",
-        icon: "🎮"
-    },
-    "2017-04-18": {
-        type: "game_release", 
-        title: "Bendy and the Ink Machine - Chapter 2",
-        description: "Релиз Главы 2: The Old Song (ПК)",
-        link: "https://store.steampowered.com/app/622650/Bendy_and_the_Ink_Machine/",
-        icon: "🎮"
-    },
-    "2017-09-28": {
-        type: "game_release",
-        title: "Bendy and the Ink Machine - Chapter 3", 
-        description: "Релиз Главы 3: Rise and Fall (ПК)",
-        link: "https://store.steampowered.com/app/622650/Bendy_and_the_Ink_Machine/",
-        icon: "🎮"
-    },
-    "2018-04-30": {
-        type: "game_release",
-        title: "Bendy and the Ink Machine - Chapter 4",
-        description: "Релиз Главы 4: Colossal Wonders (ПК)",
-        link: "https://store.steampowered.com/app/622650/Bendy_and_the_Ink_Machine/",
-        icon: "🎮"
-    },
-    "2018-10-26": {
-        type: "game_release",
-        title: "Bendy and the Ink Machine - Chapter 5",
-        description: "Релиз Главы 5: The Last Reel (ПК), полный выпуск игры",
-        link: "https://store.steampowered.com/app/622650/Bendy_and_the_Ink_Machine/",
-        icon: "🎮"
-    },
-    "2018-11-20": {
-        type: "game_release",
-        title: "Bendy and the Ink Machine - Полное издание",
-        description: "Выпуск полного издания на PlayStation 4, Xbox One и Nintendo Switch",
-        link: "https://store.playstation.com/app/bendy-and-the-ink-machine",
-        icon: "🎮"
-    },
-    "2022-11-15": {
-        type: "game_release",
-        title: "Bendy and the Dark Revival",
-        description: "Релиз продолжения на Windows (ПК)",
-        link: "https://store.steampowered.com/app/1716620/Bendy_and_the_Dark_Revival/",
-        icon: "🎮"
-    }
-};
+// Элементы DOM
+const filmStrip = document.getElementById('filmStrip');
+const yearSelect = document.getElementById('yearSelect');
+const monthSelect = document.getElementById('monthSelect');
+const daySelect = document.getElementById('daySelect');
+const goToDateBtn = document.getElementById('goToDate');
+const todayBtn = document.getElementById('todayBtn');
 
-// Основной код
-document.addEventListener('DOMContentLoaded', function() {
-    const filmStrip = document.getElementById('filmStrip');
-    const modal = document.getElementById('eventModal');
-    const closeModal = document.getElementById('closeModal');
-    const modalTitle = document.getElementById('modalTitle');
-    const modalDescription = document.getElementById('modalDescription');
-    const modalLink = document.getElementById('modalLink');
-    
-    let isDragging = false;
-    let startX;
-    let scrollLeft;
-    
-    // Генерация календаря
-    function generateCalendar() {
-        const startYear = 2017;
-        const endYear = 2025;
-        
-        for (let year = startYear; year <= endYear; year++) {
-            // Добавляем разделитель года
-            const yearSeparator = document.createElement('div');
-            yearSeparator.className = 'film-frame year-separator';
-            yearSeparator.innerHTML = `
-                <div style="font-size: 2em;">${year}</div>
-                <div style="font-size: 0.8em; margin-top: 8px;">BENDY</div>
-            `;
-            filmStrip.appendChild(yearSeparator);
-            
-            // Добавляем дни
-            for (let month = 0; month < 12; month++) {
-                const daysInMonth = new Date(year, month + 1, 0).getDate();
-                
-                for (let day = 1; day <= daysInMonth; day++) {
-                    const date = new Date(year, month, day);
-                    const dateStr = formatDate(date);
-                    const event = bendyEvents[dateStr];
-                    
-                    const dayFrame = document.createElement('div');
-                    dayFrame.className = 'film-frame' + (event ? ' event-day' : '');
-                    
-                    const monthNames = ['ЯНВ', 'ФЕВ', 'МАР', 'АПР', 'МАЙ', 'ИЮН', 'ИЮЛ', 'АВГ', 'СЕН', 'ОКТ', 'НОЯ', 'ДЕК'];
-                    const monthName = monthNames[month];
-                    
-                    dayFrame.innerHTML = `
-                        <div class="date-number">${day}</div>
-                        <div class="month-name">${monthName}</div>
-                        ${event ? `<div class="event-indicator">${event.icon}</div>` : ''}
-                    `;
-                    
-                    if (event) {
-                        dayFrame.addEventListener('click', function() {
-                            openModal(event);
-                        });
-                    }
-                    
-                    filmStrip.appendChild(dayFrame);
-                }
-            }
-        }
-    }
-    
-    // Открытие модального окна
-    function openModal(event) {
-        modalTitle.textContent = event.title;
-        modalDescription.textContent = event.description;
-        modalLink.href = event.link;
-        modalLink.textContent = 'Подробнее';
-        modal.style.display = 'flex';
-    }
-    
-    // Закрытие модального окна
-    closeModal.addEventListener('click', function() {
-        modal.style.display = 'none';
-    });
-    
-    modal.addEventListener('click', function(e) {
-        if (e.target === modal) {
-            modal.style.display = 'none';
-        }
-    });
-    
-    // Навигация по годам
-    document.querySelectorAll('.navigation button').forEach(button => {
-        button.addEventListener('click', function() {
-            const year = this.getAttribute('data-year');
-            scrollToYear(year);
-        });
-    });
-    
-    function scrollToYear(year) {
-        const yearElements = filmStrip.getElementsByClassName('year-separator');
-        for (let element of yearElements) {
-            if (element.textContent.includes(year)) {
-                const containerWidth = filmStrip.parentElement.clientWidth;
-                const targetPosition = element.offsetLeft - containerWidth / 2 + element.offsetWidth / 2;
-                
-                filmStrip.scrollTo({
-                    left: targetPosition,
-                    behavior: 'smooth'
-                });
-                break;
-            }
-        }
-    }
-    
-    // Перетаскивание плёнки
-    filmStrip.addEventListener('mousedown', function(e) {
-        isDragging = true;
-        startX = e.pageX - filmStrip.offsetLeft;
-        scrollLeft = filmStrip.scrollLeft;
-        filmStrip.style.cursor = 'grabbing';
-    });
-    
-    document.addEventListener('mousemove', function(e) {
-        if (!isDragging) return;
-        e.preventDefault();
-        const x = e.pageX - filmStrip.offsetLeft;
-        const walk = (x - startX) * 2;
-        filmStrip.scrollLeft = scrollLeft - walk;
-    });
-    
-    document.addEventListener('mouseup', function() {
-        isDragging = false;
-        filmStrip.style.cursor = 'grab';
-    });
-    
-    // Скролл колесом
-    filmStrip.addEventListener('wheel', function(e) {
-        e.preventDefault();
-        filmStrip.scrollLeft += e.deltaY;
-    });
-    
-    // Вспомогательная функция
-    function formatDate(date) {
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-    }
-    
-    // Запуск
+// Инициализация
+function init() {
+    generateYearOptions();
     generateCalendar();
-});
+    setupEventListeners();
+}
+
+// Генерация опций выбора годов
+function generateYearOptions() {
+    for (let year = CALENDAR_CONFIG.START_YEAR; year <= CALENDAR_CONFIG.END_YEAR; year++) {
+        const option = document.createElement('option');
+        option.value = year;
+        option.textContent = year;
+        yearSelect.appendChild(option);
+    }
+}
+
+// Генерация календаря
+function generateCalendar() {
+    filmStrip.innerHTML = '';
+    
+    for (let year = CALENDAR_CONFIG.START_YEAR; year <= CALENDAR_CONFIG.END_YEAR; year++) {
+        for (let month = 0; month < 12; month++) {
+            const monthSection = createMonthSection(year, month);
+            filmStrip.appendChild(monthSection);
+        }
+    }
+}
+
+// Создание секции месяца
+function createMonthSection(year, month) {
+    const section = document.createElement('div');
+    section.className = 'month-section';
+    section.dataset.year = year;
+    section.dataset.month = month;
+    
+    const monthName = CALENDAR_CONFIG.MONTHS[month];
+    section.innerHTML = `
+        <div class="month-header">${monthName} ${year}</div>
+        <div class="days-grid" id="days-${year}-${month}"></div>
+    `;
+    
+    const daysGrid = section.querySelector('.days-grid');
+    populateDaysGrid(daysGrid, year, month);
+    
+    return section;
+}
+
+// Заполнение сетки дней
+function populateDaysGrid(daysGrid, year, month) {
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    
+    // Пустые ячейки для дней перед первым числом
+    for (let i = 0; i < (firstDay === 0 ? 6 : firstDay - 1); i++) {
+        const emptyDay = document.createElement('div');
+        emptyDay.className = 'day empty';
+        daysGrid.appendChild(emptyDay);
+    }
+    
+    // Дни месяца
+    for (let day = 1; day <= daysInMonth; day++) {
+        const dayElement = document.createElement('div');
+        dayElement.className = 'day';
+        dayElement.textContent = day;
+        dayElement.dataset.date = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        
+        // Проверка на события
+        const event = eventsData.find(event => event.date === dayElement.dataset.date);
+        if (event) {
+            dayElement.classList.add('event', event.type);
+            dayElement.innerHTML += `<div class="event-marker"></div>`;
+            dayElement.title = event.title;
+        }
+        
+        daysGrid.appendChild(dayElement);
+    }
+}
+
+// Настройка обработчиков событий
+function setupEventListeners() {
+    goToDateBtn.addEventListener('click', scrollToSelectedDate);
+    todayBtn.addEventListener('click', scrollToToday);
+    
+    yearSelect.addEventListener('change', updateMonthOptions);
+    monthSelect.addEventListener('change', updateDayOptions);
+    
+    // Клик по дню
+    filmStrip.addEventListener('click', (e) => {
+        if (e.target.classList.contains('day') && !e.target.classList.contains('empty')) {
+            const date = e.target.dataset.date;
+            showEventDetails(date);
+        }
+    });
+}
+
+// Обновление опций месяцев
+function updateMonthOptions() {
+    monthSelect.innerHTML = '<option value="">Выберите месяц</option>';
+    daySelect.innerHTML = '<option value="">Выберите день</option>';
+    
+    if (yearSelect.value) {
+        CALENDAR_CONFIG.MONTHS.forEach((month, index) => {
+            const option = document.createElement('option');
+            option.value = index;
+            option.textContent = month;
+            monthSelect.appendChild(option);
+        });
+    }
+}
+
+// Обновление опций дней
+function updateDayOptions() {
+    daySelect.innerHTML = '<option value="">Выберите день</option>';
+    
+    if (yearSelect.value && monthSelect.value) {
+        const year = parseInt(yearSelect.value);
+        const month = parseInt(monthSelect.value);
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        
+        for (let day = 1; day <= daysInMonth; day++) {
+            const option = document.createElement('option');
+            option.value = day;
+            option.textContent = day;
+            daySelect.appendChild(option);
+        }
+    }
+}
+
+// Прокрутка к выбранной дате
+function scrollToSelectedDate() {
+    const year = yearSelect.value;
+    const month = monthSelect.value;
+    const day = daySelect.value;
+    
+    if (!year || !month) {
+        alert('Пожалуйста, выберите год и месяц');
+        return;
+    }
+    
+    const targetDate = `${year}-${String(parseInt(month) + 1).padStart(2, '0')}-${String(day || 1).padStart(2, '0')}`;
+    const targetElement = document.querySelector(`.month-section[data-year="${year}"][data-month="${month}"]`);
+    
+    if (targetElement) {
+        smoothScrollToElement(targetElement);
+        
+        // Подсветка выбранного дня
+        if (day) {
+            setTimeout(() => {
+                const dayElement = document.querySelector(`.day[data-date="${targetDate}"]`);
+                if (dayElement) {
+                    dayElement.style.background = '#555';
+                    dayElement.style.borderColor = '#ff4444';
+                    setTimeout(() => {
+                        dayElement.style.background = '';
+                        dayElement.style.borderColor = '';
+                    }, 2000);
+                }
+            }, 1000);
+        }
+    }
+}
+
+// Прокрутка к текущей дате
+function scrollToToday() {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = today.getMonth();
+    const day = today.getDate();
+    
+    yearSelect.value = year;
+    updateMonthOptions();
+    monthSelect.value = month;
+    updateDayOptions();
+    daySelect.value = day;
+    
+    scrollToSelectedDate();
+}
+
+// Плавная прокрутка к элементу
+function smoothScrollToElement(element) {
+    const startPosition = filmStrip.scrollLeft;
+    const targetPosition = element.offsetLeft - (filmStrip.offsetWidth - element.offsetWidth) / 2;
+    const distance = targetPosition - startPosition;
+    const duration = 1500;
+    let startTime = null;
+
+    function animation(currentTime) {
+        if (!startTime) startTime = currentTime;
+        const timeElapsed = currentTime - startTime;
+        const progress = Math.min(timeElapsed / duration, 1);
+        
+        // Эффект easeInOut
+        const easeProgress = progress < 0.5 
+            ? 2 * progress * progress 
+            : -1 + (4 - 2 * progress) * progress;
+        
+        filmStrip.scrollLeft = startPosition + (distance * easeProgress);
+        
+        if (timeElapsed < duration) {
+            requestAnimationFrame(animation);
+        }
+    }
+    
+    requestAnimationFrame(animation);
+}
+
+// Показать детали события
+function showEventDetails(date) {
+    const event = eventsData.find(event => event.date === date);
+    if (event) {
+        alert(`Событие: ${event.title}\nДата: ${date}\nТип: ${getEventTypeName(event.type)}`);
+    }
+}
+
+// Получить название типа события
+function getEventTypeName(type) {
+    const names = {
+        'teaser': 'Тизер',
+        'trailer': 'Трейлер', 
+        'game': 'Игра'
+    };
+    return names[type] || type;
+}
+
+// Запуск при загрузке
+document.addEventListener('DOMContentLoaded', init);
