@@ -3,49 +3,54 @@ class BendyCalendar {
         this.monthsTrack = document.getElementById('monthsTrack');
         this.tooltip = document.getElementById('eventTooltip');
         this.currentPosition = 0;
-        this.monthWidth = 320;
-        this.gap = 40;
+        this.monthWidth = 280;
+        this.gap = 30;
         this.compactMode = false;
         this.activeFilter = 'all';
-        this.monthsWithEvents = new Set();
+        this.isDragging = false;
+        this.startX = 0;
+        this.currentX = 0;
         
         this.init();
     }
 
     init() {
-        this.calculateMonthsWithEvents();
         this.generateMonths();
         this.setupEventListeners();
         this.centerOnCurrentMonth();
     }
 
-    calculateMonthsWithEvents() {
-        eventsData.forEach(event => {
-            const date = new Date(event.date);
-            const monthKey = `${date.getFullYear()}-${date.getMonth()}`;
-            this.monthsWithEvents.add(monthKey);
+    generateMonths() {
+        // Создаем только месяцы, в которых есть события
+        const monthsWithEvents = this.getMonthsWithEvents();
+        
+        monthsWithEvents.forEach(({ year, month }) => {
+            const monthElement = this.createMonthElement(year, month);
+            this.monthsTrack.appendChild(monthElement);
         });
     }
 
-    generateMonths() {
-        const startYear = 2017;
-        const endYear = 2025;
+    getMonthsWithEvents() {
+        const monthsSet = new Set();
         
-        for (let year = startYear; year <= endYear; year++) {
-            for (let month = 0; month < 12; month++) {
-                const monthKey = `${year}-${month}`;
-                
-                // Показываем только месяцы с событиями
-                if (this.monthsWithEvents.has(monthKey)) {
-                    const monthElement = this.createMonthElement(year, month);
-                    this.monthsTrack.appendChild(monthElement);
-                }
-            }
-        }
+        eventsData.forEach(event => {
+            const date = new Date(event.date);
+            const year = date.getFullYear();
+            const month = date.getMonth();
+            monthsSet.add(`${year}-${month}`);
+        });
+        
+        // Преобразуем обратно в массив объектов
+        return Array.from(monthsSet).map(monthStr => {
+            const [year, month] = monthStr.split('-').map(Number);
+            return { year, month };
+        }).sort((a, b) => {
+            // Сортируем по дате
+            return new Date(a.year, a.month) - new Date(b.year, b.month);
+        });
     }
 
     createMonthElement(year, month) {
-        const monthDate = new Date(year, month, 1);
         const monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 
                            'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
         
@@ -85,6 +90,7 @@ class BendyCalendar {
             if (isToday) dayClass += ' today';
             if (dayEvents.length > 0) {
                 dayClass += ' has-event';
+                // Добавляем класс для каждого типа события
                 dayEvents.forEach(event => {
                     dayClass += ` event-${event.type}`;
                 });
@@ -92,6 +98,12 @@ class BendyCalendar {
             }
             
             html += `<div class="${dayClass}" data-date="${dateStr}">${day}</div>`;
+        }
+        
+        // Пустые ячейки после последнего дня
+        const lastDay = new Date(year, month, daysInMonth).getDay();
+        for (let i = lastDay + 1; i < 7; i++) {
+            html += '<div class="day other-month"></div>';
         }
         
         html += '</div>';
@@ -147,13 +159,11 @@ class BendyCalendar {
             this.centerOnCurrentMonth();
         });
         
-        // Свайпы
-        this.setupSwipe();
-        
         // События дней
         this.monthsTrack.addEventListener('mouseover', (e) => {
-            if (e.target.classList.contains('day') && e.target.dataset.date) {
-                this.showTooltip(e.target, e.target.dataset.date);
+            const dayElement = e.target.closest('.day');
+            if (dayElement && dayElement.dataset.date) {
+                this.showTooltip(dayElement, dayElement.dataset.date);
             }
         });
         
@@ -161,19 +171,103 @@ class BendyCalendar {
             this.hideTooltip();
         });
 
-        // Обновление активного месяца при скролле
-        window.addEventListener('scroll', () => this.updateActiveMonth());
-        window.addEventListener('resize', () => this.updateActiveMonth());
+        // Свайпы
+        this.setupSwipe();
+        
+        // Ресайз
+        window.addEventListener('resize', () => {
+            this.updateActiveMonth();
+        });
     }
 
     scroll(direction) {
         const scrollAmount = (this.monthWidth + this.gap) * direction;
         this.currentPosition += scrollAmount;
         this.updatePosition();
+        this.snapToMonth();
     }
 
     updatePosition() {
         this.monthsTrack.style.transform = `translateX(${this.currentPosition}px)`;
+    }
+
+    setupSwipe() {
+        const track = this.monthsTrack;
+
+        track.addEventListener('mousedown', (e) => {
+            this.isDragging = true;
+            this.startX = e.clientX;
+            this.currentX = this.currentPosition;
+            track.style.transition = 'none';
+            e.preventDefault();
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!this.isDragging) return;
+            const delta = e.clientX - this.startX;
+            this.currentPosition = this.currentX + delta;
+            this.updatePosition();
+        });
+
+        document.addEventListener('mouseup', () => {
+            if (!this.isDragging) return;
+            this.isDragging = false;
+            track.style.transition = 'transform 0.3s ease';
+            this.snapToMonth();
+        });
+
+        // Touch events
+        track.addEventListener('touchstart', (e) => {
+            this.isDragging = true;
+            this.startX = e.touches[0].clientX;
+            this.currentX = this.currentPosition;
+            track.style.transition = 'none';
+        });
+
+        document.addEventListener('touchmove', (e) => {
+            if (!this.isDragging) return;
+            const delta = e.touches[0].clientX - this.startX;
+            this.currentPosition = this.currentX + delta;
+            this.updatePosition();
+        });
+
+        document.addEventListener('touchend', () => {
+            if (!this.isDragging) return;
+            this.isDragging = false;
+            track.style.transition = 'transform 0.3s ease';
+            this.snapToMonth();
+        });
+    }
+
+    snapToMonth() {
+        const months = Array.from(document.querySelectorAll('.month'));
+        if (months.length === 0) return;
+
+        const containerCenter = window.innerWidth / 2;
+        
+        let closestMonth = null;
+        let minDistance = Infinity;
+        
+        months.forEach(month => {
+            const rect = month.getBoundingClientRect();
+            const monthCenter = rect.left + rect.width / 2;
+            const distance = Math.abs(containerCenter - monthCenter);
+            
+            if (distance < minDistance) {
+                minDistance = distance;
+                closestMonth = month;
+            }
+        });
+        
+        if (closestMonth) {
+            const targetPosition = -closestMonth.offsetLeft + (window.innerWidth - closestMonth.offsetWidth) / 2;
+            this.animateToPosition(targetPosition);
+        }
+    }
+
+    animateToPosition(targetPosition) {
+        this.currentPosition = targetPosition;
+        this.updatePosition();
         this.updateActiveMonth();
     }
 
@@ -211,10 +305,11 @@ class BendyCalendar {
         const rect = dayElement.getBoundingClientRect();
         const tooltipRect = this.tooltip.getBoundingClientRect();
         
-        // Позиционируем тултип так, чтобы он не выходил за экран
+        // Позиционирование тултипа
         let left = rect.left;
         let top = rect.bottom + 10;
         
+        // Проверяем, чтобы тултип не выходил за экран
         if (left + tooltipRect.width > window.innerWidth) {
             left = window.innerWidth - tooltipRect.width - 20;
         }
@@ -223,8 +318,8 @@ class BendyCalendar {
             top = rect.top - tooltipRect.height - 10;
         }
         
-        this.tooltip.style.left = left + 'px';
-        this.tooltip.style.top = top + 'px';
+        this.tooltip.style.left = Math.max(10, left) + 'px';
+        this.tooltip.style.top = Math.max(10, top) + 'px';
     }
 
     hideTooltip() {
@@ -233,77 +328,47 @@ class BendyCalendar {
 
     getTypeLabel(type) {
         const labels = {
-            'game': '🎮 Игра',
-            'trailer': '🎬 Трейлер',
-            'announcement': '📢 Анонс',
-            'future': '🔮 Будущее'
+            'game': 'Игра',
+            'trailer': 'Трейлер',
+            'announcement': 'Анонс',
+            'future': 'Будущее'
         };
         return labels[type] || type;
     }
 
-    setupSwipe() {
-        let startX = 0;
-        let currentX = 0;
-        let isDragging = false;
-
-        this.monthsTrack.addEventListener('mousedown', (e) => {
-            startX = e.clientX;
-            currentX = this.currentPosition;
-            isDragging = true;
-            this.monthsTrack.style.transition = 'none';
-        });
-
-        document.addEventListener('mousemove', (e) => {
-            if (!isDragging) return;
-            const delta = e.clientX - startX;
-            this.currentPosition = currentX + delta;
-            this.updatePosition();
-        });
-
-        document.addEventListener('mouseup', () => {
-            if (!isDragging) return;
-            isDragging = false;
-            this.monthsTrack.style.transition = 'transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-            this.snapToMonth();
-        });
-
-        // Touch events для мобильных
-        this.monthsTrack.addEventListener('touchstart', (e) => {
-            startX = e.touches[0].clientX;
-            currentX = this.currentPosition;
-            isDragging = true;
-            this.monthsTrack.style.transition = 'none';
-        });
-
-        document.addEventListener('touchmove', (e) => {
-            if (!isDragging) return;
-            const delta = e.touches[0].clientX - startX;
-            this.currentPosition = currentX + delta;
-            this.updatePosition();
-        });
-
-        document.addEventListener('touchend', () => {
-            if (!isDragging) return;
-            isDragging = false;
-            this.monthsTrack.style.transition = 'transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-            this.snapToMonth();
-        });
+    centerOnCurrentMonth() {
+        const today = new Date();
+        const currentYear = today.getFullYear();
+        const currentMonth = today.getMonth();
+        
+        const currentMonthElement = document.querySelector(`.month[data-year="${currentYear}"][data-month="${currentMonth}"]`);
+        
+        if (currentMonthElement) {
+            const targetPosition = -currentMonthElement.offsetLeft + (window.innerWidth - currentMonthElement.offsetWidth) / 2;
+            this.animateToPosition(targetPosition);
+        } else {
+            // Если текущего месяца нет в отображаемых, показываем самый близкий
+            this.showClosestMonth(currentYear, currentMonth);
+        }
     }
 
-    snapToMonth() {
-        const months = document.querySelectorAll('.month');
-        const containerCenter = window.innerWidth / 2;
+    showClosestMonth(targetYear, targetMonth) {
+        const months = Array.from(document.querySelectorAll('.month'));
+        if (months.length === 0) return;
+
+        const targetDate = new Date(targetYear, targetMonth);
         
         let closestMonth = null;
-        let minDistance = Infinity;
+        let minDiff = Infinity;
         
         months.forEach(month => {
-            const rect = month.getBoundingClientRect();
-            const monthCenter = rect.left + rect.width / 2;
-            const distance = Math.abs(containerCenter - monthCenter);
+            const monthYear = parseInt(month.dataset.year);
+            const monthMonth = parseInt(month.dataset.month);
+            const monthDate = new Date(monthYear, monthMonth);
+            const diff = Math.abs(targetDate - monthDate);
             
-            if (distance < minDistance) {
-                minDistance = distance;
+            if (diff < minDiff) {
+                minDiff = diff;
                 closestMonth = month;
             }
         });
@@ -314,37 +379,17 @@ class BendyCalendar {
         }
     }
 
-    animateToPosition(targetPosition) {
-        this.currentPosition = targetPosition;
-        this.updatePosition();
-    }
-
-    centerOnCurrentMonth() {
-        const today = new Date();
-        const currentMonthKey = `${today.getFullYear()}-${today.getMonth()}`;
-        
-        if (this.monthsWithEvents.has(currentMonthKey)) {
-            const currentMonthElement = document.querySelector(`.month[data-year="${today.getFullYear()}"][data-month="${today.getMonth()}"]`);
-            
-            if (currentMonthElement) {
-                const targetPosition = -currentMonthElement.offsetLeft + (window.innerWidth - currentMonthElement.offsetWidth) / 2;
-                this.animateToPosition(targetPosition);
-            }
-        }
-    }
-
     goToSelectedDate() {
         const input = document.getElementById('monthInput');
         const [year, month] = input.value.split('-').map(Number);
-        const monthKey = `${year}-${month - 1}`;
         
-        if (this.monthsWithEvents.has(monthKey)) {
-            const targetMonthElement = document.querySelector(`.month[data-year="${year}"][data-month="${month - 1}"]`);
-            
-            if (targetMonthElement) {
-                const targetPosition = -targetMonthElement.offsetLeft + (window.innerWidth - targetMonthElement.offsetWidth) / 2;
-                this.animateToPosition(targetPosition);
-            }
+        const targetMonthElement = document.querySelector(`.month[data-year="${year}"][data-month="${month - 1}"]`);
+        
+        if (targetMonthElement) {
+            const targetPosition = -targetMonthElement.offsetLeft + (window.innerWidth - targetMonthElement.offsetWidth) / 2;
+            this.animateToPosition(targetPosition);
+        } else {
+            this.showClosestMonth(year, month - 1);
         }
     }
 
