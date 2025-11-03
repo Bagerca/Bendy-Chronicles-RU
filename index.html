@@ -5,34 +5,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bendy Chronicles RU - Календарь событий</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Special+Elite&display=swap" rel="stylesheet">
 </head>
 <body>
+    <div class="ink-effect"></div>
     <div class="container">
         <header>
-            <h1>Bendy Chronicles RU</h1>
+            <div class="logo">
+                <h1>Bendy Chronicles</h1>
+                <div class="subtitle">Russian Community</div>
+            </div>
             <div class="filters">
                 <button class="filter-btn active" data-filter="all">Все события</button>
-                <button class="filter-btn" data-filter="game">Игры</button>
-                <button class="filter-btn" data-filter="trailer">Трейлеры</button>
-                <button class="filter-btn" data-filter="announcement">Анонсы</button>
-                <button class="filter-btn" data-filter="future">Будущие</button>
-                <button class="filter-btn" id="compactMode">Только с событиями</button>
+                <button class="filter-btn" data-filter="game">🎮 Игры</button>
+                <button class="filter-btn" data-filter="trailer">🎬 Трейлеры</button>
+                <button class="filter-btn" data-filter="announcement">📢 Анонсы</button>
+                <button class="filter-btn" data-filter="future">🔮 Будущие</button>
+                <button class="filter-btn" id="compactMode">🎞️ Только с событиями</button>
             </div>
         </header>
 
-        <div class="calendar-container">
-            <div class="film-strip">
-                <button class="nav-btn prev">‹</button>
-                <div class="months-track" id="monthsTrack"></div>
-                <button class="nav-btn next">›</button>
+        <main>
+            <div class="calendar-container">
+                <div class="film-strip">
+                    <div class="film-perforations left"></div>
+                    <button class="nav-btn prev">‹</button>
+                    <div class="months-track" id="monthsTrack"></div>
+                    <button class="nav-btn next">›</button>
+                    <div class="film-perforations right"></div>
+                </div>
             </div>
-        </div>
 
-        <div class="date-selector">
-            <input type="month" id="monthInput" min="2017-01" max="2025-12">
-            <button id="goToDate">Перейти</button>
-        </div>
+            <div class="date-selector">
+                <input type="month" id="monthInput" min="2017-01" max="2025-12">
+                <button id="goToDate">Перейти к дате</button>
+                <button id="todayBtn">Сегодня</button>
+            </div>
+        </main>
 
         <div id="eventTooltip" class="event-tooltip"></div>
     </div>
