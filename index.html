@@ -4,26 +4,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bendy Хроники - Киноплёнка событий</title>
+    <style>
+        /* Временные базовые стили чтобы сайт не был белым */
+        body {
+            background: #2a1b0d;
+            color: #e8e8e8;
+            margin: 0;
+            padding: 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+        }
+    </style>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <!-- Эффект проектора -->
     <div class="projector-effect"></div>
     
-    <!-- Царапины на плёнки -->
+    <!-- Царапины на плёнке -->
     <div class="film-scratch"></div>
 
     <!-- Навигация -->
     <div class="navigation">
-        <button class="nav-btn" onclick="scrollToYear(2017)">2017</button>
-        <button class="nav-btn" onclick="scrollToYear(2018)">2018</button>
-        <button class="nav-btn" onclick="scrollToYear(2019)">2019</button>
-        <button class="nav-btn" onclick="scrollToYear(2020)">2020</button>
-        <button class="nav-btn" onclick="scrollToYear(2021)">2021</button>
-        <button class="nav-btn" onclick="scrollToYear(2022)">2022</button>
-        <button class="nav-btn" onclick="scrollToYear(2023)">2023</button>
-        <button class="nav-btn" onclick="scrollToYear(2024)">2024</button>
-        <button class="nav-btn" onclick="scrollToYear(2025)">2025</button>
+        <button class="nav-btn" data-year="2017">2017</button>
+        <button class="nav-btn" data-year="2018">2018</button>
+        <button class="nav-btn" data-year="2019">2019</button>
+        <button class="nav-btn" data-year="2020">2020</button>
+        <button class="nav-btn" data-year="2021">2021</button>
+        <button class="nav-btn" data-year="2022">2022</button>
+        <button class="nav-btn" data-year="2023">2023</button>
+        <button class="nav-btn" data-year="2024">2024</button>
+        <button class="nav-btn" data-year="2025">2025</button>
     </div>
 
     <!-- Контейнер плёнки -->
@@ -36,7 +47,7 @@
     <!-- Модальное окно события -->
     <div class="modal" id="eventModal">
         <div class="modal-content">
-            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <span class="close-modal" id="closeModal">&times;</span>
             <h2 class="event-title" id="modalTitle">Событие</h2>
             <p class="event-description" id="modalDescription">Описание события...</p>
             <a href="#" class="event-link" id="modalLink" target="_blank">Подробнее</a>
