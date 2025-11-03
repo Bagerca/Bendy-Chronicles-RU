@@ -1,62 +1,5 @@
-// Данные событий Bendy
-const bendyEvents = {
-    "2017-02-10": {
-        type: "game_release",
-        title: "Bendy and the Ink Machine - Chapter 1",
-        description: "Вышла первая глава культовой игры Bendy and the Ink Machine",
-        link: "https://store.steampowered.com/app/622650/Bendy_and_the_Ink_Machine/",
-        icon: "🎮"
-    },
-    "2017-12-21": {
-        type: "game_release", 
-        title: "Bendy and the Ink Machine - Chapter 2",
-        description: "Вышла вторая глава игры, добавляющая новые локации и механики",
-        link: "https://store.steampowered.com/app/622650/Bendy_and_the_Ink_Machine/",
-        icon: "🎮"
-    },
-    "2018-09-24": {
-        type: "trailer",
-        title: "Трейлер Chapter 3",
-        description: "Официальный трейлер третьей главы Bendy and the Ink Machine",
-        link: "https://youtube.com",
-        icon: "🎬"
-    },
-    "2018-11-13": {
-        type: "game_release",
-        title: "Bendy and the Ink Machine - Chapter 3", 
-        description: "Третья глава игры с новыми головоломками и врагами",
-        link: "https://store.steampowered.com/app/622650/Bendy_and_the_Ink_Machine/",
-        icon: "🎮"
-    },
-    "2019-04-23": {
-        type: "teaser",
-        title: "Тизер Chapter 4",
-        description: "Первый тизер четвертой главы с новыми персонажами",
-        link: "https://youtube.com",
-        icon: "📢"
-    },
-    "2019-06-25": {
-        type: "game_release",
-        title: "Bendy and the Ink Machine - Chapter 4",
-        description: "Четвертая глава, приближающая к развязке истории",
-        link: "https://store.steampowered.com/app/622650/Bendy_and_the_Ink_Machine/",
-        icon: "🎮"
-    },
-    "2020-07-20": {
-        type: "trailer",
-        title: "Трейлер Bendy and the Dark Revival",
-        description: "Анонс сиквела - Bendy and the Dark Revival",
-        link: "https://youtube.com",
-        icon: "🎬"
-    },
-    "2022-11-15": {
-        type: "game_release",
-        title: "Bendy and the Dark Revival",
-        description: "Полный релиз сиквела Bendy and the Dark Revival",
-        link: "https://store.steampowered.com/app/1716620/Bendy_and_the_Dark_Revival/",
-        icon: "🎮"
-    }
-};
+// Убедимся, что переменная bendyEvents не объявлена здесь
+// Вся логика работы с календарем
 
 // Переменные для управления плёнкой
 let isDragging = false;
@@ -72,13 +15,40 @@ document.addEventListener('DOMContentLoaded', function() {
     generateFilmFrames();
     setupFilmDrag();
     setupWheelScroll();
+    setupNavigation();
+    setupModal();
 });
+
+// Настройка навигации
+function setupNavigation() {
+    const navButtons = document.querySelectorAll('.nav-btn');
+    navButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const year = parseInt(this.getAttribute('data-year'));
+            scrollToYear(year);
+        });
+    });
+}
+
+// Настройка модального окна
+function setupModal() {
+    const closeModalBtn = document.getElementById('closeModal');
+    const modal = document.getElementById('eventModal');
+    
+    closeModalBtn.addEventListener('click', closeModal);
+    
+    window.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closeModal();
+        }
+    });
+}
 
 // Генерация кадров плёнки
 function generateFilmFrames() {
     const filmStrip = document.getElementById('filmStrip');
     const startYear = 2017;
-    const endYear = 2023;
+    const endYear = 2025;
     
     for (let year = startYear; year <= endYear; year++) {
         // Добавляем разделитель года
@@ -310,7 +280,14 @@ function openModal(event) {
     title.textContent = event.title;
     description.textContent = event.description;
     link.href = event.link;
-    link.textContent = event.type === 'game_release' ? 'Купить в Steam' : 'Смотреть видео';
+    
+    if (event.type === 'game_release') {
+        link.textContent = 'Купить в Steam';
+    } else if (event.type === 'trailer' || event.type === 'teaser') {
+        link.textContent = 'Смотреть видео';
+    } else {
+        link.textContent = 'Подробнее';
+    }
     
     modal.style.display = 'flex';
 }
@@ -327,14 +304,6 @@ function formatDate(date) {
     const day = String(date.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
 }
-
-// Закрытие модального окна по клику вне его
-window.addEventListener('click', (e) => {
-    const modal = document.getElementById('eventModal');
-    if (e.target === modal) {
-        closeModal();
-    }
-});
 
 // Предотвращаем выделение текста при перетаскивании
 document.addEventListener('selectstart', (e) => {
