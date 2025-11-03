@@ -309,7 +309,8 @@ function getEventTypeName(type) {
     const names = {
         'teaser': 'Тизер',
         'trailer': 'Трейлер', 
-        'game': 'Игра'
+        'game': 'Игра',
+        'announcement': 'Анонс'
     };
     return names[type] || type;
 }
