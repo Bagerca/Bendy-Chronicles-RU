@@ -3,53 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bendy Chronicles - Timeline</title>
+    <title>Bendy Chronicles RU - Календарь событий</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="container">
-        <header class="header">
-            <div class="logo">
-                <h1>Bendy Chronicles</h1>
-                <p>История франшизы в датах</p>
+        <header>
+            <h1>Bendy Chronicles RU</h1>
+            <div class="filters">
+                <button class="filter-btn active" data-filter="all">Все события</button>
+                <button class="filter-btn" data-filter="game">Игры</button>
+                <button class="filter-btn" data-filter="trailer">Трейлеры</button>
+                <button class="filter-btn" data-filter="announcement">Анонсы</button>
+                <button class="filter-btn" data-filter="future">Будущие</button>
+                <button class="filter-btn" id="compactMode">Только с событиями</button>
             </div>
         </header>
 
-        <div class="navigation">
-            <div class="nav-controls">
-                <select id="yearSelect">
-                    <option value="">Год</option>
-                </select>
-                <select id="monthSelect">
-                    <option value="">Месяц</option>
-                </select>
-                <button id="todayBtn">Сегодня</button>
-            </div>
-            <div class="timeline-controls">
-                <button id="prevMonth" class="nav-btn">←</button>
-                <div class="current-display" id="currentMonth"></div>
-                <button id="nextMonth" class="nav-btn">→</button>
-            </div>
-        </div>
-
         <div class="calendar-container">
-            <div class="calendar" id="calendar">
-                <!-- Calendar will be generated here -->
+            <div class="film-strip">
+                <button class="nav-btn prev">‹</button>
+                <div class="months-track" id="monthsTrack"></div>
+                <button class="nav-btn next">›</button>
             </div>
         </div>
 
-        <div class="events-panel" id="eventsPanel">
-            <div class="events-header">
-                <h3>События</h3>
-                <span id="selectedDate"></span>
-            </div>
-            <div class="events-list" id="eventsList">
-                <!-- Events will be displayed here -->
-            </div>
+        <div class="date-selector">
+            <input type="month" id="monthInput" min="2017-01" max="2025-12">
+            <button id="goToDate">Перейти</button>
         </div>
+
+        <div id="eventTooltip" class="event-tooltip"></div>
     </div>
 
-    <script src="data.js"></script>
+    <script src="events-data.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
