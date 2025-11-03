@@ -1,319 +1,226 @@
-// Элементы DOM
-const filmStrip = document.getElementById('filmStrip');
-const yearSelect = document.getElementById('yearSelect');
-const monthSelect = document.getElementById('monthSelect');
-const daySelect = document.getElementById('daySelect');
-const goToDateBtn = document.getElementById('goToDate');
-const todayBtn = document.getElementById('todayBtn');
-const timelineSlider = document.getElementById('timelineSlider');
-
-// Переменные состояния
-let isScrolling = false;
-let scrollTimeout;
-let totalMonths = 0;
-
-// Инициализация
-function init() {
-    generateYearOptions();
-    generateCalendar();
-    setupEventListeners();
-    updateSliderRange();
-}
-
-// Генерация опций выбора годов
-function generateYearOptions() {
-    for (let year = CALENDAR_CONFIG.START_YEAR; year <= CALENDAR_CONFIG.END_YEAR; year++) {
-        const option = document.createElement('option');
-        option.value = year;
-        option.textContent = year;
-        yearSelect.appendChild(option);
+class BendyCalendar {
+    constructor() {
+        this.currentDate = new Date();
+        this.selectedDate = null;
+        this.initializeElements();
+        this.init();
     }
-}
 
-// Генерация календаря
-function generateCalendar() {
-    filmStrip.innerHTML = '';
-    totalMonths = 0;
-    
-    for (let year = CALENDAR_CONFIG.START_YEAR; year <= CALENDAR_CONFIG.END_YEAR; year++) {
-        for (let month = 0; month < 12; month++) {
-            const monthSection = createMonthSection(year, month);
-            filmStrip.appendChild(monthSection);
-            totalMonths++;
+    initializeElements() {
+        this.calendarElement = document.getElementById('calendar');
+        this.yearSelect = document.getElementById('yearSelect');
+        this.monthSelect = document.getElementById('monthSelect');
+        this.todayBtn = document.getElementById('todayBtn');
+        this.prevMonthBtn = document.getElementById('prevMonth');
+        this.nextMonthBtn = document.getElementById('nextMonth');
+        this.currentMonthElement = document.getElementById('currentMonth');
+        this.selectedDateElement = document.getElementById('selectedDate');
+        this.eventsListElement = document.getElementById('eventsList');
+    }
+
+    init() {
+        this.generateYearOptions();
+        this.generateMonthOptions();
+        this.renderCalendar();
+        this.setupEventListeners();
+        this.updateCurrentMonthDisplay();
+        this.showTodaysEvents();
+    }
+
+    generateYearOptions() {
+        this.yearSelect.innerHTML = '<option value="">Год</option>';
+        for (let year = CALENDAR_CONFIG.START_YEAR; year <= CALENDAR_CONFIG.END_YEAR; year++) {
+            const option = document.createElement('option');
+            option.value = year;
+            option.textContent = year;
+            this.yearSelect.appendChild(option);
         }
     }
-}
 
-// Создание секции месяца
-function createMonthSection(year, month) {
-    const section = document.createElement('div');
-    section.className = 'month-section';
-    section.dataset.year = year;
-    section.dataset.month = month;
-    section.dataset.index = totalMonths;
-    
-    const monthName = CALENDAR_CONFIG.MONTHS[month];
-    section.innerHTML = `
-        <div class="month-header">${monthName} ${year}</div>
-        <div class="days-grid" id="days-${year}-${month}"></div>
-    `;
-    
-    const daysGrid = section.querySelector('.days-grid');
-    populateDaysGrid(daysGrid, year, month);
-    
-    return section;
-}
-
-// Заполнение сетки дней
-function populateDaysGrid(daysGrid, year, month) {
-    const firstDay = new Date(year, month, 1).getDay();
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-    
-    // Пустые ячейки для дней перед первым числом
-    for (let i = 0; i < (firstDay === 0 ? 6 : firstDay - 1); i++) {
-        const emptyDay = document.createElement('div');
-        emptyDay.className = 'day empty';
-        daysGrid.appendChild(emptyDay);
-    }
-    
-    // Дни месяца
-    for (let day = 1; day <= daysInMonth; day++) {
-        const dayElement = document.createElement('div');
-        dayElement.className = 'day';
-        dayElement.textContent = day;
-        dayElement.dataset.date = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-        
-        // Проверка на события
-        const event = eventsData.find(event => event.date === dayElement.dataset.date);
-        if (event) {
-            dayElement.classList.add('event', event.type);
-            dayElement.innerHTML += `<div class="event-marker"></div>`;
-            dayElement.title = event.title;
-        }
-        
-        daysGrid.appendChild(dayElement);
-    }
-}
-
-// Настройка обработчиков событий
-function setupEventListeners() {
-    goToDateBtn.addEventListener('click', scrollToSelectedDate);
-    todayBtn.addEventListener('click', scrollToToday);
-    
-    yearSelect.addEventListener('change', updateMonthOptions);
-    monthSelect.addEventListener('change', updateDayOptions);
-    
-    // Клик по дню
-    filmStrip.addEventListener('click', (e) => {
-        if (e.target.classList.contains('day') && !e.target.classList.contains('empty')) {
-            const date = e.target.dataset.date;
-            showEventDetails(date);
-        }
-    });
-    
-    // Прокрутка колесиком мыши на пленке
-    filmStrip.addEventListener('wheel', handleFilmStripScroll, { passive: false });
-    
-    // Синхронизация ползунка с прокруткой
-    filmStrip.addEventListener('scroll', handleFilmStripScrollEvent);
-    
-    // Обработка изменения ползунка
-    timelineSlider.addEventListener('input', handleSliderInput);
-    
-    // Примагничивание при завершении прокрутки
-    filmStrip.addEventListener('scroll', handleSnapScroll);
-}
-
-// Обработка прокрутки колесиком мыши
-function handleFilmStripScroll(e) {
-    e.preventDefault();
-    filmStrip.scrollLeft += e.deltaY * 2;
-}
-
-// Обработка события прокрутки пленки
-function handleFilmStripScrollEvent() {
-    if (!isScrolling) {
-        isScrolling = true;
-    }
-    
-    // Обновление ползунка
-    const scrollPercentage = (filmStrip.scrollLeft / (filmStrip.scrollWidth - filmStrip.clientWidth)) * 100;
-    timelineSlider.value = scrollPercentage;
-    
-    clearTimeout(scrollTimeout);
-    scrollTimeout = setTimeout(() => {
-        isScrolling = false;
-    }, 100);
-}
-
-// Обработка изменения ползунка
-function handleSliderInput() {
-    if (isScrolling) return;
-    
-    const scrollPosition = (timelineSlider.value / 100) * (filmStrip.scrollWidth - filmStrip.clientWidth);
-    filmStrip.scrollLeft = scrollPosition;
-}
-
-// Примагничивание к ближайшему месяцу
-function handleSnapScroll() {
-    if (isScrolling) return;
-    
-    clearTimeout(scrollTimeout);
-    scrollTimeout = setTimeout(() => {
-        const monthSections = document.querySelectorAll('.month-section');
-        let closestSection = null;
-        let closestDistance = Infinity;
-        
-        monthSections.forEach(section => {
-            const rect = section.getBoundingClientRect();
-            const containerCenter = filmStrip.getBoundingClientRect().left + filmStrip.clientWidth / 2;
-            const sectionCenter = rect.left + rect.width / 2;
-            const distance = Math.abs(sectionCenter - containerCenter);
-            
-            if (distance < closestDistance) {
-                closestDistance = distance;
-                closestSection = section;
-            }
-        });
-        
-        if (closestSection) {
-            smoothScrollToElement(closestSection);
-        }
-    }, 150);
-}
-
-// Обновление диапазона ползунка
-function updateSliderRange() {
-    // Ползунок уже имеет min="0" max="100" в HTML
-}
-
-// Обновление опций месяцев
-function updateMonthOptions() {
-    monthSelect.innerHTML = '<option value="">Выберите месяц</option>';
-    daySelect.innerHTML = '<option value="">Выберите день</option>';
-    
-    if (yearSelect.value) {
+    generateMonthOptions() {
+        this.monthSelect.innerHTML = '<option value="">Месяц</option>';
         CALENDAR_CONFIG.MONTHS.forEach((month, index) => {
             const option = document.createElement('option');
             option.value = index;
             option.textContent = month;
-            monthSelect.appendChild(option);
+            this.monthSelect.appendChild(option);
+        });
+    }
+
+    renderCalendar() {
+        const year = this.currentDate.getFullYear();
+        const month = this.currentDate.getMonth();
+        
+        this.calendarElement.innerHTML = '';
+
+        // Добавляем заголовки дней недели
+        const weekdaysContainer = document.createElement('div');
+        weekdaysContainer.className = 'weekdays';
+        CALENDAR_CONFIG.WEEKDAYS.forEach(day => {
+            const dayElement = document.createElement('div');
+            dayElement.className = 'weekday';
+            dayElement.textContent = day;
+            weekdaysContainer.appendChild(dayElement);
+        });
+        this.calendarElement.appendChild(weekdaysContainer);
+
+        const firstDay = new Date(year, month, 1);
+        const lastDay = new Date(year, month + 1, 0);
+        const daysInMonth = lastDay.getDate();
+        const startingDay = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1;
+
+        // Добавляем пустые ячейки для дней предыдущего месяца
+        for (let i = 0; i < startingDay; i++) {
+            const emptyDay = document.createElement('div');
+            emptyDay.className = 'day';
+            this.calendarElement.appendChild(emptyDay);
+        }
+
+        // Добавляем дни текущего месяца
+        for (let day = 1; day <= daysInMonth; day++) {
+            const dayElement = document.createElement('div');
+            dayElement.className = 'day current-month';
+            dayElement.textContent = day;
+            
+            const dateString = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            dayElement.dataset.date = dateString;
+
+            // Проверяем, сегодня ли это
+            const today = new Date();
+            if (year === today.getFullYear() && month === today.getMonth() && day === today.getDate()) {
+                dayElement.classList.add('today');
+            }
+
+            // Проверяем события
+            const events = this.getEventsForDate(dateString);
+            if (events.length > 0) {
+                dayElement.classList.add('has-event');
+                // Используем тип первого события для цвета
+                dayElement.classList.add(events[0].type);
+            }
+
+            dayElement.addEventListener('click', () => this.selectDate(dateString));
+            this.calendarElement.appendChild(dayElement);
+        }
+    }
+
+    getEventsForDate(dateString) {
+        return eventsData.filter(event => event.date === dateString);
+    }
+
+    selectDate(dateString) {
+        // Убираем выделение с предыдущей даты
+        document.querySelectorAll('.day.active').forEach(day => {
+            day.classList.remove('active');
+        });
+
+        // Выделяем новую дату
+        const selectedDay = document.querySelector(`[data-date="${dateString}"]`);
+        if (selectedDay) {
+            selectedDay.classList.add('active');
+        }
+
+        this.selectedDate = dateString;
+        this.showEventsForDate(dateString);
+    }
+
+    showEventsForDate(dateString) {
+        const events = this.getEventsForDate(dateString);
+        const date = new Date(dateString);
+        const formattedDate = date.toLocaleDateString('ru-RU', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+        });
+
+        this.selectedDateElement.textContent = formattedDate;
+
+        if (events.length === 0) {
+            this.eventsListElement.innerHTML = '<div class="empty-events">Нет событий на эту дату</div>';
+            return;
+        }
+
+        this.eventsListElement.innerHTML = events.map(event => `
+            <div class="event-item">
+                <span class="event-type ${event.type}">${this.getEventTypeName(event.type)}</span>
+                <div class="event-title">${event.title}</div>
+            </div>
+        `).join('');
+    }
+
+    showTodaysEvents() {
+        const today = new Date();
+        const todayString = today.toISOString().split('T')[0];
+        this.selectDate(todayString);
+        
+        // Находим и выделяем сегодняшний день
+        const todayElement = document.querySelector(`[data-date="${todayString}"]`);
+        if (todayElement) {
+            todayElement.classList.add('active');
+        }
+    }
+
+    getEventTypeName(type) {
+        const names = {
+            'teaser': 'Тизер',
+            'trailer': 'Трейлер', 
+            'game': 'Игра',
+            'announcement': 'Анонс'
+        };
+        return names[type] || type;
+    }
+
+    navigateMonth(direction) {
+        this.currentDate.setMonth(this.currentDate.getMonth() + direction);
+        this.renderCalendar();
+        this.updateCurrentMonthDisplay();
+        this.updateSelects();
+        this.showTodaysEvents();
+    }
+
+    updateCurrentMonthDisplay() {
+        const monthName = CALENDAR_CONFIG.MONTHS[this.currentDate.getMonth()];
+        const year = this.currentDate.getFullYear();
+        this.currentMonthElement.textContent = `${monthName} ${year}`;
+    }
+
+    updateSelects() {
+        this.yearSelect.value = this.currentDate.getFullYear();
+        this.monthSelect.value = this.currentDate.getMonth();
+    }
+
+    goToToday() {
+        this.currentDate = new Date();
+        this.renderCalendar();
+        this.updateCurrentMonthDisplay();
+        this.updateSelects();
+        this.showTodaysEvents();
+    }
+
+    setupEventListeners() {
+        this.prevMonthBtn.addEventListener('click', () => this.navigateMonth(-1));
+        this.nextMonthBtn.addEventListener('click', () => this.navigateMonth(1));
+        this.todayBtn.addEventListener('click', () => this.goToToday());
+
+        this.yearSelect.addEventListener('change', (e) => {
+            if (e.target.value) {
+                this.currentDate.setFullYear(parseInt(e.target.value));
+                this.renderCalendar();
+                this.updateCurrentMonthDisplay();
+            }
+        });
+
+        this.monthSelect.addEventListener('change', (e) => {
+            if (e.target.value) {
+                this.currentDate.setMonth(parseInt(e.target.value));
+                this.renderCalendar();
+                this.updateCurrentMonthDisplay();
+            }
         });
     }
 }
 
-// Обновление опций дней
-function updateDayOptions() {
-    daySelect.innerHTML = '<option value="">Выберите день</option>';
-    
-    if (yearSelect.value && monthSelect.value) {
-        const year = parseInt(yearSelect.value);
-        const month = parseInt(monthSelect.value);
-        const daysInMonth = new Date(year, month + 1, 0).getDate();
-        
-        for (let day = 1; day <= daysInMonth; day++) {
-            const option = document.createElement('option');
-            option.value = day;
-            option.textContent = day;
-            daySelect.appendChild(option);
-        }
-    }
-}
-
-// Прокрутка к выбранной дате
-function scrollToSelectedDate() {
-    const year = yearSelect.value;
-    const month = monthSelect.value;
-    const day = daySelect.value;
-    
-    if (!year || !month) {
-        alert('Пожалуйста, выберите год и месяц');
-        return;
-    }
-    
-    const targetElement = document.querySelector(`.month-section[data-year="${year}"][data-month="${month}"]`);
-    
-    if (targetElement) {
-        smoothScrollToElement(targetElement);
-        
-        // Подсветка выбранного дня
-        if (day) {
-            setTimeout(() => {
-                const targetDate = `${year}-${String(parseInt(month) + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                const dayElement = document.querySelector(`.day[data-date="${targetDate}"]`);
-                if (dayElement) {
-                    dayElement.style.background = '#5d4c37';
-                    dayElement.style.borderColor = '#c8b090';
-                    setTimeout(() => {
-                        dayElement.style.background = '';
-                        dayElement.style.borderColor = '';
-                    }, 2000);
-                }
-            }, 1000);
-        }
-    }
-}
-
-// Прокрутка к текущей дате
-function scrollToToday() {
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = today.getMonth();
-    const day = today.getDate();
-    
-    yearSelect.value = year;
-    updateMonthOptions();
-    monthSelect.value = month;
-    updateDayOptions();
-    daySelect.value = day;
-    
-    scrollToSelectedDate();
-}
-
-// Плавная прокрутка к элементу
-function smoothScrollToElement(element) {
-    const startPosition = filmStrip.scrollLeft;
-    const targetPosition = element.offsetLeft - (filmStrip.clientWidth - element.offsetWidth) / 2;
-    const distance = targetPosition - startPosition;
-    const duration = 1000;
-    let startTime = null;
-
-    function animation(currentTime) {
-        if (!startTime) startTime = currentTime;
-        const timeElapsed = currentTime - startTime;
-        const progress = Math.min(timeElapsed / duration, 1);
-        
-        // Эффект easeOut
-        const easeProgress = 1 - Math.pow(1 - progress, 3);
-        
-        filmStrip.scrollLeft = startPosition + (distance * easeProgress);
-        
-        if (timeElapsed < duration) {
-            requestAnimationFrame(animation);
-        }
-    }
-    
-    requestAnimationFrame(animation);
-}
-
-// Показать детали события
-function showEventDetails(date) {
-    const event = eventsData.find(event => event.date === date);
-    if (event) {
-        alert(`Событие: ${event.title}\nДата: ${date}\nТип: ${getEventTypeName(event.type)}`);
-    }
-}
-
-// Получить название типа события
-function getEventTypeName(type) {
-    const names = {
-        'teaser': 'Тизер',
-        'trailer': 'Трейлер', 
-        'game': 'Игра',
-        'announcement': 'Анонс'
-    };
-    return names[type] || type;
-}
-
-// Запуск при загрузке
-document.addEventListener('DOMContentLoaded', init);
+// Инициализация календаря при загрузке страницы
+document.addEventListener('DOMContentLoaded', () => {
+    new BendyCalendar();
+});
