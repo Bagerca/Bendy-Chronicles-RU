@@ -229,7 +229,7 @@ class BendyTimeline {
             this.pinnedEvents.add(event.id);
         }
         this.updatePinnedEvents();
-        this.renderTimeline(); // Обновляем тултипы
+        this.renderTimeline();
     }
     
     updatePinnedEvents() {
@@ -286,7 +286,7 @@ class BendyTimeline {
         
         this.inactivityTimer = setTimeout(() => {
             this.startAutoScroll();
-        }, 10000); // 10 секунд бездействия
+        }, 10000);
     }
 }
 
