@@ -1,65 +1,22 @@
-const bendyEvents = {
-    "2017-02-10": {
-        type: "game_release",
-        title: "Bendy and the Ink Machine - Chapter 1",
-        description: "Релиз Главы 1: Moving Pictures (ПК, демо-версия)",
-        link: "https://store.steampowered.com/app/622650/Bendy_and_the_Ink_Machine/",
-        icon: "🎮"
-    },
-    "2017-04-18": {
-        type: "game_release", 
-        title: "Bendy and the Ink Machine - Chapter 2",
-        description: "Релиз Главы 2: The Old Song (ПК)",
-        link: "https://store.steampowered.com/app/622650/Bendy_and_the_Ink_Machine/",
-        icon: "🎮"
-    },
-    "2017-09-28": {
-        type: "game_release",
-        title: "Bendy and the Ink Machine - Chapter 3", 
-        description: "Релиз Главы 3: Rise and Fall (ПК)",
-        link: "https://store.steampowered.com/app/622650/Bendy_and_the_Ink_Machine/",
-        icon: "🎮"
-    },
-    "2018-04-30": {
-        type: "game_release",
-        title: "Bendy and the Ink Machine - Chapter 4",
-        description: "Релиз Главы 4: Colossal Wonders (ПК)",
-        link: "https://store.steampowered.com/app/622650/Bendy_and_the_Ink_Machine/",
-        icon: "🎮"
-    },
-    "2018-10-26": {
-        type: "game_release",
-        title: "Bendy and the Ink Machine - Chapter 5",
-        description: "Релиз Главы 5: The Last Reel (ПК), полный выпуск игры",
-        link: "https://store.steampowered.com/app/622650/Bendy_and_the_Ink_Machine/",
-        icon: "🎮"
-    },
-    "2018-11-20": {
-        type: "game_release",
-        title: "Bendy and the Ink Machine - Полное издание",
-        description: "Выпуск полного издания на PlayStation 4, Xbox One и Nintendo Switch",
-        link: "https://store.playstation.com/app/bendy-and-the-ink-machine",
-        icon: "🎮"
-    },
-    "2022-11-15": {
-        type: "game_release",
-        title: "Bendy and the Dark Revival",
-        description: "Релиз продолжения на Windows (ПК)",
-        link: "https://store.steampowered.com/app/1716620/Bendy_and_the_Dark_Revival/",
-        icon: "🎮"
-    },
-    "2017-01-30": {
-        type: "trailer",
-        title: "Анонсирующий трейлер Bendy and the Ink Machine",
-        description: "Первый анонсирующий трейлер игры",
-        link: "https://youtube.com",
-        icon: "🎬"
-    },
-    "2019-04-14": {
-        type: "announcement",
-        title: "Анонс Bendy and the Dark Revival",
-        description: "Первый анонс сиквела Bendy and the Dark Revival",
-        link: "https://youtube.com",
-        icon: "📢"
-    }
+// Данные о событиях Bendy Chronicles
+const eventsData = [
+    { date: '2017-02-10', type: 'teaser', title: 'Первый тизер Bendy and the Ink Machine' },
+    { date: '2017-10-31', type: 'game', title: 'Выход Bendy and the Ink Machine Chapter 1' },
+    { date: '2018-05-18', type: 'game', title: 'Выход Bendy and the Ink Machine Chapter 2' },
+    { date: '2018-09-24', type: 'game', title: 'Выход Bendy and the Ink Machine Chapter 3' },
+    { date: '2019-04-25', type: 'trailer', title: 'Трейлер Chapter 4' },
+    { date: '2019-11-20', type: 'game', title: 'Выход Bendy and the Ink Machine Chapter 4' },
+    { date: '2020-02-10', type: 'game', title: 'Выход Boris and the Dark Survival' },
+    { date: '2020-11-20', type: 'trailer', title: 'Анонс Bendy and the Dark Revival' },
+    { date: '2022-11-15', type: 'game', title: 'Выход Bendy and the Dark Revival' },
+    { date: '2023-03-15', type: 'teaser', title: 'Тизер нового контента' },
+    { date: '2024-01-10', type: 'trailer', title: 'Трейлер обновления' },
+    { date: '2024-06-15', type: 'teaser', title: 'Тизер будущего проекта' }
+];
+
+// Настройки календаря
+const CALENDAR_CONFIG = {
+    START_YEAR: 2017,
+    END_YEAR: 2025,
+    MONTHS: ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь']
 };
