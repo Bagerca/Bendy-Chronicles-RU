@@ -3,608 +3,612 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bendy Chronicles RU - Киноплёнка</title>
+    <title>Bendy Хроники - Киноплёнка событий</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        :root {
-            --dark-bg: #0a0a0a;
-            --film-color: #1a1a1a;
-            --accent-orange: #ff6b00;
-            --accent-yellow: #ffd700;
-            --text-primary: #ffffff;
-            --text-secondary: #cccccc;
         }
 
         body {
-            background: var(--dark-bg);
-            color: var(--text-primary);
-            min-height: 100vh;
+            background: #2a1b0d; /* Темно-коричневый фон */
+            font-family: 'Courier New', monospace;
+            color: #e8e8e8;
             overflow-x: hidden;
+            position: relative;
         }
 
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 40px 20px;
+        /* Эффект проектора */
+        .projector-effect {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(
+                circle at top,
+                transparent 0%,
+                rgba(0, 0, 0, 0.7) 40%,
+                rgba(0, 0, 0, 0.9) 100%
+            );
+            pointer-events: none;
+            z-index: 10;
         }
 
-        /* Header */
-        .header {
-            text-align: center;
-            margin-bottom: 60px;
-        }
-
-        .title {
-            font-size: 4rem;
-            font-weight: 900;
-            color: var(--accent-orange);
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            margin-bottom: 10px;
-            text-shadow: 0 0 30px var(--accent-orange);
-        }
-
-        .subtitle {
-            font-size: 1.3rem;
-            color: var(--text-secondary);
-            font-style: italic;
-        }
-
-        /* Film Container */
+        /* Контейнер плёнки */
         .film-container {
             position: relative;
-            margin: 80px 0;
-            background: linear-gradient(90deg, #000000, #1a1a1a, #000000);
-            border: 3px solid #333;
-            border-left: none;
-            border-right: none;
-            padding: 0;
+            width: 100%;
+            min-height: 100vh;
+            padding: 100px 0;
+            background: 
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 95%,
+                    rgba(139, 69, 19, 0.1) 100%
+                );
         }
 
-        /* Film Strip with Holes */
+        /* Сама киноплёнка */
         .film-strip {
-            position: relative;
-            background: 
-                repeating-linear-gradient(
-                    90deg,
-                    transparent 0px,
-                    transparent 18px,
-                    var(--film-color) 18px,
-                    var(--film-color) 20px
-                );
-            min-height: 400px;
             display: flex;
-            align-items: center;
-            padding: 40px 0;
-        }
-
-        .film-strip::before,
-        .film-strip::after {
-            content: "";
-            position: absolute;
-            left: 0;
-            right: 0;
-            height: 40px;
+            position: relative;
+            width: max-content;
+            min-width: 100%;
             background: 
+                /* Перфорации слева */
                 repeating-linear-gradient(
                     90deg,
-                    var(--dark-bg) 0px,
-                    var(--dark-bg) 8px,
-                    transparent 8px,
-                    transparent 20px
+                    transparent,
+                    transparent 38px,
+                    #8B4513 40px,
+                    #8B4513 42px,
+                    transparent 44px
+                ),
+                /* Перфорации справа */
+                repeating-linear-gradient(
+                    90deg,
+                    transparent 194px,
+                    transparent 232px,
+                    #8B4513 234px,
+                    #8B4513 236px,
+                    transparent 238px
+                ),
+                /* Основная плёнка */
+                linear-gradient(
+                    180deg,
+                    #1a1a1a 0%,
+                    #2a2a2a 50%,
+                    #1a1a1a 100%
                 );
-            z-index: 3;
+            border-top: 2px solid #8B4513;
+            border-bottom: 2px solid #8B4513;
+            padding: 20px 0;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
+            transition: transform 0.1s linear;
         }
 
-        .film-strip::before {
-            top: 0;
-        }
-
-        .film-strip::after {
-            bottom: 0;
-        }
-
-        /* Film Frame - Calendar Content */
+        /* Кадр - день */
         .film-frame {
-            flex: 1;
-            background: rgba(0, 0, 0, 0.9);
-            margin: 0 50px;
-            padding: 40px;
-            border: 2px solid #444;
+            width: 200px;
+            height: 150px;
+            margin: 0 20px;
+            background: 
+                /* Текстура старой бумаги */
+                url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" opacity="0.1"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="1" stitchTiles="stitch"/></filter><rect width="100" height="100" filter="url(%23noise)"/></svg>'),
+                /* Основной цвет */
+                linear-gradient(135deg, #3a2c1f 0%, #2a1f14 100%);
+            border: 2px solid #8B4513;
+            border-radius: 5px;
             position: relative;
-            box-shadow: 0 0 50px rgba(255, 107, 0, 0.1);
-        }
-
-        .film-frame::before {
-            content: "";
-            position: absolute;
-            top: 5px;
-            left: 5px;
-            right: 5px;
-            bottom: 5px;
-            border: 1px solid rgba(255, 107, 0, 0.3);
-            pointer-events: none;
-        }
-
-        /* Navigation */
-        .navigation {
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
-            gap: 40px;
-            margin-bottom: 40px;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .film-frame:hover {
+            transform: scale(1.05);
+            border-color: #e8e8e8;
+            box-shadow: 0 0 20px rgba(232, 232, 232, 0.3);
+        }
+
+        .film-frame.event-day {
+            background: 
+                url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" opacity="0.1"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="1" stitchTiles="stitch"/></filter><rect width="100" height="100" filter="url(%23noise)"/></svg>'),
+                linear-gradient(135deg, #1a1a1a 0%, #000000 100%);
+            border-color: #e8e8e8;
+        }
+
+        .date-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #e8e8e8;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+        }
+
+        .month-name {
+            font-size: 1em;
+            color: #8B4513;
+            margin-top: 5px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .event-indicator {
+            position: absolute;
+            bottom: 10px;
+            font-size: 1.8em;
+            opacity: 0.9;
+        }
+
+        /* Навигация */
+        .navigation {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            z-index: 100;
+            background: rgba(42, 27, 13, 0.9);
+            padding: 15px 30px;
+            border-radius: 10px;
+            border: 2px solid #8B4513;
         }
 
         .nav-btn {
-            background: transparent;
-            color: var(--accent-yellow);
-            border: 2px solid var(--accent-orange);
-            padding: 15px 25px;
-            font-size: 1.5rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
+            background: #2a1b0d;
+            color: #e8e8e8;
+            border: 2px solid #8B4513;
+            padding: 10px 20px;
             border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            font-size: 1em;
+            transition: all 0.3s ease;
         }
 
         .nav-btn:hover {
-            background: var(--accent-orange);
-            color: var(--dark-bg);
-            box-shadow: 0 0 20px var(--accent-orange);
-            transform: scale(1.1);
+            background: #8B4513;
+            border-color: #e8e8e8;
         }
 
-        .current-display {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: var(--accent-yellow);
-            text-align: center;
-            min-width: 300px;
-            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        /* Модальное окно события */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
         }
 
-        /* Calendar Grid */
-        .calendar-container {
-            background: rgba(30, 30, 30, 0.6);
-            padding: 20px;
-            border: 1px solid #444;
-        }
-
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 4px;
-        }
-
-        .day-header {
-            background: linear-gradient(135deg, #333, #555);
-            color: var(--text-primary);
-            padding: 15px 5px;
-            text-align: center;
-            font-weight: bold;
-            text-transform: uppercase;
-            font-size: 0.9rem;
-            letter-spacing: 1px;
-            border: 1px solid #666;
-        }
-
-        .calendar-day {
-            background: rgba(255, 255, 255, 0.05);
-            color: var(--text-secondary);
-            padding: 20px 5px;
-            text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
-            cursor: pointer;
-            position: relative;
-            font-weight: 500;
-        }
-
-        .calendar-day:hover {
-            background: rgba(255, 107, 0, 0.2);
-            border-color: var(--accent-orange);
-            transform: scale(1.05);
-            z-index: 2;
-        }
-
-        .calendar-day.event-day {
-            background: linear-gradient(135deg, var(--accent-orange), #ff8c00);
-            color: var(--dark-bg);
-            border: 2px solid var(--accent-yellow);
-            box-shadow: 0 0 20px var(--accent-orange);
-            font-weight: bold;
-            animation: glow 2s ease-in-out infinite alternate;
-        }
-
-        @keyframes glow {
-            from {
-                box-shadow: 0 0 10px var(--accent-orange);
-            }
-            to {
-                box-shadow: 0 0 25px var(--accent-orange), 0 0 35px var(--accent-orange);
-            }
-        }
-
-        .calendar-day.empty {
-            background: transparent;
-            border: 1px dashed rgba(255, 255, 255, 0.05);
-            cursor: default;
-        }
-
-        .calendar-day.empty:hover {
-            background: transparent;
-            border-color: rgba(255, 255, 255, 0.05);
-            transform: none;
-        }
-
-        /* Events Panel */
-        .events-panel {
-            margin-top: 40px;
+        .modal-content {
+            background: 
+                url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" opacity="0.1"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="1" stitchTiles="stitch"/></filter><rect width="100" height="100" filter="url(%23noise)"/></svg>'),
+                linear-gradient(135deg, #3a2c1f 0%, #2a1f14 100%);
             padding: 30px;
-            background: rgba(20, 20, 20, 0.8);
-            border: 1px solid #444;
-            border-left: 4px solid var(--accent-orange);
+            border-radius: 10px;
+            border: 3px solid #8B4513;
+            max-width: 500px;
+            width: 90%;
+            position: relative;
+            box-shadow: 0 0 50px rgba(139, 69, 19, 0.5);
         }
 
-        .events-title {
-            color: var(--accent-yellow);
-            font-size: 1.5rem;
-            margin-bottom: 20px;
-            border-bottom: 2px solid var(--accent-orange);
+        .close-modal {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 2em;
+            cursor: pointer;
+            color: #8B4513;
+        }
+
+        .event-title {
+            color: #e8e8e8;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #8B4513;
             padding-bottom: 10px;
         }
 
-        .event-item {
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.05);
-            margin-bottom: 10px;
-            border-left: 3px solid var(--accent-orange);
+        .event-description {
+            color: #cccccc;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .event-link {
+            color: #8B4513;
+            text-decoration: none;
+            border: 1px solid #8B4513;
+            padding: 8px 15px;
+            border-radius: 5px;
             transition: all 0.3s ease;
+            display: inline-block;
         }
 
-        .event-item:hover {
-            background: rgba(255, 107, 0, 0.1);
-            transform: translateX(5px);
-            border-left-color: var(--accent-yellow);
+        .event-link:hover {
+            background: #8B4513;
+            color: #e8e8e8;
         }
 
-        .event-date {
-            color: var(--accent-yellow);
-            font-weight: bold;
-            margin-bottom: 5px;
+        /* Анимации */
+        @keyframes filmScratch {
+            0% { opacity: 0; }
+            50% { opacity: 0.3; }
+            100% { opacity: 0; }
         }
 
-        /* Film Rewind Effect */
-        @keyframes rewindLeft {
-            0% { transform: translateX(0); }
-            50% { transform: translateX(-100px); opacity: 0.7; }
-            100% { transform: translateX(0); opacity: 1; }
-        }
-
-        @keyframes rewindRight {
-            0% { transform: translateX(0); }
-            50% { transform: translateX(100px); opacity: 0.7; }
-            100% { transform: translateX(0); opacity: 1; }
-        }
-
-        .film-rewind-left {
-            animation: rewindLeft 0.8s ease-in-out;
-        }
-
-        .film-rewind-right {
-            animation: rewindRight 0.8s ease-in-out;
-        }
-
-        /* Responsive */
-        @media (max-width: 1024px) {
-            .film-frame {
-                margin: 0 20px;
-                padding: 30px 20px;
-            }
-            
-            .current-display {
-                font-size: 2rem;
-                min-width: 250px;
-            }
-            
-            .nav-btn {
-                padding: 12px 20px;
-                font-size: 1.3rem;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .title {
-                font-size: 2.5rem;
-            }
-            
-            .navigation {
-                flex-direction: column;
-                gap: 20px;
-            }
-            
-            .film-strip {
-                min-height: 300px;
-                padding: 30px 0;
-            }
-            
-            .calendar-day {
-                padding: 15px 3px;
-                font-size: 0.9rem;
-            }
-            
-            .day-header {
-                padding: 12px 3px;
-                font-size: 0.8rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .film-frame {
-                margin: 0 10px;
-                padding: 20px 10px;
-            }
-            
-            .current-display {
-                font-size: 1.5rem;
-                min-width: 200px;
-            }
-            
-            .calendar-day {
-                padding: 12px 2px;
-                font-size: 0.8rem;
-            }
+        .film-scratch {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(255,255,255,0.1) 3px,
+                    rgba(255,255,255,0.1) 4px,
+                    transparent 5px
+                );
+            pointer-events: none;
+            z-index: 5;
+            animation: filmScratch 0.3s infinite;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <div class="title">Bendy Chronicles</div>
-            <div class="subtitle">История франшизы в стиле киноплёнки</div>
+    <!-- Эффект проектора -->
+    <div class="projector-effect"></div>
+    
+    <!-- Царапины на плёнке -->
+    <div class="film-scratch"></div>
+
+    <!-- Навигация -->
+    <div class="navigation">
+        <button class="nav-btn" onclick="scrollToYear(2017)">2017</button>
+        <button class="nav-btn" onclick="scrollToYear(2018)">2018</button>
+        <button class="nav-btn" onclick="scrollToYear(2019)">2019</button>
+        <button class="nav-btn" onclick="scrollToYear(2020)">2020</button>
+        <button class="nav-btn" onclick="scrollToYear(2021)">2021</button>
+        <button class="nav-btn" onclick="scrollToYear(2022)">2022</button>
+        <button class="nav-btn" onclick="scrollToYear(2023)">2023</button>
+    </div>
+
+    <!-- Контейнер плёнки -->
+    <div class="film-container">
+        <div class="film-strip" id="filmStrip">
+            <!-- Кадры будут генерироваться JavaScript -->
         </div>
+    </div>
 
-        <div class="film-container">
-            <div class="film-strip" id="filmStrip">
-                <div class="film-frame">
-                    <!-- Navigation -->
-                    <div class="navigation">
-                        <button class="nav-btn" id="prevYear">❮❮</button>
-                        <div class="current-display" id="currentYear">2017</div>
-                        <button class="nav-btn" id="nextYear">❯❯</button>
-                    </div>
-                    
-                    <div class="navigation">
-                        <button class="nav-btn" id="prevMonth">❮</button>
-                        <div class="current-display" id="currentMonth">ФЕВРАЛЬ</div>
-                        <button class="nav-btn" id="nextMonth">❯</button>
-                    </div>
-
-                    <!-- Calendar -->
-                    <div class="calendar-container">
-                        <div class="calendar-grid" id="calendarGrid">
-                            <!-- Days will be populated by JavaScript -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Events -->
-        <div class="events-panel">
-            <div class="events-title">📅 События этого месяца</div>
-            <div id="eventsList">
-                <!-- Events will be populated by JavaScript -->
-            </div>
+    <!-- Модальное окно события -->
+    <div class="modal" id="eventModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <h2 class="event-title" id="modalTitle">Событие</h2>
+            <p class="event-description" id="modalDescription">Описание события...</p>
+            <a href="#" class="event-link" id="modalLink" target="_blank">Подробнее</a>
         </div>
     </div>
 
     <script>
-        // Calendar Data and Configuration
-        const eventsData = {
-            "2017-02-10": [
-                { type: "game", title: "Bendy and the Ink Machine - Chapter 1", description: "Релиз первой главы на Game Jolt" }
-            ],
-            "2017-04-18": [
-                { type: "game", title: "Bendy and the Ink Machine - Chapter 2", description: "Релиз второй главы" }
-            ],
-            "2017-09-28": [
-                { type: "game", title: "Bendy and the Ink Machine - Chapter 3", description: "Релиз в Steam" }
-            ],
-            "2018-10-13": [
-                { type: "game", title: "Bendy and the Ink Machine - Chapter 4", description: "Релиз четвёртой главы" }
-            ],
-            "2019-06-21": [
-                { type: "game", title: "Bendy and the Ink Machine - Chapter 5", description: "Финальная глава" }
-            ],
-            "2020-02-14": [
-                { type: "game", title: "Boris and the Dark Survival", description: "Релиз спин-оффа" }
-            ],
-            "2022-11-15": [
-                { type: "game", title: "Bendy and the Dark Revival", description: "Релиз сиквела" }
-            ]
+        // Данные событий Bendy
+        const bendyEvents = {
+            "2017-02-10": {
+                type: "game_release",
+                title: "Bendy and the Ink Machine - Chapter 1",
+                description: "Вышла первая глава культовой игры Bendy and the Ink Machine",
+                link: "https://store.steampowered.com/app/622650/Bendy_and_the_Ink_Machine/",
+                icon: "🎮"
+            },
+            "2017-12-21": {
+                type: "game_release", 
+                title: "Bendy and the Ink Machine - Chapter 2",
+                description: "Вышла вторая глава игры, добавляющая новые локации и механики",
+                link: "https://store.steampowered.com/app/622650/Bendy_and_the_Ink_Machine/",
+                icon: "🎮"
+            },
+            "2018-09-24": {
+                type: "trailer",
+                title: "Трейлер Chapter 3",
+                description: "Официальный трейлер третьей главы Bendy and the Ink Machine",
+                link: "https://youtube.com",
+                icon: "🎬"
+            },
+            "2018-11-13": {
+                type: "game_release",
+                title: "Bendy and the Ink Machine - Chapter 3", 
+                description: "Третья глава игры с новыми головоломками и врагами",
+                link: "https://store.steampowered.com/app/622650/Bendy_and_the_Ink_Machine/",
+                icon: "🎮"
+            },
+            "2019-04-23": {
+                type: "teaser",
+                title: "Тизер Chapter 4",
+                description: "Первый тизер четвертой главы с новыми персонажами",
+                link: "https://youtube.com",
+                icon: "📢"
+            },
+            "2019-06-25": {
+                type: "game_release",
+                title: "Bendy and the Ink Machine - Chapter 4",
+                description: "Четвертая глава, приближающая к развязке истории",
+                link: "https://store.steampowered.com/app/622650/Bendy_and_the_Ink_Machine/",
+                icon: "🎮"
+            },
+            "2020-07-20": {
+                type: "trailer",
+                title: "Трейлер Bendy and the Dark Revival",
+                description: "Анонс сиквела - Bendy and the Dark Revival",
+                link: "https://youtube.com",
+                icon: "🎬"
+            },
+            "2022-11-15": {
+                type: "game_release",
+                title: "Bendy and the Dark Revival",
+                description: "Полный релиз сиквела Bendy and the Dark Revival",
+                link: "https://store.steampowered.com/app/1716620/Bendy_and_the_Dark_Revival/",
+                icon: "🎮"
+            }
         };
 
-        const monthNames = [
-            "ЯНВАРЬ", "ФЕВРАЛЬ", "МАРТ", "АПРЕЛЬ", "МАЙ", "ИЮНЬ",
-            "ИЮЛЬ", "АВГУСТ", "СЕНТЯБРЬ", "ОКТЯБРЬ", "НОЯБРЬ", "ДЕКАБРЬ"
-        ];
+        // Переменные для управления плёнкой
+        let isDragging = false;
+        let startX, scrollLeft;
+        let velocity = 0;
+        let lastX, lastTime;
+        let animationFrame;
 
-        const dayNames = ["ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ", "ВС"];
+        // Инициализация
+        document.addEventListener('DOMContentLoaded', function() {
+            generateFilmFrames();
+            setupFilmDrag();
+            setupWheelScroll();
+        });
 
-        let currentDate = new Date(2017, 1, 1); // Start with February 2017
-
-        // Initialize Calendar
-        function initCalendar() {
-            renderCalendar();
-            setupEventListeners();
-        }
-
-        // Render Calendar Grid
-        function renderCalendar() {
-            const calendarGrid = document.getElementById('calendarGrid');
-            calendarGrid.innerHTML = '';
-
-            // Add day headers
-            dayNames.forEach(day => {
-                const dayElement = document.createElement('div');
-                dayElement.className = 'day-header';
-                dayElement.textContent = day;
-                calendarGrid.appendChild(dayElement);
-            });
-
-            const year = currentDate.getFullYear();
-            const month = currentDate.getMonth();
-
-            // Update displays
-            document.getElementById('currentYear').textContent = year;
-            document.getElementById('currentMonth').textContent = monthNames[month];
-
-            // Get first and last day of month
-            const firstDay = new Date(year, month, 1);
-            const lastDay = new Date(year, month + 1, 0);
+        // Генерация кадров плёнки
+        function generateFilmFrames() {
+            const filmStrip = document.getElementById('filmStrip');
+            const startYear = 2017;
+            const endYear = 2023;
             
-            // Adjust for Monday as first day
-            let startDay = firstDay.getDay();
-            if (startDay === 0) startDay = 7; // Sunday becomes 7
-            startDay--; // Now 0-6 where 0 is Monday
-
-            // Add empty cells for days before first day of month
-            for (let i = 0; i < startDay; i++) {
-                const emptyDay = document.createElement('div');
-                emptyDay.className = 'calendar-day empty';
-                calendarGrid.appendChild(emptyDay);
-            }
-
-            // Add days of month
-            for (let day = 1; day <= lastDay.getDate(); day++) {
-                const dayElement = document.createElement('div');
-                dayElement.className = 'calendar-day';
-                dayElement.textContent = day;
-
-                const dateString = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            for (let year = startYear; year <= endYear; year++) {
+                // Добавляем разделитель года
+                filmStrip.appendChild(createYearSeparator(year));
                 
-                if (eventsData[dateString]) {
-                    dayElement.classList.add('event-day');
-                    dayElement.addEventListener('click', () => showEventDetails(dateString, eventsData[dateString]));
-                } else {
-                    dayElement.addEventListener('click', () => showNoEvents(dateString));
+                // Добавляем месяцы и дни
+                for (let month = 0; month < 12; month++) {
+                    const daysInMonth = new Date(year, month + 1, 0).getDate();
+                    
+                    for (let day = 1; day <= daysInMonth; day++) {
+                        const date = new Date(year, month, day);
+                        const dateString = formatDate(date);
+                        const event = bendyEvents[dateString];
+                        
+                        filmStrip.appendChild(createFilmFrame(date, event));
+                    }
                 }
-
-                calendarGrid.appendChild(dayElement);
             }
-
-            updateEventsList();
         }
 
-        // Update Events List
-        function updateEventsList() {
-            const eventsList = document.getElementById('eventsList');
-            eventsList.innerHTML = '';
+        // Создание разделителя года
+        function createYearSeparator(year) {
+            const separator = document.createElement('div');
+            separator.className = 'film-frame year-separator';
+            separator.style.background = 'linear-gradient(135deg, #8B4513 0%, #654321 100%)';
+            separator.style.width = '300px';
+            separator.innerHTML = `
+                <div style="font-size: 2.5em; color: #e8e8e8;">${year}</div>
+                <div style="font-size: 1em; color: #1a1a1a; margin-top: 10px;">ГОД БЕНДИ</div>
+            `;
+            return separator;
+        }
 
-            const year = currentDate.getFullYear();
-            const month = currentDate.getMonth();
-
-            const monthEvents = Object.keys(eventsData)
-                .filter(dateStr => {
-                    const eventDate = new Date(dateStr);
-                    return eventDate.getFullYear() === year && eventDate.getMonth() === month;
-                })
-                .sort((a, b) => new Date(a) - new Date(b));
-
-            if (monthEvents.length === 0) {
-                eventsList.innerHTML = '<div class="event-item">В этом месяце нет событий</div>';
-                return;
+        // Создание кадра дня
+        function createFilmFrame(date, event) {
+            const frame = document.createElement('div');
+            frame.className = 'film-frame' + (event ? ' event-day' : '');
+            
+            const day = date.getDate();
+            const monthNames = ['ЯНВАРЬ', 'ФЕВРАЛЬ', 'МАРТ', 'АПРЕЛЬ', 'МАЙ', 'ИЮНЬ', 
+                               'ИЮЛЬ', 'АВГУСТ', 'СЕНТЯБРЬ', 'ОКТЯБРЬ', 'НОЯБРЬ', 'ДЕКАБРЬ'];
+            const month = monthNames[date.getMonth()];
+            
+            frame.innerHTML = `
+                <div class="date-number">${day}</div>
+                <div class="month-name">${month}</div>
+                ${event ? `<div class="event-indicator">${event.icon}</div>` : ''}
+            `;
+            
+            if (event) {
+                frame.addEventListener('click', () => openModal(event));
             }
+            
+            return frame;
+        }
 
-            monthEvents.forEach(dateStr => {
-                eventsData[dateStr].forEach(event => {
-                    const eventDate = new Date(dateStr);
-                    const eventElement = document.createElement('div');
-                    eventElement.className = 'event-item';
-                    
-                    eventElement.innerHTML = `
-                        <div class="event-date">${eventDate.getDate()} ${getMonthName(eventDate.getMonth())} ${eventDate.getFullYear()}</div>
-                        <div><strong>${getEventIcon(event.type)} ${event.title}</strong></div>
-                        <div>${event.description}</div>
-                    `;
-                    
-                    eventsList.appendChild(eventElement);
-                });
+        // Настройка перетаскивания плёнки
+        function setupFilmDrag() {
+            const filmStrip = document.getElementById('filmStrip');
+            
+            filmStrip.addEventListener('mousedown', startDrag);
+            filmStrip.addEventListener('touchstart', startDrag);
+            
+            document.addEventListener('mousemove', drag);
+            document.addEventListener('touchmove', drag);
+            
+            document.addEventListener('mouseup', endDrag);
+            document.addEventListener('touchend', endDrag);
+        }
+
+        function startDrag(e) {
+            isDragging = true;
+            const filmStrip = document.getElementById('filmStrip');
+            startX = (e.pageX || e.touches[0].pageX) - filmStrip.offsetLeft;
+            scrollLeft = filmStrip.scrollLeft;
+            lastX = startX;
+            lastTime = Date.now();
+            
+            filmStrip.style.cursor = 'grabbing';
+            filmStrip.style.transition = 'none';
+            
+            cancelAnimationFrame(animationFrame);
+        }
+
+        function drag(e) {
+            if (!isDragging) return;
+            e.preventDefault();
+            
+            const filmStrip = document.getElementById('filmStrip');
+            const x = (e.pageX || e.touches[0].pageX) - filmStrip.offsetLeft;
+            const walk = (x - startX) * 2;
+            filmStrip.scrollLeft = scrollLeft - walk;
+            
+            // Расчет скорости для инерции
+            const currentTime = Date.now();
+            const deltaX = x - lastX;
+            const deltaTime = currentTime - lastTime;
+            
+            if (deltaTime > 0) {
+                velocity = deltaX / deltaTime;
+            }
+            
+            lastX = x;
+            lastTime = currentTime;
+        }
+
+        function endDrag() {
+            isDragging = false;
+            const filmStrip = document.getElementById('filmStrip');
+            filmStrip.style.cursor = 'grab';
+            
+            // Применяем инерцию
+            applyInertia();
+        }
+
+        function applyInertia() {
+            const filmStrip = document.getElementById('filmStrip');
+            const friction = 0.95;
+            
+            function animate() {
+                if (Math.abs(velocity) > 0.1) {
+                    filmStrip.scrollLeft -= velocity * 20;
+                    velocity *= friction;
+                    animationFrame = requestAnimationFrame(animate);
+                }
+            }
+            
+            animate();
+        }
+
+        // Настройка скролла колесом мыши
+        function setupWheelScroll() {
+            const filmContainer = document.querySelector('.film-container');
+            
+            filmContainer.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                const filmStrip = document.getElementById('filmStrip');
+                filmStrip.scrollLeft += e.deltaY * 2;
             });
         }
 
-        // Event Listeners
-        function setupEventListeners() {
-            document.getElementById('prevYear').addEventListener('click', () => changeYear(-1));
-            document.getElementById('nextYear').addEventListener('click', () => changeYear(1));
-            document.getElementById('prevMonth').addEventListener('click', () => changeMonth(-1));
-            document.getElementById('nextMonth').addEventListener('click', () => changeMonth(1));
-        }
-
-        function changeYear(delta) {
+        // Прокрутка к году
+        function scrollToYear(year) {
             const filmStrip = document.getElementById('filmStrip');
-            filmStrip.classList.add(delta > 0 ? 'film-rewind-right' : 'film-rewind-left');
+            const yearElements = filmStrip.getElementsByClassName('year-separator');
+            let targetElement = null;
             
-            setTimeout(() => {
-                currentDate.setFullYear(currentDate.getFullYear() + delta);
-                renderCalendar();
-                filmStrip.classList.remove('film-rewind-right', 'film-rewind-left');
-            }, 400);
+            for (let element of yearElements) {
+                if (element.textContent.includes(year.toString())) {
+                    targetElement = element;
+                    break;
+                }
+            }
+            
+            if (targetElement) {
+                const targetPosition = targetElement.offsetLeft - window.innerWidth / 2 + targetElement.offsetWidth / 2;
+                
+                // Анимация с ускорением и замедлением
+                animateScroll(filmStrip.scrollLeft, targetPosition, 1000);
+            }
         }
 
-        function changeMonth(delta) {
+        function animateScroll(start, target, duration) {
             const filmStrip = document.getElementById('filmStrip');
-            filmStrip.classList.add(delta > 0 ? 'film-rewind-right' : 'film-rewind-left');
+            const startTime = performance.now();
             
-            setTimeout(() => {
-                currentDate.setMonth(currentDate.getMonth() + delta);
-                renderCalendar();
-                filmStrip.classList.remove('film-rewind-right', 'film-rewind-left');
-            }, 400);
-        }
-
-        // Helper Functions
-        function getMonthName(monthIndex) {
-            const names = ["января", "февраля", "марта", "апреля", "мая", "июня",
-                "июля", "августа", "сентября", "октября", "ноября", "декабря"];
-            return names[monthIndex];
-        }
-
-        function getEventIcon(type) {
-            const icons = {
-                'game': '🎮',
-                'trailer': '🎬',
-                'teaser': '📢',
-                'other': '⭐'
-            };
-            return icons[type] || '⭐';
-        }
-
-        function showEventDetails(dateString, events) {
-            const date = new Date(dateString);
-            let message = `📅 ${date.getDate()} ${getMonthName(date.getMonth())} ${date.getFullYear()}\n\n`;
+            function scrollStep(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                // Эasing функция для ускорения и замедления
+                const easeProgress = easeInOutCubic(progress);
+                
+                filmStrip.scrollLeft = start + (target - start) * easeProgress;
+                
+                if (progress < 1) {
+                    requestAnimationFrame(scrollStep);
+                }
+            }
             
-            events.forEach(event => {
-                message += `${getEventIcon(event.type)} ${event.title}\n`;
-                message += `📝 ${event.description}\n\n`;
-            });
+            requestAnimationFrame(scrollStep);
+        }
+
+        function easeInOutCubic(t) {
+            return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+        }
+
+        // Работа с модальным окном
+        function openModal(event) {
+            const modal = document.getElementById('eventModal');
+            const title = document.getElementById('modalTitle');
+            const description = document.getElementById('modalDescription');
+            const link = document.getElementById('modalLink');
             
-            alert(message);
+            title.textContent = event.title;
+            description.textContent = event.description;
+            link.href = event.link;
+            link.textContent = event.type === 'game_release' ? 'Купить в Steam' : 'Смотреть видео';
+            
+            modal.style.display = 'flex';
         }
 
-        function showNoEvents(dateString) {
-            const date = new Date(dateString);
-            alert(`📅 ${date.getDate()} ${getMonthName(date.getMonth())} ${date.getFullYear()}\n\nВ этот день не было событий Bendy.`);
+        function closeModal() {
+            const modal = document.getElementById('eventModal');
+            modal.style.display = 'none';
         }
 
-        // Initialize when page loads
-        document.addEventListener('DOMContentLoaded', initCalendar);
+        // Вспомогательные функции
+        function formatDate(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        // Закрытие модального окна по клику вне его
+        window.addEventListener('click', (e) => {
+            const modal = document.getElementById('eventModal');
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
     </script>
 </body>
 </html>
