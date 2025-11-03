@@ -5,38 +5,86 @@
 }
 
 body {
-    background: #2a1b0d;
+    background: #1a0f08;
     font-family: 'Courier New', monospace;
     color: #e8e8e8;
-    overflow-x: auto;
-    overflow-y: hidden;
-    position: relative;
+    overflow: hidden;
     height: 100vh;
 }
 
-/* Эффект проектора */
 .projector-effect {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: radial-gradient(
-        circle at top,
-        transparent 0%,
-        rgba(0, 0, 0, 0.7) 40%,
-        rgba(0, 0, 0, 0.9) 100%
-    );
+    background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.8) 100%);
     pointer-events: none;
     z-index: 10;
 }
 
-/* Контейнер плёнки */
+.film-scratch {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(0deg, 
+        transparent, 
+        transparent 2px, 
+        rgba(255,255,255,0.03) 3px,
+        rgba(255,255,255,0.03) 4px,
+        transparent 5px
+    );
+    pointer-events: none;
+    z-index: 5;
+    animation: scratch 0.3s infinite;
+}
+
+@keyframes scratch {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.1; }
+}
+
+.navigation {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+    z-index: 100;
+    background: rgba(42, 27, 13, 0.95);
+    padding: 15px 25px;
+    border-radius: 10px;
+    border: 2px solid #8B4513;
+    backdrop-filter: blur(5px);
+}
+
+.navigation button {
+    background: #2a1b0d;
+    color: #e8e8e8;
+    border: 1px solid #8B4513;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9em;
+    transition: all 0.3s ease;
+}
+
+.navigation button:hover {
+    background: #8B4513;
+    border-color: #e8e8e8;
+}
+
 .film-container {
     position: relative;
     width: 100%;
     height: 100vh;
-    padding: 100px 0;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
     background: 
         repeating-linear-gradient(
             90deg,
@@ -44,67 +92,49 @@ body {
             transparent 95%,
             rgba(139, 69, 19, 0.1) 100%
         );
-    overflow: hidden;
 }
 
-/* Сама киноплёнка */
 .film-strip {
     display: flex;
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    left: 0;
+    align-items: center;
+    height: 200px;
     background: 
-        /* Перфорации слева */
-        repeating-linear-gradient(
-            90deg,
+        repeating-linear-gradient(90deg,
             transparent,
             transparent 38px,
             #8B4513 40px,
             #8B4513 42px,
             transparent 44px
         ),
-        /* Перфорации справа */
-        repeating-linear-gradient(
-            90deg,
+        repeating-linear-gradient(90deg,
             transparent 194px,
             transparent 232px,
             #8B4513 234px,
             #8B4513 236px,
             transparent 238px
         ),
-        /* Основная плёнка */
-        linear-gradient(
-            180deg,
-            #1a1a1a 0%,
-            #2a2a2a 50%,
-            #1a1a1a 100%
-        );
-    border-top: 2px solid #8B4513;
-    border-bottom: 2px solid #8B4513;
-    padding: 20px 0;
-    box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
+        linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #1a1a1a 100%);
+    border-top: 3px solid #8B4513;
+    border-bottom: 3px solid #8B4513;
+    padding: 25px 0;
     cursor: grab;
     user-select: none;
+    position: absolute;
+    left: 0;
 }
 
 .film-strip:active {
     cursor: grabbing;
 }
 
-/* Кадр - день */
 .film-frame {
-    width: 200px;
+    width: 180px;
     height: 150px;
-    margin: 0 20px;
+    margin: 0 15px;
     background: 
-        /* Текстура старой бумаги */
-        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" opacity="0.1"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="1" stitchTiles="stitch"/></filter><rect width="100" height="100" filter="url(%23noise)"/></svg>'),
-        /* Основной цвет */
         linear-gradient(135deg, #3a2c1f 0%, #2a1f14 100%);
     border: 2px solid #8B4513;
-    border-radius: 5px;
-    position: relative;
+    border-radius: 8px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -113,81 +143,47 @@ body {
     transition: all 0.3s ease;
     box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
     flex-shrink: 0;
+    position: relative;
 }
 
 .film-frame:hover {
     transform: scale(1.05);
     border-color: #e8e8e8;
-    box-shadow: 0 0 20px rgba(232, 232, 232, 0.3);
+    box-shadow: 0 0 20px rgba(232, 232, 232, 0.2);
 }
 
 .film-frame.event-day {
-    background: 
-        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" opacity="0.1"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="1" stitchTiles="stitch"/></filter><rect width="100" height="100" filter="url(%23noise)"/></svg>'),
-        linear-gradient(135deg, #1a1a1a 0%, #000000 100%);
+    background: linear-gradient(135deg, #1a1a1a 0%, #000000 100%);
     border-color: #e8e8e8;
 }
 
 .year-separator {
     background: linear-gradient(135deg, #8B4513 0%, #654321 100%) !important;
-    width: 300px !important;
+    width: 250px !important;
 }
 
 .date-number {
-    font-size: 2.5em;
+    font-size: 2.2em;
     font-weight: bold;
     color: #e8e8e8;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
 }
 
 .month-name {
-    font-size: 1em;
+    font-size: 0.9em;
     color: #8B4513;
-    margin-top: 5px;
+    margin-top: 8px;
     text-transform: uppercase;
-    letter-spacing: 2px;
+    letter-spacing: 1px;
 }
 
 .event-indicator {
     position: absolute;
-    bottom: 10px;
-    font-size: 1.8em;
+    bottom: 12px;
+    font-size: 1.6em;
     opacity: 0.9;
 }
 
-/* Навигация */
-.navigation {
-    position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    gap: 20px;
-    z-index: 100;
-    background: rgba(42, 27, 13, 0.9);
-    padding: 15px 30px;
-    border-radius: 10px;
-    border: 2px solid #8B4513;
-}
-
-.nav-btn {
-    background: #2a1b0d;
-    color: #e8e8e8;
-    border: 2px solid #8B4513;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-family: 'Courier New', monospace;
-    font-size: 1em;
-    transition: all 0.3s ease;
-}
-
-.nav-btn:hover {
-    background: #8B4513;
-    border-color: #e8e8e8;
-}
-
-/* Модальное окно события */
 .modal {
     display: none;
     position: fixed;
@@ -195,16 +191,14 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.9);
+    background: rgba(0, 0, 0, 0.95);
     z-index: 1000;
     align-items: center;
     justify-content: center;
 }
 
 .modal-content {
-    background: 
-        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" opacity="0.1"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="1" stitchTiles="stitch"/></filter><rect width="100" height="100" filter="url(%23noise)"/></svg>'),
-        linear-gradient(135deg, #3a2c1f 0%, #2a1f14 100%);
+    background: linear-gradient(135deg, #3a2c1f 0%, #2a1f14 100%);
     padding: 30px;
     border-radius: 10px;
     border: 3px solid #8B4513;
@@ -214,7 +208,7 @@ body {
     box-shadow: 0 0 50px rgba(139, 69, 19, 0.5);
 }
 
-.close-modal {
+#closeModal {
     position: absolute;
     top: 10px;
     right: 15px;
@@ -223,21 +217,21 @@ body {
     color: #8B4513;
 }
 
-.event-title {
+#modalTitle {
     color: #e8e8e8;
-    font-size: 1.5em;
+    font-size: 1.4em;
     margin-bottom: 15px;
     border-bottom: 2px solid #8B4513;
     padding-bottom: 10px;
 }
 
-.event-description {
+#modalDescription {
     color: #cccccc;
     line-height: 1.6;
     margin-bottom: 20px;
 }
 
-.event-link {
+#modalLink {
     color: #8B4513;
     text-decoration: none;
     border: 1px solid #8B4513;
@@ -247,104 +241,7 @@ body {
     display: inline-block;
 }
 
-.event-link:hover {
+#modalLink:hover {
     background: #8B4513;
     color: #e8e8e8;
-}
-
-/* Анимации */
-@keyframes filmScratch {
-    0% { opacity: 0; }
-    50% { opacity: 0.3; }
-    100% { opacity: 0; }
-}
-
-.film-scratch {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: 
-        repeating-linear-gradient(
-            0deg,
-            transparent,
-            transparent 2px,
-            rgba(255,255,255,0.1) 3px,
-            rgba(255,255,255,0.1) 4px,
-            transparent 5px
-        );
-    pointer-events: none;
-    z-index: 5;
-    animation: filmScratch 0.3s infinite;
-}
-/* Исправления для скролла плёнки */
-.film-strip {
-    display: flex;
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    left: 0;
-    background: 
-        /* Перфорации слева */
-        repeating-linear-gradient(
-            90deg,
-            transparent,
-            transparent 38px,
-            #8B4513 40px,
-            #8B4513 42px,
-            transparent 44px
-        ),
-        /* Перфорации справа */
-        repeating-linear-gradient(
-            90deg,
-            transparent 194px,
-            transparent 232px,
-            #8B4513 234px,
-            #8B4513 236px,
-            transparent 238px
-        ),
-        /* Основная плёнка */
-        linear-gradient(
-            180deg,
-            #1a1a1a 0%,
-            #2a2a2a 50%,
-            #1a1a1a 100%
-        );
-    border-top: 2px solid #8B4513;
-    border-bottom: 2px solid #8B4513;
-    padding: 20px 0;
-    box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
-    cursor: grab;
-    user-select: none;
-    overflow-x: auto;
-    overflow-y: hidden;
-    white-space: nowrap;
-    width: max-content;
-    min-width: 100%;
-    height: 190px;
-}
-
-.film-strip::-webkit-scrollbar {
-    display: none;
-}
-
-.film-strip {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-}
-
-.film-container {
-    position: relative;
-    width: 100%;
-    height: 100vh;
-    padding: 100px 0;
-    background: 
-        repeating-linear-gradient(
-            90deg,
-            transparent,
-            transparent 95%,
-            rgba(139, 69, 19, 0.1) 100%
-        );
-    overflow: hidden;
 }
