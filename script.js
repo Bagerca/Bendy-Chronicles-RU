@@ -1,4 +1,4 @@
-// Основная логика приложения
+// Основная логика приложения Bendy Chronicles RU
 
 // Навигация по разделам
 document.querySelectorAll('.nav-btn').forEach(button => {
@@ -19,6 +19,11 @@ document.querySelectorAll('.nav-btn').forEach(button => {
         // Показываем целевой раздел
         const targetId = this.getAttribute('data-target');
         document.getElementById(targetId).classList.add('active');
+        
+        // При переключении на календарь обновляем его отображение
+        if (targetId === 'calendar') {
+            renderCalendar(currentDate);
+        }
     });
 });
 
@@ -53,15 +58,15 @@ function renderHofCards(category = 'all') {
         
         // Определяем иконки для социальных сетей
         let socialIcons = '';
-        if (person.social.youtube) socialIcons += `<a href="${person.social.youtube}" class="social-icon"><i class="fab fa-youtube"></i></a>`;
-        if (person.social.vk) socialIcons += `<a href="${person.social.vk}" class="social-icon"><i class="fab fa-vk"></i></a>`;
-        if (person.social.telegram) socialIcons += `<a href="${person.social.telegram}" class="social-icon"><i class="fab fa-telegram"></i></a>`;
-        if (person.social.deviantart) socialIcons += `<a href="${person.social.deviantart}" class="social-icon"><i class="fab fa-deviantart"></i></a>`;
-        if (person.social.instagram) socialIcons += `<a href="${person.social.instagram}" class="social-icon"><i class="fab fa-instagram"></i></a>`;
-        if (person.social.artstation) socialIcons += `<a href="${person.social.artstation}" class="social-icon"><i class="fab fa-artstation"></i></a>`;
-        if (person.social.github) socialIcons += `<a href="${person.social.github}" class="social-icon"><i class="fab fa-github"></i></a>`;
-        if (person.social.discord) socialIcons += `<a href="${person.social.discord}" class="social-icon"><i class="fab fa-discord"></i></a>`;
-        if (person.social.tiktok) socialIcons += `<a href="${person.social.tiktok}" class="social-icon"><i class="fab fa-tiktok"></i></a>`;
+        if (person.social.youtube) socialIcons += `<a href="${person.social.youtube}" class="social-icon" target="_blank"><i class="fab fa-youtube"></i></a>`;
+        if (person.social.vk) socialIcons += `<a href="${person.social.vk}" class="social-icon" target="_blank"><i class="fab fa-vk"></i></a>`;
+        if (person.social.telegram) socialIcons += `<a href="${person.social.telegram}" class="social-icon" target="_blank"><i class="fab fa-telegram"></i></a>`;
+        if (person.social.deviantart) socialIcons += `<a href="${person.social.deviantart}" class="social-icon" target="_blank"><i class="fab fa-deviantart"></i></a>`;
+        if (person.social.instagram) socialIcons += `<a href="${person.social.instagram}" class="social-icon" target="_blank"><i class="fab fa-instagram"></i></a>`;
+        if (person.social.artstation) socialIcons += `<a href="${person.social.artstation}" class="social-icon" target="_blank"><i class="fab fa-artstation"></i></a>`;
+        if (person.social.github) socialIcons += `<a href="${person.social.github}" class="social-icon" target="_blank"><i class="fab fa-github"></i></a>`;
+        if (person.social.discord) socialIcons += `<a href="${person.social.discord}" class="social-icon" target="_blank"><i class="fab fa-discord"></i></a>`;
+        if (person.social.tiktok) socialIcons += `<a href="${person.social.tiktok}" class="social-icon" target="_blank"><i class="fab fa-tiktok"></i></a>`;
         
         // Определяем категорию для отображения
         let categoryText = '';
@@ -89,16 +94,16 @@ let currentDate = new Date(2017, 1, 1); // Февраль 2017 для демо
 function renderCalendar(date) {
     const calendarGrid = document.querySelector('.calendar-grid');
     // Очищаем предыдущие дни (кроме заголовков)
-    for (let i = calendarGrid.children.length - 1; i >= 7; i--) {
-        calendarGrid.removeChild(calendarGrid.children[i]);
+    while (calendarGrid.children.length > 7) {
+        calendarGrid.removeChild(calendarGrid.lastChild);
     }
     
     const year = date.getFullYear();
     const month = date.getMonth();
     
     // Обновляем заголовок
-    const monthNames = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь",
-        "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"];
+    const monthNames = ["ЯНВАРЬ", "ФЕВРАЛЬ", "МАРТ", "АПРЕЛЬ", "МАЙ", "ИЮНЬ",
+        "ИЮЛЬ", "АВГУСТ", "СЕНТЯБРЬ", "ОКТЯБРЬ", "НОЯБРЬ", "ДЕКАБРЬ"];
     document.getElementById('current-month').textContent = `${monthNames[month]} ${year}`;
     
     // Первый день месяца
@@ -132,22 +137,22 @@ function renderCalendar(date) {
         dayNumber.textContent = day;
         dayElement.appendChild(dayNumber);
         
-        // Добавляем индикаторы событий
+        // Если есть события, добавляем класс event-day для неонового эффекта
         if (dayEvents.length > 0) {
-            const indicators = document.createElement('div');
-            indicators.className = 'event-indicators';
+            dayElement.classList.add('event-day');
             
-            dayEvents.forEach(event => {
-                const indicator = document.createElement('div');
-                indicator.className = `event-indicator event-${event.type}`;
-                indicator.title = event.title;
-                indicators.appendChild(indicator);
-            });
-            
-            dayElement.appendChild(indicators);
+            // Добавляем всплывающую подсказку
+            dayElement.title = `${dayEvents.length} событие(ий) - кликните для подробностей`;
             
             // Добавляем обработчик клика для показа деталей
             dayElement.addEventListener('click', () => showEventDetails(dateString, dayEvents));
+        } else {
+            // Для дней без событий тоже добавляем базовый обработчик
+            dayElement.addEventListener('click', () => {
+                if (dayEvents.length === 0) {
+                    showNoEventsMessage(dateString);
+                }
+            });
         }
         
         calendarGrid.appendChild(dayElement);
@@ -180,7 +185,7 @@ function updateEventsList(year, month) {
     
     // Добавляем события в список
     if (monthEvents.length === 0) {
-        eventsContainer.innerHTML = '<p>В этом месяце нет запланированных событий.</p>';
+        eventsContainer.innerHTML = '<div class="event-item"><div>В этом месяце нет запланированных событий.</div></div>';
     } else {
         monthEvents.forEach(event => {
             const eventDate = new Date(event.date);
@@ -188,20 +193,39 @@ function updateEventsList(year, month) {
             eventElement.className = 'event-item';
             
             let typeIcon = '';
+            let typeText = '';
             switch(event.type) {
-                case 'game': typeIcon = '<i class="fas fa-gamepad"></i>'; break;
-                case 'trailer': typeIcon = '<i class="fas fa-film"></i>'; break;
-                case 'teaser': typeIcon = '<i class="fas fa-bullhorn"></i>'; break;
-                default: typeIcon = '<i class="fas fa-star"></i>';
+                case 'game': 
+                    typeIcon = '<i class="fas fa-gamepad"></i>';
+                    typeText = 'Игра';
+                    break;
+                case 'trailer': 
+                    typeIcon = '<i class="fas fa-film"></i>';
+                    typeText = 'Трейлер';
+                    break;
+                case 'teaser': 
+                    typeIcon = '<i class="fas fa-bullhorn"></i>';
+                    typeText = 'Тизер';
+                    break;
+                default: 
+                    typeIcon = '<i class="fas fa-star"></i>';
+                    typeText = 'Событие';
             }
             
             eventElement.innerHTML = `
                 <div>
-                    <div class="event-date">${eventDate.getDate()} ${getMonthName(eventDate.getMonth())} ${eventDate.getFullYear()}</div>
+                    <div class="event-date">${eventDate.getDate()} ${getMonthName(eventDate.getMonth())} ${eventDate.getFullYear()} 
+                        <span class="event-type">${typeText}</span>
+                    </div>
                     <div><strong>${typeIcon} ${event.title}</strong></div>
                     <div>${event.description}</div>
                 </div>
             `;
+            
+            // Добавляем обработчик клика для события в списке
+            eventElement.addEventListener('click', () => {
+                showEventDetails(event.date, [event]);
+            });
             
             eventsContainer.appendChild(eventElement);
         });
@@ -215,8 +239,63 @@ function getMonthName(monthIndex) {
 }
 
 function showEventDetails(dateString, events) {
-    // В реальном приложении здесь можно показать модальное окно с деталями
-    alert(`События ${dateString}:\n\n${events.map(e => `• ${e.title}: ${e.description}`).join('\n')}`);
+    const eventDate = new Date(dateString);
+    const formattedDate = `${eventDate.getDate()} ${getMonthName(eventDate.getMonth())} ${eventDate.getFullYear()}`;
+    
+    let eventDetails = `📅 ${formattedDate}\n\n`;
+    
+    events.forEach((event, index) => {
+        let eventIcon = '';
+        switch(event.type) {
+            case 'game': eventIcon = '🎮'; break;
+            case 'trailer': eventIcon = '🎬'; break;
+            case 'teaser': eventIcon = '📢'; break;
+            default: eventIcon = '⭐';
+        }
+        
+        eventDetails += `${eventIcon} ${event.title}\n`;
+        eventDetails += `📝 ${event.description}\n`;
+        
+        if (index < events.length - 1) {
+            eventDetails += '\n';
+        }
+    });
+    
+    // В реальном приложении здесь можно показать красивое модальное окно
+    alert(eventDetails);
+}
+
+function showNoEventsMessage(dateString) {
+    const date = new Date(dateString);
+    const formattedDate = `${date.getDate()} ${getMonthName(date.getMonth())} ${date.getFullYear()}`;
+    alert(`📅 ${formattedDate}\n\nВ этот день не было значимых событий Bendy.`);
+}
+
+// Расширенная функция для получения типа события
+function getEventTypeDisplay(type) {
+    const typeMap = {
+        'game': { text: 'Релиз игры', icon: '🎮', color: '#ff6b00' },
+        'trailer': { text: 'Трейлер', icon: '🎬', color: '#2a52be' },
+        'teaser': { text: 'Тизер', icon: '📢', color: '#50c878' },
+        'other': { text: 'Событие', icon: '⭐', color: '#d4af37' }
+    };
+    
+    return typeMap[type] || { text: 'Событие', icon: '⭐', color: '#d4af37' };
+}
+
+// Функция для переключения на конкретный месяц и год
+function goToDate(year, month) {
+    currentDate = new Date(year, month, 1);
+    renderCalendar(currentDate);
+}
+
+// Функция для добавления события через интерфейс (для будущего расширения)
+function addEvent(dateString, event) {
+    if (!eventsData[dateString]) {
+        eventsData[dateString] = [];
+    }
+    eventsData[dateString].push(event);
+    renderCalendar(currentDate);
 }
 
 // Инициализация при загрузке страницы
@@ -242,4 +321,44 @@ document.addEventListener('DOMContentLoaded', function() {
         currentDate = new Date();
         renderCalendar(currentDate);
     });
+
+    // Добавляем обработчики клавиатуры для навигации
+    document.addEventListener('keydown', (e) => {
+        if (document.getElementById('calendar').classList.contains('active')) {
+            switch(e.key) {
+                case 'ArrowLeft':
+                    currentDate.setMonth(currentDate.getMonth() - 1);
+                    renderCalendar(currentDate);
+                    break;
+                case 'ArrowRight':
+                    currentDate.setMonth(currentDate.getMonth() + 1);
+                    renderCalendar(currentDate);
+                    break;
+                case 'Home':
+                    currentDate = new Date(2017, 0, 1); // Начало хронологии Bendy
+                    renderCalendar(currentDate);
+                    break;
+            }
+        }
+    });
+
+    // Показываем приветственное сообщение
+    setTimeout(() => {
+        console.log(`
+░█▀▄░█▀▀░█▀█░█▀█░█▀▀░█░█░░░█▀▀░█▀█░█▀█░█▀▀░▀█▀░█▀▀░█▀▄
+░█▀▄░█▀▀░█▀▀░█░█░█░░░█▀█░░░█▀▀░█▀█░█░█░█▀▀░░█░░█▀▀░█▀▄
+░▀░▀░▀▀▀░▀░░░▀░▀░▀▀▀░▀░▀░░░▀░░░▀░▀░▀░▀░▀░░░▀▀▀░▀▀▀░▀░▀
+
+        Добро пожаловать в Bendy Chronicles RU!
+        Используйте стрелки ← → для навигации по месяцам
+        `);
+    }, 1000);
 });
+
+// Экспорт функций для глобального использования (если нужно)
+window.BendyCalendar = {
+    goToDate,
+    addEvent,
+    renderCalendar,
+    currentDate: () => currentDate
+};
