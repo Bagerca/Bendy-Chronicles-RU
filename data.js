@@ -1,4 +1,4 @@
-// Данные о событиях Bendy Chronicles (обновленные)
+// Данные о событиях Bendy Chronicles
 const eventsData = [
     // 2017
     { date: '2017-01-30', type: 'trailer', title: 'Анонсирующий трейлер Bendy and the Ink Machine' },
@@ -37,7 +37,7 @@ const eventsData = [
     { date: '2024-04-14', type: 'game', title: 'Bendy: Secrets of the Machine (ПК)' },
     { date: '2024-04-18', type: 'announcement', title: 'Официальный анонс третьей основной части серии (B3NDY)' },
     { date: '2024-08-15', type: 'game', title: 'Bendy: Lone Wolf (ПК)' },
-    { date: '2024-10-31', type: 'announcement', title: 'Объявлен режиссёр фильма (Андре Эвредал) и официальное название (Бенди и чернильная машина)' },
+    { date: '2024-10-31', type: 'announcement', title: 'Объявлен режиссёр фильма (Андре Эвредал) и официальное название' },
     { date: '2024-12-16', type: 'trailer', title: 'Первый трейлер Bendy: Lone Wolf' },
     
     // 2025
@@ -48,5 +48,6 @@ const eventsData = [
 const CALENDAR_CONFIG = {
     START_YEAR: 2017,
     END_YEAR: 2025,
-    MONTHS: ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь']
+    MONTHS: ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'],
+    WEEKDAYS: ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс']
 };
