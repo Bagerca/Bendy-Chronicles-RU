@@ -3,42 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bendy Chronicles - Календарь событий</title>
+    <title>Bendy Timeline</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        <header>
-            <h1>Bendy Chronicles</h1>
+        <!-- Панель фильтров и поиска -->
+        <div class="controls">
             <div class="filters">
-                <button class="filter-btn active" data-filter="all">Все события</button>
-                <button class="filter-btn" data-filter="game">Игры</button>
-                <button class="filter-btn" data-filter="trailer">Трейлеры</button>
-                <button class="filter-btn" data-filter="announcement">Анонсы</button>
-                <button class="filter-btn" id="compactMode">Только с событиями</button>
+                <button class="filter-btn active" data-filter="all">Все</button>
+                <button class="filter-btn" data-filter="game">🎮 Игры</button>
+                <button class="filter-btn" data-filter="trailer">🎥 Трейлеры</button>
+                <button class="filter-btn" data-filter="teaser">📢 Тизеры</button>
+                <button class="filter-btn" data-filter="announcement">⭐ Анонсы</button>
             </div>
-        </header>
-
-        <main>
-            <div class="calendar-container">
-                <div class="film-strip">
-                    <button class="nav-btn prev">‹</button>
-                    <div class="months-track" id="monthsTrack"></div>
-                    <button class="nav-btn next">›</button>
-                </div>
+            <div class="search">
+                <input type="text" id="searchInput" placeholder="Поиск событий...">
             </div>
+        </div>
 
-            <div class="controls">
-                <input type="month" id="monthInput" min="2017-01" max="2025-12">
-                <button id="goToDate">Перейти</button>
-                <button id="todayBtn">Сегодня</button>
+        <!-- Киноплёнка -->
+        <div class="film-container">
+            <div class="film-perforation-top"></div>
+            <div class="film-strip" id="filmStrip">
+                <!-- Плёнка будет генерироваться через JavaScript -->
             </div>
-        </main>
+            <div class="film-perforation-bottom"></div>
+        </div>
 
-        <div id="eventTooltip" class="event-tooltip"></div>
+        <!-- Область закрепленных событий -->
+        <div class="pinned-events" id="pinnedEvents">
+            <h3>Закреплённые события</h3>
+            <div class="pinned-list" id="pinnedList"></div>
+        </div>
     </div>
 
-    <script src="events-data.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
