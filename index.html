@@ -9,62 +9,79 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Courier New', monospace;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --dark-bg: #0a0a0a;
+            --film-color: #1a1a1a;
+            --accent-orange: #ff6b00;
+            --accent-yellow: #ffd700;
+            --text-primary: #ffffff;
+            --text-secondary: #cccccc;
         }
 
         body {
-            background: #0a0a0a;
-            color: #f0e6d2;
-            overflow-x: hidden;
+            background: var(--dark-bg);
+            color: var(--text-primary);
             min-height: 100vh;
+            overflow-x: hidden;
         }
 
         .container {
             max-width: 1400px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 40px 20px;
         }
 
-        header {
+        /* Header */
+        .header {
             text-align: center;
-            padding: 30px 0;
-            margin-bottom: 40px;
+            margin-bottom: 60px;
         }
 
-        h1 {
-            font-size: 3rem;
-            color: #ff6b00;
-            text-shadow: 0 0 20px #ff6b00;
+        .title {
+            font-size: 4rem;
+            font-weight: 900;
+            color: var(--accent-orange);
+            text-transform: uppercase;
+            letter-spacing: 3px;
             margin-bottom: 10px;
+            text-shadow: 0 0 30px var(--accent-orange);
         }
 
         .subtitle {
-            color: #e6d6b5;
-            font-size: 1.2rem;
+            font-size: 1.3rem;
+            color: var(--text-secondary);
+            font-style: italic;
         }
 
-        /* Стили киноплёнки */
+        /* Film Container */
         .film-container {
             position: relative;
-            margin: 50px 0;
-            background: #1a1a1a;
-            border: 3px solid #5a0101;
+            margin: 80px 0;
+            background: linear-gradient(90deg, #000000, #1a1a1a, #000000);
+            border: 3px solid #333;
+            border-left: none;
+            border-right: none;
             padding: 0;
-            overflow: hidden;
         }
 
+        /* Film Strip with Holes */
         .film-strip {
             position: relative;
             background: 
                 repeating-linear-gradient(
                     90deg,
-                    transparent,
-                    transparent 19px,
-                    #8a0303 19px,
-                    #8a0303 20px
+                    transparent 0px,
+                    transparent 18px,
+                    var(--film-color) 18px,
+                    var(--film-color) 20px
                 );
-            padding: 60px 0;
-            margin: 0 -20px;
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            padding: 40px 0;
         }
 
         .film-strip::before,
@@ -73,16 +90,16 @@
             position: absolute;
             left: 0;
             right: 0;
-            height: 30px;
+            height: 40px;
             background: 
                 repeating-linear-gradient(
                     90deg,
-                    #0a0a0a,
-                    #0a0a0a 9px,
-                    transparent 9px,
+                    var(--dark-bg) 0px,
+                    var(--dark-bg) 8px,
+                    transparent 8px,
                     transparent 20px
                 );
-            z-index: 2;
+            z-index: 3;
         }
 
         .film-strip::before {
@@ -93,14 +110,15 @@
             bottom: 0;
         }
 
-        /* Кадры киноплёнки */
+        /* Film Frame - Calendar Content */
         .film-frame {
-            background: rgba(10, 10, 10, 0.9);
-            border: 2px solid #8a0303;
-            margin: 0 40px 40px;
-            padding: 30px;
+            flex: 1;
+            background: rgba(0, 0, 0, 0.9);
+            margin: 0 50px;
+            padding: 40px;
+            border: 2px solid #444;
             position: relative;
-            box-shadow: 0 0 30px rgba(138, 3, 3, 0.3);
+            box-shadow: 0 0 50px rgba(255, 107, 0, 0.1);
         }
 
         .film-frame::before {
@@ -114,217 +132,231 @@
             pointer-events: none;
         }
 
-        /* Навигация */
+        /* Navigation */
         .navigation {
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
-            margin-bottom: 30px;
-            padding: 0 20px;
-        }
-
-        .nav-section {
-            display: flex;
-            align-items: center;
-            gap: 20px;
+            gap: 40px;
+            margin-bottom: 40px;
         }
 
         .nav-btn {
-            background: #1a1a1a;
-            color: #ffd700;
-            border: 2px solid #ff6b00;
-            padding: 15px 20px;
+            background: transparent;
+            color: var(--accent-yellow);
+            border: 2px solid var(--accent-orange);
+            padding: 15px 25px;
+            font-size: 1.5rem;
             cursor: pointer;
             transition: all 0.3s ease;
-            font-size: 1.2rem;
-            font-weight: bold;
-            position: relative;
-            overflow: hidden;
+            border-radius: 5px;
         }
 
         .nav-btn:hover {
-            background: #ff6b00;
-            color: #0a0a0a;
-            box-shadow: 0 0 20px #ff6b00;
-            transform: scale(1.05);
+            background: var(--accent-orange);
+            color: var(--dark-bg);
+            box-shadow: 0 0 20px var(--accent-orange);
+            transform: scale(1.1);
         }
 
         .current-display {
-            font-size: 2rem;
-            color: #ffd700;
-            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
-            min-width: 200px;
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--accent-yellow);
             text-align: center;
-            padding: 10px 20px;
-            background: rgba(138, 3, 3, 0.2);
-            border: 1px solid #ff6b00;
+            min-width: 300px;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
         }
 
-        /* Календарь */
+        /* Calendar Grid */
+        .calendar-container {
+            background: rgba(30, 30, 30, 0.6);
+            padding: 20px;
+            border: 1px solid #444;
+        }
+
         .calendar-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 2px;
-            background: rgba(138, 3, 3, 0.1);
-            padding: 2px;
+            gap: 4px;
         }
 
         .day-header {
-            background: linear-gradient(to bottom, #8a0303, #5a0101);
-            color: #f0e6d2;
+            background: linear-gradient(135deg, #333, #555);
+            color: var(--text-primary);
             padding: 15px 5px;
             text-align: center;
             font-weight: bold;
             text-transform: uppercase;
+            font-size: 0.9rem;
             letter-spacing: 1px;
-            border: 1px solid #000;
-            text-shadow: 1px 1px 0 #000;
+            border: 1px solid #666;
         }
 
         .calendar-day {
-            background: rgba(230, 214, 181, 0.05);
-            color: #e6d6b5;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-secondary);
             padding: 20px 5px;
             text-align: center;
-            border: 1px solid rgba(139, 115, 85, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             transition: all 0.3s ease;
             cursor: pointer;
             position: relative;
-            font-weight: bold;
+            font-weight: 500;
         }
 
         .calendar-day:hover {
             background: rgba(255, 107, 0, 0.2);
-            border-color: #ff6b00;
+            border-color: var(--accent-orange);
+            transform: scale(1.05);
+            z-index: 2;
         }
 
         .calendar-day.event-day {
-            background: linear-gradient(145deg, #ff6b00, #ff8c00);
-            color: #0a0a0a;
-            border: 2px solid #ffd700;
-            box-shadow: 
-                0 0 15px #ff6b00,
-                inset 0 0 10px rgba(255, 215, 0, 0.3);
-            animation: film-flicker 2s infinite;
-            text-shadow: 0 0 5px rgba(255, 215, 0, 0.8);
-            z-index: 1;
+            background: linear-gradient(135deg, var(--accent-orange), #ff8c00);
+            color: var(--dark-bg);
+            border: 2px solid var(--accent-yellow);
+            box-shadow: 0 0 20px var(--accent-orange);
+            font-weight: bold;
+            animation: glow 2s ease-in-out infinite alternate;
         }
 
-        @keyframes film-flicker {
-            0%, 100% { 
-                box-shadow: 
-                    0 0 15px #ff6b00,
-                    inset 0 0 10px rgba(255, 215, 0, 0.3);
+        @keyframes glow {
+            from {
+                box-shadow: 0 0 10px var(--accent-orange);
             }
-            50% { 
-                box-shadow: 
-                    0 0 25px #ff6b00,
-                    0 0 35px #ff6b00,
-                    inset 0 0 15px rgba(255, 215, 0, 0.5);
+            to {
+                box-shadow: 0 0 25px var(--accent-orange), 0 0 35px var(--accent-orange);
             }
         }
 
         .calendar-day.empty {
             background: transparent;
-            border: 1px dashed rgba(139, 115, 85, 0.1);
+            border: 1px dashed rgba(255, 255, 255, 0.05);
             cursor: default;
         }
 
         .calendar-day.empty:hover {
             background: transparent;
-            border-color: rgba(139, 115, 85, 0.1);
+            border-color: rgba(255, 255, 255, 0.05);
+            transform: none;
         }
 
-        /* Анимации переключения */
-        @keyframes film-rewind {
-            0% { transform: translateX(0); }
-            50% { transform: translateX(-100px); }
-            100% { transform: translateX(0); }
-        }
-
-        @keyframes film-forward {
-            0% { transform: translateX(0); }
-            50% { transform: translateX(100px); }
-            100% { transform: translateX(0); }
-        }
-
-        .film-rewind {
-            animation: film-rewind 0.6s ease-in-out;
-        }
-
-        .film-forward {
-            animation: film-forward 0.6s ease-in-out;
-        }
-
-        /* События */
+        /* Events Panel */
         .events-panel {
-            margin-top: 30px;
-            padding: 20px;
-            background: rgba(10, 10, 10, 0.8);
-            border: 1px solid #8a0303;
+            margin-top: 40px;
+            padding: 30px;
+            background: rgba(20, 20, 20, 0.8);
+            border: 1px solid #444;
+            border-left: 4px solid var(--accent-orange);
         }
 
-        .events-panel h3 {
-            color: #ffd700;
-            margin-bottom: 15px;
-            border-bottom: 2px solid #ff6b00;
-            padding-bottom: 8px;
+        .events-title {
+            color: var(--accent-yellow);
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--accent-orange);
+            padding-bottom: 10px;
         }
 
         .event-item {
-            padding: 12px 15px;
-            background: rgba(230, 214, 181, 0.1);
-            margin-bottom: 8px;
-            border-left: 4px solid #ff6b00;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            margin-bottom: 10px;
+            border-left: 3px solid var(--accent-orange);
             transition: all 0.3s ease;
         }
 
         .event-item:hover {
             background: rgba(255, 107, 0, 0.1);
             transform: translateX(5px);
-            border-left-color: #ffd700;
+            border-left-color: var(--accent-yellow);
         }
 
         .event-date {
-            color: #ffd700;
+            color: var(--accent-yellow);
             font-weight: bold;
+            margin-bottom: 5px;
         }
 
-        /* Адаптивность */
+        /* Film Rewind Effect */
+        @keyframes rewindLeft {
+            0% { transform: translateX(0); }
+            50% { transform: translateX(-100px); opacity: 0.7; }
+            100% { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes rewindRight {
+            0% { transform: translateX(0); }
+            50% { transform: translateX(100px); opacity: 0.7; }
+            100% { transform: translateX(0); opacity: 1; }
+        }
+
+        .film-rewind-left {
+            animation: rewindLeft 0.8s ease-in-out;
+        }
+
+        .film-rewind-right {
+            animation: rewindRight 0.8s ease-in-out;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .film-frame {
+                margin: 0 20px;
+                padding: 30px 20px;
+            }
+            
+            .current-display {
+                font-size: 2rem;
+                min-width: 250px;
+            }
+            
+            .nav-btn {
+                padding: 12px 20px;
+                font-size: 1.3rem;
+            }
+        }
+
         @media (max-width: 768px) {
+            .title {
+                font-size: 2.5rem;
+            }
+            
             .navigation {
                 flex-direction: column;
                 gap: 20px;
             }
             
-            .nav-section {
-                justify-content: center;
-            }
-            
-            .current-display {
-                font-size: 1.5rem;
-                min-width: 150px;
+            .film-strip {
+                min-height: 300px;
+                padding: 30px 0;
             }
             
             .calendar-day {
-                padding: 15px 2px;
+                padding: 15px 3px;
                 font-size: 0.9rem;
             }
             
             .day-header {
-                padding: 10px 2px;
+                padding: 12px 3px;
                 font-size: 0.8rem;
             }
         }
 
         @media (max-width: 480px) {
             .film-frame {
-                margin: 0 10px 20px;
-                padding: 15px;
+                margin: 0 10px;
+                padding: 20px 10px;
+            }
+            
+            .current-display {
+                font-size: 1.5rem;
+                min-width: 200px;
             }
             
             .calendar-day {
-                padding: 10px 1px;
+                padding: 12px 2px;
                 font-size: 0.8rem;
             }
         }
@@ -332,278 +364,247 @@
 </head>
 <body>
     <div class="container">
-        <header>
-            <h1>BENDY CHRONICLES RU</h1>
-            <p class="subtitle">Календарь событий в стиле киноплёнки</p>
-        </header>
+        <div class="header">
+            <div class="title">Bendy Chronicles</div>
+            <div class="subtitle">История франшизы в стиле киноплёнки</div>
+        </div>
 
         <div class="film-container">
             <div class="film-strip" id="filmStrip">
-                <!-- Год -->
                 <div class="film-frame">
+                    <!-- Navigation -->
                     <div class="navigation">
-                        <div class="nav-section">
-                            <button class="nav-btn" id="prev-year">❮❮</button>
-                            <div class="current-display" id="current-year">2017</div>
-                            <button class="nav-btn" id="next-year">❯❯</button>
-                        </div>
+                        <button class="nav-btn" id="prevYear">❮❮</button>
+                        <div class="current-display" id="currentYear">2017</div>
+                        <button class="nav-btn" id="nextYear">❯❯</button>
                     </div>
-                </div>
-
-                <!-- Месяц -->
-                <div class="film-frame">
+                    
                     <div class="navigation">
-                        <div class="nav-section">
-                            <button class="nav-btn" id="prev-month">❮</button>
-                            <div class="current-display" id="current-month">ФЕВРАЛЬ</div>
-                            <button class="nav-btn" id="next-month">❯</button>
-                        </div>
+                        <button class="nav-btn" id="prevMonth">❮</button>
+                        <div class="current-display" id="currentMonth">ФЕВРАЛЬ</div>
+                        <button class="nav-btn" id="nextMonth">❯</button>
                     </div>
-                </div>
 
-                <!-- Календарь -->
-                <div class="film-frame">
-                    <div class="calendar-grid" id="calendarGrid">
-                        <!-- Заголовки дней -->
-                        <div class="day-header">ПН</div>
-                        <div class="day-header">ВТ</div>
-                        <div class="day-header">СР</div>
-                        <div class="day-header">ЧТ</div>
-                        <div class="day-header">ПТ</div>
-                        <div class="day-header">СБ</div>
-                        <div class="day-header">ВС</div>
-                        
-                        <!-- Дни будут добавляться через JavaScript -->
+                    <!-- Calendar -->
+                    <div class="calendar-container">
+                        <div class="calendar-grid" id="calendarGrid">
+                            <!-- Days will be populated by JavaScript -->
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Панель событий -->
+        <!-- Events -->
         <div class="events-panel">
-            <h3>🎬 События этого месяца</h3>
+            <div class="events-title">📅 События этого месяца</div>
             <div id="eventsList">
-                <!-- События будут добавляться через JavaScript -->
+                <!-- Events will be populated by JavaScript -->
             </div>
         </div>
     </div>
 
     <script>
-        // Данные календаря
+        // Calendar Data and Configuration
         const eventsData = {
             "2017-02-10": [
-                { type: "game", title: "Bendy and the Ink Machine - Глава 1", description: "Релиз первой главы на Game Jolt" }
+                { type: "game", title: "Bendy and the Ink Machine - Chapter 1", description: "Релиз первой главы на Game Jolt" }
             ],
             "2017-04-18": [
-                { type: "game", title: "Bendy and the Ink Machine - Глава 2", description: "Релиз второй главы на Game Jolt" }
+                { type: "game", title: "Bendy and the Ink Machine - Chapter 2", description: "Релиз второй главы" }
             ],
             "2017-09-28": [
-                { type: "game", title: "Bendy and the Ink Machine - Глава 3", description: "Релиз третьей главы в Steam" }
+                { type: "game", title: "Bendy and the Ink Machine - Chapter 3", description: "Релиз в Steam" }
             ],
-            "2017-01-30": [
-                { type: "teaser", title: "Первый тизер игры", description: "Анонс разработки Bendy and the Ink Machine" }
+            "2018-10-13": [
+                { type: "game", title: "Bendy and the Ink Machine - Chapter 4", description: "Релиз четвёртой главы" }
             ],
-            "2017-03-27": [
-                { type: "trailer", title: "Трейлер Главы 2", description: "Официальный трейлер второй главы" }
+            "2019-06-21": [
+                { type: "game", title: "Bendy and the Ink Machine - Chapter 5", description: "Финальная глава" }
             ],
-            "2017-08-11": [
-                { type: "trailer", title: "Трейлер Главы 3", description: "Официальный трейлер третьей главы" }
+            "2020-02-14": [
+                { type: "game", title: "Boris and the Dark Survival", description: "Релиз спин-оффа" }
             ],
-            "2017-11-17": [
-                { type: "other", title: "Анонс Главы 4", description: "Начало разработки четвёртой главы" }
+            "2022-11-15": [
+                { type: "game", title: "Bendy and the Dark Revival", description: "Релиз сиквела" }
             ]
         };
 
-        // Текущее состояние
-        let currentDate = new Date(2017, 1, 1); // Февраль 2017
         const monthNames = [
             "ЯНВАРЬ", "ФЕВРАЛЬ", "МАРТ", "АПРЕЛЬ", "МАЙ", "ИЮНЬ",
             "ИЮЛЬ", "АВГУСТ", "СЕНТЯБРЬ", "ОКТЯБРЬ", "НОЯБРЬ", "ДЕКАБРЬ"
         ];
 
-        // Инициализация
-        document.addEventListener('DOMContentLoaded', function() {
-            updateCalendar();
-            setupEventListeners();
-        });
+        const dayNames = ["ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ", "ВС"];
 
-        function setupEventListeners() {
-            document.getElementById('prev-year').addEventListener('click', () => changeYear(-1));
-            document.getElementById('next-year').addEventListener('click', () => changeYear(1));
-            document.getElementById('prev-month').addEventListener('click', () => changeMonth(-1));
-            document.getElementById('next-month').addEventListener('click', () => changeMonth(1));
-        }
+        let currentDate = new Date(2017, 1, 1); // Start with February 2017
 
-        function changeYear(delta) {
-            const filmStrip = document.getElementById('filmStrip');
-            filmStrip.classList.add(delta > 0 ? 'film-forward' : 'film-rewind');
-            
-            setTimeout(() => {
-                currentDate.setFullYear(currentDate.getFullYear() + delta);
-                updateCalendar();
-                filmStrip.classList.remove('film-forward', 'film-rewind');
-            }, 300);
-        }
-
-        function changeMonth(delta) {
-            const filmStrip = document.getElementById('filmStrip');
-            filmStrip.classList.add(delta > 0 ? 'film-forward' : 'film-rewind');
-            
-            setTimeout(() => {
-                currentDate.setMonth(currentDate.getMonth() + delta);
-                updateCalendar();
-                filmStrip.classList.remove('film-forward', 'film-rewind');
-            }, 300);
-        }
-
-        function updateCalendar() {
-            updateDisplay();
+        // Initialize Calendar
+        function initCalendar() {
             renderCalendar();
-            updateEventsList();
+            setupEventListeners();
         }
 
-        function updateDisplay() {
-            document.getElementById('current-year').textContent = currentDate.getFullYear();
-            document.getElementById('current-month').textContent = monthNames[currentDate.getMonth()];
-        }
-
+        // Render Calendar Grid
         function renderCalendar() {
             const calendarGrid = document.getElementById('calendarGrid');
-            
-            // Очищаем предыдущие дни (кроме заголовков)
-            while (calendarGrid.children.length > 7) {
-                calendarGrid.removeChild(calendarGrid.lastChild);
-            }
-            
+            calendarGrid.innerHTML = '';
+
+            // Add day headers
+            dayNames.forEach(day => {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'day-header';
+                dayElement.textContent = day;
+                calendarGrid.appendChild(dayElement);
+            });
+
             const year = currentDate.getFullYear();
             const month = currentDate.getMonth();
-            
-            // Первый день месяца
+
+            // Update displays
+            document.getElementById('currentYear').textContent = year;
+            document.getElementById('currentMonth').textContent = monthNames[month];
+
+            // Get first and last day of month
             const firstDay = new Date(year, month, 1);
-            // Последний день месяца
             const lastDay = new Date(year, month + 1, 0);
             
-            // День недели первого дня
-            let firstDayOfWeek = firstDay.getDay();
-            // Корректируем для отображения понедельника первым
-            if (firstDayOfWeek === 0) firstDayOfWeek = 7;
-            
-            // Добавляем пустые ячейки для дней до первого дня месяца
-            for (let i = 1; i < firstDayOfWeek; i++) {
+            // Adjust for Monday as first day
+            let startDay = firstDay.getDay();
+            if (startDay === 0) startDay = 7; // Sunday becomes 7
+            startDay--; // Now 0-6 where 0 is Monday
+
+            // Add empty cells for days before first day of month
+            for (let i = 0; i < startDay; i++) {
                 const emptyDay = document.createElement('div');
                 emptyDay.className = 'calendar-day empty';
                 calendarGrid.appendChild(emptyDay);
             }
-            
-            // Добавляем дни месяца
+
+            // Add days of month
             for (let day = 1; day <= lastDay.getDate(); day++) {
                 const dayElement = document.createElement('div');
                 dayElement.className = 'calendar-day';
                 dayElement.textContent = day;
-                
+
                 const dateString = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                const dayEvents = eventsData[dateString] || [];
                 
-                if (dayEvents.length > 0) {
+                if (eventsData[dateString]) {
                     dayElement.classList.add('event-day');
-                    dayElement.title = `${dayEvents.length} событие(ий) - кликните для подробностей`;
-                    dayElement.addEventListener('click', () => showEventDetails(dateString, dayEvents));
+                    dayElement.addEventListener('click', () => showEventDetails(dateString, eventsData[dateString]));
                 } else {
                     dayElement.addEventListener('click', () => showNoEvents(dateString));
                 }
-                
+
                 calendarGrid.appendChild(dayElement);
             }
+
+            updateEventsList();
         }
 
+        // Update Events List
         function updateEventsList() {
             const eventsList = document.getElementById('eventsList');
             eventsList.innerHTML = '';
-            
+
             const year = currentDate.getFullYear();
             const month = currentDate.getMonth();
-            
-            // Находим все события для текущего месяца
-            const monthEvents = [];
-            Object.keys(eventsData).forEach(dateStr => {
-                const eventDate = new Date(dateStr);
-                if (eventDate.getFullYear() === year && eventDate.getMonth() === month) {
-                    eventsData[dateStr].forEach(event => {
-                        monthEvents.push({
-                            date: dateStr,
-                            ...event
-                        });
-                    });
-                }
-            });
-            
-            // Сортируем события по дате
-            monthEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
-            
-            // Добавляем события в список
+
+            const monthEvents = Object.keys(eventsData)
+                .filter(dateStr => {
+                    const eventDate = new Date(dateStr);
+                    return eventDate.getFullYear() === year && eventDate.getMonth() === month;
+                })
+                .sort((a, b) => new Date(a) - new Date(b));
+
             if (monthEvents.length === 0) {
                 eventsList.innerHTML = '<div class="event-item">В этом месяце нет событий</div>';
-            } else {
-                monthEvents.forEach(event => {
-                    const eventDate = new Date(event.date);
+                return;
+            }
+
+            monthEvents.forEach(dateStr => {
+                eventsData[dateStr].forEach(event => {
+                    const eventDate = new Date(dateStr);
                     const eventElement = document.createElement('div');
                     eventElement.className = 'event-item';
                     
-                    let typeIcon = '';
-                    switch(event.type) {
-                        case 'game': typeIcon = '🎮'; break;
-                        case 'trailer': typeIcon = '🎬'; break;
-                        case 'teaser': typeIcon = '📢'; break;
-                        default: typeIcon = '⭐';
-                    }
-                    
                     eventElement.innerHTML = `
                         <div class="event-date">${eventDate.getDate()} ${getMonthName(eventDate.getMonth())} ${eventDate.getFullYear()}</div>
-                        <div><strong>${typeIcon} ${event.title}</strong></div>
+                        <div><strong>${getEventIcon(event.type)} ${event.title}</strong></div>
                         <div>${event.description}</div>
                     `;
                     
                     eventsList.appendChild(eventElement);
                 });
-            }
+            });
         }
 
+        // Event Listeners
+        function setupEventListeners() {
+            document.getElementById('prevYear').addEventListener('click', () => changeYear(-1));
+            document.getElementById('nextYear').addEventListener('click', () => changeYear(1));
+            document.getElementById('prevMonth').addEventListener('click', () => changeMonth(-1));
+            document.getElementById('nextMonth').addEventListener('click', () => changeMonth(1));
+        }
+
+        function changeYear(delta) {
+            const filmStrip = document.getElementById('filmStrip');
+            filmStrip.classList.add(delta > 0 ? 'film-rewind-right' : 'film-rewind-left');
+            
+            setTimeout(() => {
+                currentDate.setFullYear(currentDate.getFullYear() + delta);
+                renderCalendar();
+                filmStrip.classList.remove('film-rewind-right', 'film-rewind-left');
+            }, 400);
+        }
+
+        function changeMonth(delta) {
+            const filmStrip = document.getElementById('filmStrip');
+            filmStrip.classList.add(delta > 0 ? 'film-rewind-right' : 'film-rewind-left');
+            
+            setTimeout(() => {
+                currentDate.setMonth(currentDate.getMonth() + delta);
+                renderCalendar();
+                filmStrip.classList.remove('film-rewind-right', 'film-rewind-left');
+            }, 400);
+        }
+
+        // Helper Functions
         function getMonthName(monthIndex) {
-            const monthNames = ["января", "февраля", "марта", "апреля", "мая", "июня",
+            const names = ["января", "февраля", "марта", "апреля", "мая", "июня",
                 "июля", "августа", "сентября", "октября", "ноября", "декабря"];
-            return monthNames[monthIndex];
+            return names[monthIndex];
+        }
+
+        function getEventIcon(type) {
+            const icons = {
+                'game': '🎮',
+                'trailer': '🎬',
+                'teaser': '📢',
+                'other': '⭐'
+            };
+            return icons[type] || '⭐';
         }
 
         function showEventDetails(dateString, events) {
             const date = new Date(dateString);
-            const formattedDate = `${date.getDate()} ${getMonthName(date.getMonth())} ${date.getFullYear()}`;
+            let message = `📅 ${date.getDate()} ${getMonthName(date.getMonth())} ${date.getFullYear()}\n\n`;
             
-            let eventDetails = `📅 ${formattedDate}\n\n`;
-            events.forEach((event, index) => {
-                let eventIcon = '';
-                switch(event.type) {
-                    case 'game': eventIcon = '🎮'; break;
-                    case 'trailer': eventIcon = '🎬'; break;
-                    case 'teaser': eventIcon = '📢'; break;
-                    default: eventIcon = '⭐';
-                }
-                
-                eventDetails += `${eventIcon} ${event.title}\n`;
-                eventDetails += `📝 ${event.description}\n`;
-                
-                if (index < events.length - 1) {
-                    eventDetails += '\n';
-                }
+            events.forEach(event => {
+                message += `${getEventIcon(event.type)} ${event.title}\n`;
+                message += `📝 ${event.description}\n\n`;
             });
             
-            alert(eventDetails);
+            alert(message);
         }
 
         function showNoEvents(dateString) {
             const date = new Date(dateString);
-            const formattedDate = `${date.getDate()} ${getMonthName(date.getMonth())} ${date.getFullYear()}`;
-            alert(`📅 ${formattedDate}\n\nВ этот день не было значимых событий Bendy.`);
+            alert(`📅 ${date.getDate()} ${getMonthName(date.getMonth())} ${date.getFullYear()}\n\nВ этот день не было событий Bendy.`);
         }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', initCalendar);
     </script>
 </body>
 </html>
