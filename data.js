@@ -205,11 +205,3 @@ const bendyEvents = {
         icon: "🎥"
     }
 };
-
-// Дополнительные данные для фильтрации по типам
-const eventTypes = {
-    "game_release": { name: "Релизы игр", color: "#8B4513", icon: "🎮" },
-    "trailer": { name: "Трейлеры", color: "#654321", icon: "🎬" },
-    "teaser": { name: "Тизеры", color: "#A0522D", icon: "📢" },
-    "announcement": { name: "Анонсы", color: "#D2691E", icon: "📢" }
-};
