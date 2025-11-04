@@ -13,18 +13,23 @@
     
     <!-- Основная навигация -->
     <header class="cinema-header">
-        <div class="film-reel left-reel">
-            <div class="reel-inner">
-                <div class="reel-hole"></div>
-                <div class="reel-hole"></div>
-                <div class="reel-hole"></div>
+        <div class="header-container">
+            <div class="film-reel left-reel">
+                <div class="reel-inner">
+                    <div class="reel-hole"></div>
+                    <div class="reel-hole"></div>
+                    <div class="reel-hole"></div>
+                </div>
             </div>
-        </div>
 
-        <nav class="film-navigation">
-            <div class="film-strip">
-                <div class="perforations-top"></div>
+            <nav class="film-navigation">
+                <!-- Движущаяся пленка с перфорациями -->
+                <div class="film-strip">
+                    <div class="perforations-top"></div>
+                    <div class="perforations-bottom"></div>
+                </div>
                 
+                <!-- Статичные кнопки навигации -->
                 <div class="nav-frames">
                     <a href="#home" class="frame-cell active" data-page="home">
                         <span class="frame-number">01</span>
@@ -47,20 +52,18 @@
                         <span class="frame-title">События</span>
                     </a>
                 </div>
+            </nav>
 
-                <div class="perforations-bottom"></div>
+            <div class="film-reel right-reel">
+                <div class="reel-inner">
+                    <div class="reel-hole"></div>
+                    <div class="reel-hole"></div>
+                    <div class="reel-hole"></div>
+                </div>
             </div>
-        </nav>
 
-        <div class="film-reel right-reel">
-            <div class="reel-inner">
-                <div class="reel-hole"></div>
-                <div class="reel-hole"></div>
-                <div class="reel-hole"></div>
-            </div>
+            <div class="projector-light" id="projectorLight"></div>
         </div>
-
-        <div class="projector-light" id="projectorLight"></div>
     </header>
 
     <!-- Основной контент -->
