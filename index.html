@@ -189,29 +189,5 @@
     </audio>
 
     <script src="js/script.js"></script>
-    <script>
-        // Инициализация звуков (опционально)
-        document.addEventListener('DOMContentLoaded', function() {
-            const projectorSound = document.getElementById('projectorSound');
-            const filmSound = document.getElementById('filmSound');
-            
-            // Воспроизведение звуков при переключении страниц
-            const navItems = document.querySelectorAll('.frame-cell');
-            navItems.forEach(item => {
-                item.addEventListener('click', function() {
-                    if (projectorSound) {
-                        projectorSound.currentTime = 0;
-                        projectorSound.play().catch(e => console.log('Audio play failed:', e));
-                    }
-                    if (filmSound) {
-                        setTimeout(() => {
-                            filmSound.currentTime = 0;
-                            filmSound.play().catch(e => console.log('Audio play failed:', e));
-                        }, 200);
-                    }
-                });
-            });
-        });
-    </script>
 </body>
 </html>
