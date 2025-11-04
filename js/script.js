@@ -1,89 +1,160 @@
-document.addEventListener('DOMContentLoaded', function() {
-    const navLinks = document.querySelectorAll('.nav-link');
-    const pageSections = document.querySelectorAll('.page-section');
-    const filmStrip = document.querySelector('.film-strip');
-    const leftReel = document.querySelector('.reel-left');
-    const rightReel = document.querySelector('.reel-right');
-    const projectorLight = document.querySelector('.projector-light');
-    
-    let currentPage = 'home';
-    const pageOrder = ['home', 'products', 'lore', 'timeline', 'events'];
-
-    // Функция для получения индекса страницы
-    function getPageIndex(page) {
-        return pageOrder.indexOf(page);
-    }
-
-    // Функция переключения страниц с анимацией
-    function switchPage(targetPage) {
-        if (targetPage === currentPage) return;
-
-        const currentIndex = getPageIndex(currentPage);
-        const targetIndex = getPageIndex(targetPage);
+class FilmNavigation {
+    constructor() {
+        this.currentPage = 'home';
+        this.pages = ['home', 'products', 'lore', 'timeline', 'events'];
+        this.isAnimating = false;
         
-        // Определяем направление перемотки
+        this.init();
+    }
+    
+    init() {
+        this.bindEvents();
+        this.centerCurrentPage();
+    }
+    
+    bindEvents() {
+        // Обработчики для кинокадров
+        document.querySelectorAll('.film-frame').forEach(frame => {
+            frame.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetPage = frame.getAttribute('data-page');
+                this.switchPage(targetPage);
+            });
+        });
+        
+        // Обработчик для хеша в URL
+        window.addEventListener('hashchange', () => {
+            const hash = window.location.hash.substring(1);
+            if (this.pages.includes(hash)) {
+                this.switchPage(hash);
+            }
+        });
+        
+        // Инициализация по хешу
+        const initialHash = window.location.hash.substring(1);
+        if (this.pages.includes(initialHash)) {
+            this.switchPage(initialHash, false);
+        }
+    }
+    
+    switchPage(targetPage, animate = true) {
+        if (this.isAnimating || targetPage === this.currentPage) return;
+        
+        this.isAnimating = true;
+        const targetIndex = this.pages.indexOf(targetPage);
+        const currentIndex = this.pages.indexOf(this.currentPage);
+        
+        // Определяем направление анимации
         const isForward = targetIndex > currentIndex;
         
-        // Активируем свет проектора
-        projectorLight.classList.add('active');
+        // Запускаем анимации
+        this.startFilmAnimation(targetIndex, isForward, animate);
+        this.startReelAnimation(isForward);
         
-        // Запускаем анимацию бобин
+        if (animate) {
+            setTimeout(() => {
+                this.updateContent(targetPage);
+                this.isAnimating = false;
+            }, 800);
+        } else {
+            this.updateContent(targetPage);
+            this.isAnimating = false;
+        }
+        
+        // Обновляем URL
+        window.history.pushState(null, null, `#${targetPage}`);
+    }
+    
+    startFilmAnimation(targetIndex, isForward, animate) {
+        const filmStrip = document.querySelector('.film-strip');
+        const filmFrames = document.querySelectorAll('.film-frame');
+        
+        // Снимаем активный класс со всех кадров
+        filmFrames.forEach(frame => frame.classList.remove('active'));
+        
+        // Добавляем активный класс целевому кадру
+        filmFrames[targetIndex].classList.add('active');
+        
+        if (animate) {
+            // Включаем луч проектора
+            document.querySelector('.projector-beam').classList.add('active');
+            
+            // Рассчитываем смещение для центрирования
+            const frameWidth = 160 + 25; // ширина кадра + gap
+            const offset = (targetIndex - 2) * frameWidth;
+            
+            // Прокручиваем пленку
+            filmStrip.style.transform = `translateX(calc(-50% + ${offset}px))`;
+            
+            // Выключаем луч после анимации
+            setTimeout(() => {
+                document.querySelector('.projector-beam').classList.remove('active');
+            }, 800);
+        } else {
+            // Без анимации - сразу устанавливаем позицию
+            const frameWidth = 160 + 25;
+            const offset = (targetIndex - 2) * frameWidth;
+            filmStrip.style.transform = `translateX(calc(-50% + ${offset}px))`;
+        }
+    }
+    
+    startReelAnimation(isForward) {
+        const leftReel = document.querySelector('.left-reel .reel-rim');
+        const rightReel = document.querySelector('.right-reel .reel-rim');
+        
+        // Сбрасываем предыдущие анимации
+        leftReel.classList.remove('spin-forward', 'spin-backward');
+        rightReel.classList.remove('spin-forward', 'spin-backward');
+        
+        // Запускаем новые анимации
+        void leftReel.offsetWidth; // Trigger reflow
+        void rightReel.offsetWidth;
+        
         leftReel.classList.add(isForward ? 'spin-forward' : 'spin-backward');
         rightReel.classList.add(isForward ? 'spin-forward' : 'spin-backward');
         
-        // Вычисляем смещение для кинопленки
-        const linkWidth = 140 + 40; // ширина кнопки + gap
-        const offset = (targetIndex - 2) * linkWidth; // Центрируем активный элемент
-        
-        // Прокручиваем кинопленку
-        filmStrip.style.transform = `translateX(calc(-50% + ${offset}px))`;
-        
-        // Ждем завершения анимации прокрутки
+        // Убираем классы анимации после завершения
         setTimeout(() => {
-            // Скрываем все страницы
-            pageSections.forEach(section => {
-                section.classList.remove('active');
-            });
-            
-            // Показываем целевую страницу
-            const targetSection = document.getElementById(targetPage);
-            if (targetSection) {
-                targetSection.classList.add('active');
-            }
-            
-            // Обновляем активную ссылку в навигации
-            navLinks.forEach(link => {
-                link.classList.remove('active');
-                if (link.getAttribute('data-page') === targetPage) {
-                    link.classList.add('active');
-                }
-            });
-            
-            // Сбрасываем анимации бобин
-            setTimeout(() => {
-                leftReel.classList.remove('spin-forward', 'spin-backward');
-                rightReel.classList.remove('spin-forward', 'spin-backward');
-                projectorLight.classList.remove('active');
-            }, 200);
-            
-            currentPage = targetPage;
+            leftReel.classList.remove('spin-forward', 'spin-backward');
+            rightReel.classList.remove('spin-forward', 'spin-backward');
         }, 800);
     }
-
-    // Обработчики кликов для навигации
-    navLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-            const targetPage = this.getAttribute('data-page');
-            switchPage(targetPage);
+    
+    updateContent(targetPage) {
+        // Скрываем все страницы
+        document.querySelectorAll('.page').forEach(page => {
+            page.classList.remove('active');
         });
-    });
+        
+        // Показываем целевую страницу
+        const targetElement = document.getElementById(targetPage);
+        if (targetElement) {
+            targetElement.classList.add('active');
+        }
+        
+        this.currentPage = targetPage;
+    }
+    
+    centerCurrentPage() {
+        const currentIndex = this.pages.indexOf(this.currentPage);
+        const filmStrip = document.querySelector('.film-strip');
+        const frameWidth = 160 + 25;
+        const offset = (currentIndex - 2) * frameWidth;
+        
+        filmStrip.style.transform = `translateX(calc(-50% + ${offset}px))`;
+    }
+}
 
-    // Инициализация - центрируем начальную позицию
-    setTimeout(() => {
-        const homeIndex = getPageIndex('home');
-        const linkWidth = 140 + 40;
-        const initialOffset = (homeIndex - 2) * linkWidth;
-        filmStrip.style.transform = `translateX(calc(-50% + ${initialOffset}px))`;
-    }, 100);
+// Инициализация при загрузке страницы
+document.addEventListener('DOMContentLoaded', () => {
+    new FilmNavigation();
+});
+
+// Обработка кнопок браузера "назад/вперед"
+window.addEventListener('popstate', () => {
+    const hash = window.location.hash.substring(1);
+    const filmNav = new FilmNavigation();
+    if (filmNav.pages.includes(hash)) {
+        filmNav.switchPage(hash, true);
+    }
 });
