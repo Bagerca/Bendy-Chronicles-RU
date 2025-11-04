@@ -64,7 +64,7 @@ body {
     padding: 0 2rem;
 }
 
-/* Увеличенные бобины пленки с спицами */
+/* Увеличенные бобины пленки с исправленным центром */
 .film-reel {
     width: 180px;
     height: 180px;
@@ -100,7 +100,7 @@ body {
     animation: continuousSpin 25s linear infinite;
 }
 
-/* Центральная часть бобины */
+/* Центральная часть бобины - исправленное позиционирование */
 .reel-center {
     position: absolute;
     top: 50%;
@@ -116,7 +116,7 @@ body {
     z-index: 2;
 }
 
-/* Спицы от центра к отверстиям */
+/* Спицы от центра к отверстиям - исправленное позиционирование */
 .reel-spoke {
     position: absolute;
     top: 50%;
@@ -129,7 +129,7 @@ body {
         var(--secondary-gold) 50%, 
         var(--primary-gold) 70%, 
         transparent 100%);
-    transform-origin: center bottom;
+    transform-origin: center top;
     transform: translate(-50%, -50%) rotate(calc(var(--i) * 60deg));
     z-index: 1;
 }
@@ -142,7 +142,7 @@ body {
 .reel-spoke:nth-child(6) { --i: 4; }
 .reel-spoke:nth-child(7) { --i: 5; }
 
-/* 6 отверстий для улучшенного дизайна */
+/* 6 отверстий для улучшенного дизайна - исправленное позиционирование */
 .reel-hole {
     position: absolute;
     width: 18px;
@@ -154,15 +154,41 @@ body {
         inset 0 0 10px rgba(255, 179, 71, 0.4),
         0 0 15px var(--secondary-gold);
     z-index: 3;
+    transform: translate(-50%, -50%);
 }
 
-/* Расположение 6 отверстий на концах спиц */
-.reel-hole:nth-child(8) { top: 15px; left: 50%; transform: translateX(-50%); }
-.reel-hole:nth-child(9) { top: 45px; right: 30px; }
-.reel-hole:nth-child(10) { bottom: 45px; right: 30px; }
-.reel-hole:nth-child(11) { bottom: 15px; left: 50%; transform: translateX(-50%); }
-.reel-hole:nth-child(12) { bottom: 45px; left: 30px; }
-.reel-hole:nth-child(13) { top: 45px; left: 30px; }
+/* Расположение 6 отверстий на концах спиц - исправленное позиционирование */
+.reel-hole:nth-child(8) { 
+    top: 15px; 
+    left: 50%; 
+}
+.reel-hole:nth-child(9) { 
+    top: 45px; 
+    right: 15px; 
+    left: auto;
+    transform: translate(50%, -50%);
+}
+.reel-hole:nth-child(10) { 
+    bottom: 45px; 
+    right: 15px; 
+    left: auto;
+    transform: translate(50%, 50%);
+}
+.reel-hole:nth-child(11) { 
+    bottom: 15px; 
+    left: 50%; 
+    transform: translate(-50%, 50%);
+}
+.reel-hole:nth-child(12) { 
+    bottom: 45px; 
+    left: 15px; 
+    transform: translate(-50%, 50%);
+}
+.reel-hole:nth-child(13) { 
+    top: 45px; 
+    left: 15px; 
+    transform: translate(-50%, -50%);
+}
 
 /* Непрерывное вращение бобин */
 @keyframes continuousSpin {
@@ -191,7 +217,7 @@ body {
     justify-content: center;
 }
 
-/* Seamless пленка с бесконечной анимацией */
+/* Пленка с перфорациями */
 .film-strip {
     position: absolute;
     top: 0;
@@ -200,7 +226,7 @@ body {
     height: 100%;
     background: 
         /* Основной цвет пленки */
-        linear-gradient(to bottom, var(--film-color) 0%, var(--film-color) 100%),
+        var(--film-color),
         /* Верхние перфорации */
         repeating-linear-gradient(
             90deg,
@@ -233,7 +259,7 @@ body {
     box-shadow: 
         inset 0 0 20px rgba(0,0,0,0.5),
         0 10px 30px rgba(0,0,0,0.8);
-    animation: seamlessFilmMove 30s linear infinite;
+    animation: seamlessFilmMove 25s linear infinite;
 }
 
 /* Бесконечное движение seamless пленки */
