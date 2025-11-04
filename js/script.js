@@ -73,7 +73,7 @@ class FilmNavigation {
             setTimeout(() => projectorLight.classList.remove('active'), 800);
         }
         
-        const reels = document.querySelectorAll('.reel-outer');
+        const reels = document.querySelectorAll('.reel-body');
         reels.forEach(reel => {
             reel.style.animationPlayState = 'paused';
             setTimeout(() => {
