@@ -10,10 +10,11 @@ class FilmNavigation {
     init() {
         this.bindEvents();
         this.centerCurrentPage();
+        this.setupAudio();
     }
     
     bindEvents() {
-        // Обработчики для кинокадров - исправлено на frame-cell
+        // Обработчики для кинокадров
         document.querySelectorAll('.frame-cell').forEach(frame => {
             frame.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -35,6 +36,28 @@ class FilmNavigation {
         if (this.pages.includes(initialHash)) {
             this.switchPage(initialHash, false);
         }
+    }
+    
+    setupAudio() {
+        // Инициализация звуков
+        this.projectorSound = document.getElementById('projectorSound');
+        this.filmSound = document.getElementById('filmSound');
+        
+        // Воспроизведение звуков при переключении страниц
+        document.querySelectorAll('.frame-cell').forEach(item => {
+            item.addEventListener('click', () => {
+                if (this.projectorSound) {
+                    this.projectorSound.currentTime = 0;
+                    this.projectorSound.play().catch(e => console.log('Audio play failed:', e));
+                }
+                if (this.filmSound) {
+                    setTimeout(() => {
+                        this.filmSound.currentTime = 0;
+                        this.filmSound.play().catch(e => console.log('Audio play failed:', e));
+                    }, 200);
+                }
+            });
+        });
     }
     
     switchPage(targetPage, animate = true) {
@@ -76,7 +99,7 @@ class FilmNavigation {
         filmFrames[targetIndex].classList.add('active');
         
         if (animate) {
-            // Включаем луч проектора - исправлено на projector-light
+            // Включаем луч проектора
             document.querySelector('.projector-light').classList.add('active');
             
             // Рассчитываем смещение для центрирования
