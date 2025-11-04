@@ -6,39 +6,31 @@
     <title>Bendy Chronicles</title>
     <link rel="stylesheet" href="css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
-    <!-- Добавляем фавиконку чтобы избежать 404 -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎬</text></svg>">
 </head>
 <body>
-    <!-- Кинотеатральный проектор -->
     <div class="projector-overlay"></div>
     
-    <!-- Основная навигация -->
     <header class="cinema-header">
         <div class="header-container">
+            <!-- Левая бобина -->
             <div class="film-reel left-reel">
-                <div class="reel-inner">
-                    <div class="reel-center"></div>
-                    <div class="reel-spoke"></div>
-                    <div class="reel-spoke"></div>
-                    <div class="reel-spoke"></div>
-                    <div class="reel-spoke"></div>
-                    <div class="reel-spoke"></div>
-                    <div class="reel-spoke"></div>
-                    <div class="reel-hole"></div>
-                    <div class="reel-hole"></div>
-                    <div class="reel-hole"></div>
-                    <div class="reel-hole"></div>
-                    <div class="reel-hole"></div>
-                    <div class="reel-hole"></div>
+                <div class="reel-outer">
+                    <div class="reel-inner">
+                        <div class="reel-center"></div>
+                        <!-- Спицы будут добавлены через CSS -->
+                    </div>
                 </div>
             </div>
 
+            <!-- Навигация -->
             <nav class="film-navigation">
                 <!-- Пленка -->
-                <div class="film-strip"></div>
+                <div class="film-strip">
+                    <div class="film-perforations"></div>
+                </div>
                 
-                <!-- Статичные кнопки навигации -->
+                <!-- Кнопки навигации -->
                 <div class="nav-frames">
                     <a href="#home" class="frame-cell active" data-page="home">
                         <span class="frame-number">01</span>
@@ -63,51 +55,38 @@
                 </div>
             </nav>
 
+            <!-- Правая бобина -->
             <div class="film-reel right-reel">
-                <div class="reel-inner">
-                    <div class="reel-center"></div>
-                    <div class="reel-spoke"></div>
-                    <div class="reel-spoke"></div>
-                    <div class="reel-spoke"></div>
-                    <div class="reel-spoke"></div>
-                    <div class="reel-spoke"></div>
-                    <div class="reel-spoke"></div>
-                    <div class="reel-hole"></div>
-                    <div class="reel-hole"></div>
-                    <div class="reel-hole"></div>
-                    <div class="reel-hole"></div>
-                    <div class="reel-hole"></div>
-                    <div class="reel-hole"></div>
+                <div class="reel-outer">
+                    <div class="reel-inner">
+                        <div class="reel-center"></div>
+                        <!-- Спицы будут добавлены через CSS -->
+                    </div>
                 </div>
             </div>
 
-            <div class="projector-light" id="projectorLight"></div>
+            <div class="projector-light"></div>
         </div>
     </header>
 
-    <!-- Основной контент -->
     <main class="cinema-content">
-        <!-- Страница 1: Главная -->
         <section id="home" class="cinema-page active">
             <div class="page-content">
                 <div class="title-sequence">
                     <h1 class="main-title">BENDY CHRONICLES</h1>
                     <p class="subtitle">Where Animation Meets Mystery</p>
                 </div>
-                
                 <div class="content-grid">
                     <article class="feature-card">
                         <div class="card-icon">🎬</div>
                         <h3>Студия Джоуи Дрю</h3>
                         <p>Исследуйте тайны легендарной анимационной студии и её созданий.</p>
                     </article>
-                    
                     <article class="feature-card">
                         <div class="card-icon">📖</div>
                         <h3>История</h3>
                         <p>Погрузитесь в глубокий лор вселенной Bendy и её персонажей.</p>
                     </article>
-                    
                     <article class="feature-card">
                         <div class="card-icon">🎭</div>
                         <h3>Персонажи</h3>
@@ -117,92 +96,51 @@
             </div>
         </section>
 
-        <!-- Страница 2: Продукты -->
         <section id="products" class="cinema-page">
             <div class="page-content">
                 <h2>Наши Издания</h2>
                 <div class="products-showcase">
-                    <div class="product-item">
-                        <h4>Графические романы</h4>
-                        <p>Коллекционные издания комиксов</p>
-                    </div>
-                    <div class="product-item">
-                        <h4>Артбуки</h4>
-                        <p>Эксклюзивные арты и концепты</p>
-                    </div>
-                    <div class="product-item">
-                        <h4>Мерчендайз</h4>
-                        <p>Фигурки, постеры и коллекционные предметы</p>
-                    </div>
+                    <div class="product-item"><h4>Графические романы</h4><p>Коллекционные издания комиксов</p></div>
+                    <div class="product-item"><h4>Артбуки</h4><p>Эксклюзивные арты и концепты</p></div>
+                    <div class="product-item"><h4>Мерчендайз</h4><p>Фигурки, постеры и коллекционные предметы</p></div>
                 </div>
             </div>
         </section>
 
-        <!-- Страница 3: Лор -->
         <section id="lore" class="cinema-page">
             <div class="page-content">
                 <h2>Вселенная Bendy</h2>
                 <div class="lore-timeline">
-                    <div class="timeline-point">
-                        <h4>1920-е</h4>
-                        <p>Основание студии Джоуи Дрю</p>
-                    </div>
-                    <div class="timeline-point">
-                        <h4>1930-е</h4>
-                        <p>Создание первых анимационных фильмов</p>
-                    </div>
-                    <div class="timeline-point">
-                        <h4>1940-е</h4>
-                        <p>Расцвет студии и появление культовых персонажей</p>
-                    </div>
+                    <div class="timeline-point"><h4>1920-е</h4><p>Основание студии Джоуи Дрю</p></div>
+                    <div class="timeline-point"><h4>1930-е</h4><p>Создание первых анимационных фильмов</p></div>
+                    <div class="timeline-point"><h4>1940-е</h4><p>Расцвет студии и появление культовых персонажей</p></div>
                 </div>
             </div>
         </section>
 
-        <!-- Страница 4: Хроники -->
         <section id="timeline" class="cinema-page">
             <div class="page-content">
                 <h2>Хронология Событий</h2>
                 <div class="chronicles">
-                    <div class="chronicle-item">
-                        <h4>Глава 1: Машина чернил</h4>
-                        <p>Начало истории в старой студии</p>
-                    </div>
-                    <div class="chronicle-item">
-                        <h4>Глава 2: Старые друзья</h4>
-                        <p>Возвращение забытых персонажей</p>
-                    </div>
-                    <div class="chronicle-item">
-                        <h4>Глава 3: Воскрешение</h4>
-                        <p>Новые открытия и старые секреты</p>
-                    </div>
+                    <div class="chronicle-item"><h4>Глава 1: Машина чернил</h4><p>Начало истории в старой студии</p></div>
+                    <div class="chronicle-item"><h4>Глава 2: Старые друзья</h4><p>Возвращение забытых персонажей</p></div>
+                    <div class="chronicle-item"><h4>Глава 3: Воскрешение</h4><p>Новые открытия и старые секреты</p></div>
                 </div>
             </div>
         </section>
 
-        <!-- Страница 5: События -->
         <section id="events" class="cinema-page">
             <div class="page-content">
                 <h2>Предстоящие События</h2>
                 <div class="events-calendar">
-                    <div class="event-card">
-                        <h4>Comic-Con 2024</h4>
-                        <p>Эксклюзивные анонсы и встречи</p>
-                    </div>
-                    <div class="event-card">
-                        <h4>Выставка артов</h4>
-                        <p>Работы создателей вселенной</p>
-                    </div>
-                    <div class="event-card">
-                        <h4>Творческие встречи</h4>
-                        <p>Обсуждение с разработчиками</p>
-                    </div>
+                    <div class="event-card"><h4>Comic-Con 2024</h4><p>Эксклюзивные анонсы и встречи</p></div>
+                    <div class="event-card"><h4>Выставка артов</h4><p>Работы создателей вселенной</p></div>
+                    <div class="event-card"><h4>Творческие встречи</h4><p>Обсуждение с разработчиками</p></div>
                 </div>
             </div>
         </section>
     </main>
 
-    <!-- Аудио элементы для атмосферы -->
     <audio id="projectorSound" preload="auto">
         <source src="https://assets.mixkit.co/sfx/preview/mixkit-projector-click-1253.mp3" type="audio/mpeg">
     </audio>
