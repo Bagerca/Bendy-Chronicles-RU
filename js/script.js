@@ -1,3 +1,4 @@
+// CinemaNavigation - основной класс для навигации
 class CinemaNavigation {
     constructor() {
         this.currentPage = 'home';
@@ -9,17 +10,9 @@ class CinemaNavigation {
     }
     
     init() {
-        this.createAudioContext();
         this.bindEvents();
         this.initPageTransitions();
         console.log('🎬 Cinema Navigation initialized');
-    }
-    
-    createAudioContext() {
-        // Создаем контекст для звуковых эффектов
-        this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        this.projectorSound = document.getElementById('projectorSound');
-        this.filmSound = document.getElementById('filmSound');
     }
     
     bindEvents() {
@@ -48,9 +41,8 @@ class CinemaNavigation {
     }
     
     initPageTransitions() {
-        // Предзагрузка звуков
-        if (this.projectorSound) this.projectorSound.volume = 0.3;
-        if (this.filmSound) this.filmSound.volume = 0.2;
+        // Инициализация переходов между страницами
+        console.log('Page transitions initialized');
     }
     
     async navigateToPage(targetPage, animate = true) {
@@ -76,9 +68,6 @@ class CinemaNavigation {
     }
     
     async playTransitionAnimation(targetPage) {
-        // Воспроизводим звук проектора
-        await this.playSound(this.projectorSound);
-        
         // Активируем луч проектора
         this.activateProjectorLight();
         
@@ -87,9 +76,6 @@ class CinemaNavigation {
         
         // Ждем немного перед сменой контента
         await this.delay(300);
-        
-        // Воспроизводим звук пленки
-        await this.playSound(this.filmSound);
         
         // Обновляем контент страницы
         this.updatePageContent(targetPage);
@@ -138,32 +124,12 @@ class CinemaNavigation {
         }
     }
     
-    playSound(audioElement) {
-        return new Promise((resolve) => {
-            if (!audioElement) {
-                resolve();
-                return;
-            }
-            
-            audioElement.currentTime = 0;
-            const playPromise = audioElement.play();
-            
-            if (playPromise !== undefined) {
-                playPromise.then(() => {
-                    setTimeout(resolve, audioElement.duration * 1000);
-                }).catch(resolve);
-            } else {
-                resolve();
-            }
-        });
-    }
-    
     delay(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 }
 
-// Дополнительные эффекты для атмосферы
+// CinemaEffects - класс для визуальных эффектов
 class CinemaEffects {
     constructor() {
         this.init();
@@ -178,7 +144,8 @@ class CinemaEffects {
         // Случайные мерцания как в старом кино
         setInterval(() => {
             if (Math.random() > 0.7) {
-                document.body.style.filter = `brightness(${0.9 + Math.random() * 0.2})`;
+                const brightness = 0.9 + Math.random() * 0.2;
+                document.body.style.filter = `brightness(${brightness})`;
                 setTimeout(() => {
                     document.body.style.filter = 'brightness(1)';
                 }, 50 + Math.random() * 100);
@@ -191,7 +158,7 @@ class CinemaEffects {
         const overlay = document.querySelector('.projector-overlay');
         if (!overlay) return;
         
-        for (let i = 0; i < 20; i++) {
+        for (let i = 0; i < 15; i++) {
             this.createDustParticle(overlay);
         }
     }
@@ -209,19 +176,33 @@ class CinemaEffects {
         
         particle.style.left = `${Math.random() * 100}%`;
         particle.style.top = `${Math.random() * 100}%`;
-        particle.style.animation = `float ${10 + Math.random() * 20}s linear infinite`;
+        
+        // Создаем уникальную анимацию для каждой частицы
+        const animationName = `float-${Math.random().toString(36).substr(2, 9)}`;
+        const duration = 10 + Math.random() * 20;
         
         const style = document.createElement('style');
         style.textContent = `
-            @keyframes float {
-                0% { transform: translate(0, 0) rotate(0deg); opacity: 0; }
-                10% { opacity: 0.3; }
-                90% { opacity: 0.1; }
-                100% { transform: translate(${Math.random() * 100 - 50}px, ${Math.random() * 100 - 50}px) rotate(360deg); opacity: 0; }
+            @keyframes ${animationName} {
+                0% { 
+                    transform: translate(0, 0) rotate(0deg); 
+                    opacity: 0; 
+                }
+                10% { 
+                    opacity: 0.3; 
+                }
+                90% { 
+                    opacity: 0.1; 
+                }
+                100% { 
+                    transform: translate(${Math.random() * 100 - 50}px, ${Math.random() * 100 - 50}px) rotate(360deg); 
+                    opacity: 0; 
+                }
             }
         `;
         
         document.head.appendChild(style);
+        particle.style.animation = `${animationName} ${duration}s linear infinite`;
         container.appendChild(particle);
     }
 }
@@ -229,18 +210,20 @@ class CinemaEffects {
 // Инициализация при загрузке страницы
 document.addEventListener('DOMContentLoaded', () => {
     // Инициализация навигации
-    window.cinemaNav = new CinemaNavigation();
+    const cinemaNav = new CinemaNavigation();
     
     // Инициализация визуальных эффектов
-    window.cinemaEffects = new CinemaEffects();
+    const cinemaEffects = new CinemaEffects();
     
-    // Предотвращаем контекстное меню для Immersion
-    document.addEventListener('contextmenu', (e) => {
-        e.preventDefault();
-    });
+    // Сохраняем в глобальной области для отладки
+    window.cinemaNav = cinemaNav;
+    window.cinemaEffects = cinemaEffects;
+    
+    console.log('🎭 Bendy Chronicles website loaded successfully!');
 });
 
 // Обработка изменения размера окна
 window.addEventListener('resize', () => {
     // Можно добавить адаптивную логику при необходимости
+    console.log('Window resized:', window.innerWidth, 'x', window.innerHeight);
 });
