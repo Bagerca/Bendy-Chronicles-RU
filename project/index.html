@@ -7,24 +7,40 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <!-- Шапка в виде кинопленки -->
+    <!-- Шапка в виде кинопленки с проектором -->
     <header class="film-header">
-        <div class="film-strip">
-            <ul class="nav-links">
-                <li><a href="#" class="nav-link active" data-page="home">Главная</a></li>
-                <li><a href="#" class="nav-link" data-page="products">Продукты</a></li>
-                <li><a href="#" class="nav-link" data-page="lore">Лор</a></li>
-                <li><a href="#" class="nav-link" data-page="timeline">Таймлайн</a></li>
-                <li><a href="#" class="nav-link" data-page="events">События</a></li>
-            </ul>
-            <div class="projector-effect"></div>
+        <div class="projector-left">
+            <div class="reel reel-left">
+                <div class="reel-hole"></div>
+                <div class="reel-hole"></div>
+                <div class="reel-hole"></div>
+                <div class="reel-hole"></div>
+            </div>
         </div>
-    </header>
+        
+        <div class="film-strip-container">
+            <div class="film-strip">
+                <ul class="nav-links">
+                    <li><a href="#" class="nav-link active" data-page="home">Главная</a></li>
+                    <li><a href="#" class="nav-link" data-page="products">Продукты</a></li>
+                    <li><a href="#" class="nav-link" data-page="lore">Лор</a></li>
+                    <li><a href="#" class="nav-link" data-page="timeline">Таймлайн</a></li>
+                    <li><a href="#" class="nav-link" data-page="events">События</a></li>
+                </ul>
+            </div>
+        </div>
 
-    <!-- Анимация перехода -->
-    <div class="page-transition" id="pageTransition">
-        <div class="clapperboard">🎬</div>
-    </div>
+        <div class="projector-right">
+            <div class="reel reel-right">
+                <div class="reel-hole"></div>
+                <div class="reel-hole"></div>
+                <div class="reel-hole"></div>
+                <div class="reel-hole"></div>
+            </div>
+        </div>
+
+        <div class="projector-light"></div>
+    </header>
 
     <!-- Основной контент -->
     <main class="page-content">
