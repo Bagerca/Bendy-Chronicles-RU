@@ -39,25 +39,29 @@ class FilmNavigation {
     }
     
     setupAudio() {
-        // Инициализация звуков
-        this.projectorSound = document.getElementById('projectorSound');
-        this.filmSound = document.getElementById('filmSound');
-        
-        // Воспроизведение звуков при переключении страниц
-        document.querySelectorAll('.frame-cell').forEach(item => {
-            item.addEventListener('click', () => {
-                if (this.projectorSound) {
-                    this.projectorSound.currentTime = 0;
-                    this.projectorSound.play().catch(e => console.log('Audio play failed:', e));
-                }
-                if (this.filmSound) {
-                    setTimeout(() => {
-                        this.filmSound.currentTime = 0;
-                        this.filmSound.play().catch(e => console.log('Audio play failed:', e));
-                    }, 200);
-                }
+        try {
+            // Инициализация звуков
+            this.projectorSound = document.getElementById('projectorSound');
+            this.filmSound = document.getElementById('filmSound');
+            
+            // Воспроизведение звуков при переключении страниц
+            document.querySelectorAll('.frame-cell').forEach(item => {
+                item.addEventListener('click', () => {
+                    if (this.projectorSound) {
+                        this.projectorSound.currentTime = 0;
+                        this.projectorSound.play().catch(e => console.log('Audio play failed:', e));
+                    }
+                    if (this.filmSound) {
+                        setTimeout(() => {
+                            this.filmSound.currentTime = 0;
+                            this.filmSound.play().catch(e => console.log('Audio play failed:', e));
+                        }, 200);
+                    }
+                });
             });
-        });
+        } catch (error) {
+            console.log('Audio setup failed:', error);
+        }
     }
     
     switchPage(targetPage, animate = true) {
@@ -97,39 +101,49 @@ class FilmNavigation {
         const rightReel = document.querySelector('.right-reel .reel-inner');
         
         // Включаем луч проектора
-        document.querySelector('.projector-light').classList.add('active');
+        const projectorLight = document.querySelector('.projector-light');
+        if (projectorLight) {
+            projectorLight.classList.add('active');
+        }
         
         // Временно останавливаем непрерывные анимации
-        filmStrip.style.animationPlayState = 'paused';
-        leftReel.style.animationPlayState = 'paused';
-        rightReel.style.animationPlayState = 'paused';
+        if (filmStrip) filmStrip.style.animationPlayState = 'paused';
+        if (leftReel) leftReel.style.animationPlayState = 'paused';
+        if (rightReel) rightReel.style.animationPlayState = 'paused';
         
         // Запускаем быстрые анимации
-        filmStrip.classList.add('fast-move');
-        leftReel.classList.add('fast-spin');
-        rightReel.classList.add('fast-spin');
+        if (filmStrip) filmStrip.classList.add('fast-move');
+        if (leftReel) leftReel.classList.add('fast-spin');
+        if (rightReel) rightReel.classList.add('fast-spin');
         
         // Направление для бобин
         if (!isForward) {
-            leftReel.style.animationDirection = 'reverse';
-            rightReel.style.animationDirection = 'reverse';
+            if (leftReel) leftReel.style.animationDirection = 'reverse';
+            if (rightReel) rightReel.style.animationDirection = 'reverse';
         } else {
-            leftReel.style.animationDirection = 'normal';
-            rightReel.style.animationDirection = 'normal';
+            if (leftReel) leftReel.style.animationDirection = 'normal';
+            if (rightReel) rightReel.style.animationDirection = 'normal';
         }
         
         // Возвращаем непрерывные анимации после быстрых
         setTimeout(() => {
-            filmStrip.classList.remove('fast-move');
-            leftReel.classList.remove('fast-spin');
-            rightReel.classList.remove('fast-spin');
-            
-            filmStrip.style.animationPlayState = 'running';
-            leftReel.style.animationPlayState = 'running';
-            rightReel.style.animationPlayState = 'running';
+            if (filmStrip) {
+                filmStrip.classList.remove('fast-move');
+                filmStrip.style.animationPlayState = 'running';
+            }
+            if (leftReel) {
+                leftReel.classList.remove('fast-spin');
+                leftReel.style.animationPlayState = 'running';
+            }
+            if (rightReel) {
+                rightReel.classList.remove('fast-spin');
+                rightReel.style.animationPlayState = 'running';
+            }
             
             // Выключаем луч проектора
-            document.querySelector('.projector-light').classList.remove('active');
+            if (projectorLight) {
+                projectorLight.classList.remove('active');
+            }
         }, 800);
     }
     
