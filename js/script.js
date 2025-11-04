@@ -90,11 +90,11 @@ class FilmNavigation {
         // Быстрое вращение бобин
         const reels = document.querySelectorAll('.reel-outer');
         reels.forEach(reel => {
-            reel.style.animationPlayState = 'paused';
+            const currentRotation = parseInt(getComputedStyle(reel).getPropertyValue('--rotation') || 0);
+            reel.style.setProperty('--rotation', currentRotation + 360);
             reel.classList.add('fast-spin');
             setTimeout(() => {
                 reel.classList.remove('fast-spin');
-                reel.style.animationPlayState = 'running';
             }, 800);
         });
         
