@@ -64,10 +64,10 @@ body {
     padding: 0 2rem;
 }
 
-/* Увеличенные бобины пленки */
+/* Увеличенные бобины пленки с спицами */
 .film-reel {
-    width: 160px;
-    height: 160px;
+    width: 180px;
+    height: 180px;
     position: relative;
     display: flex;
     align-items: center;
@@ -77,8 +77,8 @@ body {
 }
 
 .reel-inner {
-    width: 140px;
-    height: 140px;
+    width: 160px;
+    height: 160px;
     border: 6px solid var(--primary-gold);
     border-radius: 50%;
     position: relative;
@@ -97,7 +97,7 @@ body {
         inset 0 0 30px rgba(0,0,0,0.9),
         0 0 40px rgba(255, 179, 71, 0.4),
         0 0 60px rgba(255, 179, 71, 0.2);
-    animation: continuousSpin 20s linear infinite;
+    animation: continuousSpin 25s linear infinite;
 }
 
 /* Центральная часть бобины */
@@ -105,36 +105,64 @@ body {
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 30px;
-    height: 30px;
+    width: 40px;
+    height: 40px;
     background: var(--primary-gold);
     border-radius: 50%;
     transform: translate(-50%, -50%);
     box-shadow: 
-        inset 0 0 10px rgba(0,0,0,0.5),
-        0 0 15px var(--secondary-gold);
+        inset 0 0 15px rgba(0,0,0,0.5),
+        0 0 20px var(--secondary-gold);
+    z-index: 2;
 }
+
+/* Спицы от центра к отверстиям */
+.reel-spoke {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 3px;
+    height: 70px;
+    background: linear-gradient(to top, 
+        transparent 0%, 
+        var(--primary-gold) 30%, 
+        var(--secondary-gold) 50%, 
+        var(--primary-gold) 70%, 
+        transparent 100%);
+    transform-origin: center bottom;
+    transform: translate(-50%, -50%) rotate(calc(var(--i) * 60deg));
+    z-index: 1;
+}
+
+/* Расположение 6 спиц */
+.reel-spoke:nth-child(2) { --i: 0; }
+.reel-spoke:nth-child(3) { --i: 1; }
+.reel-spoke:nth-child(4) { --i: 2; }
+.reel-spoke:nth-child(5) { --i: 3; }
+.reel-spoke:nth-child(6) { --i: 4; }
+.reel-spoke:nth-child(7) { --i: 5; }
 
 /* 6 отверстий для улучшенного дизайна */
 .reel-hole {
     position: absolute;
-    width: 16px;
-    height: 16px;
+    width: 18px;
+    height: 18px;
     background: var(--dark-bg);
-    border: 2px solid var(--primary-gold);
+    border: 3px solid var(--primary-gold);
     border-radius: 50%;
     box-shadow: 
-        inset 0 0 8px rgba(255, 179, 71, 0.3),
-        0 0 12px var(--secondary-gold);
+        inset 0 0 10px rgba(255, 179, 71, 0.4),
+        0 0 15px var(--secondary-gold);
+    z-index: 3;
 }
 
-/* Расположение 6 отверстий по кругу */
-.reel-hole:nth-child(2) { top: 15px; left: 50%; transform: translateX(-50%); }
-.reel-hole:nth-child(3) { top: 30px; right: 30px; }
-.reel-hole:nth-child(4) { bottom: 30px; right: 30px; }
-.reel-hole:nth-child(5) { bottom: 15px; left: 50%; transform: translateX(-50%); }
-.reel-hole:nth-child(6) { bottom: 30px; left: 30px; }
-.reel-hole:nth-child(7) { top: 30px; left: 30px; }
+/* Расположение 6 отверстий на концах спиц */
+.reel-hole:nth-child(8) { top: 15px; left: 50%; transform: translateX(-50%); }
+.reel-hole:nth-child(9) { top: 45px; right: 30px; }
+.reel-hole:nth-child(10) { bottom: 45px; right: 30px; }
+.reel-hole:nth-child(11) { bottom: 15px; left: 50%; transform: translateX(-50%); }
+.reel-hole:nth-child(12) { bottom: 45px; left: 30px; }
+.reel-hole:nth-child(13) { top: 45px; left: 30px; }
 
 /* Непрерывное вращение бобин */
 @keyframes continuousSpin {
@@ -163,23 +191,25 @@ body {
     justify-content: center;
 }
 
-/* Контейнер для бесконечной пленки */
-.film-strip-container {
+/* Seamless пленка с бесконечной анимацией */
+.film-strip {
     position: absolute;
     top: 0;
     left: 0;
-    width: 200%;
-    height: 100%;
-    display: flex;
-    animation: continuousFilmMove 25s linear infinite;
-}
-
-/* Индивидуальные полосы пленки */
-.film-strip {
-    width: 50%;
+    width: 100%;
     height: 100%;
     background: 
+        /* Основной цвет пленки */
         linear-gradient(to bottom, var(--film-color) 0%, var(--film-color) 100%),
+        /* Верхние перфорации */
+        repeating-linear-gradient(
+            90deg,
+            transparent,
+            transparent 8px,
+            var(--primary-gold) 8px,
+            var(--primary-gold) 16px
+        ),
+        /* Нижние перфорации */
         repeating-linear-gradient(
             90deg,
             transparent,
@@ -187,57 +217,59 @@ body {
             var(--primary-gold) 8px,
             var(--primary-gold) 16px
         );
-    background-size: 100% 100%, auto 15px;
-    background-position: 0 0, 0 0;
-    background-repeat: no-repeat, repeat-x;
+    background-size: 
+        100% 100%, 
+        auto 15px, 
+        auto 15px;
+    background-position: 
+        0 0, 
+        0 0, 
+        0 calc(100% - 15px);
+    background-repeat: 
+        no-repeat, 
+        repeat-x, 
+        repeat-x;
     border-radius: 8px;
     box-shadow: 
         inset 0 0 20px rgba(0,0,0,0.5),
         0 10px 30px rgba(0,0,0,0.8);
-    position: relative;
+    animation: seamlessFilmMove 30s linear infinite;
 }
 
-/* Добавляем перфорации к каждой полосе */
-.film-strip::before,
-.film-strip::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    width: 100%;
-    height: 15px;
-    background: 
-        repeating-linear-gradient(
-            90deg,
-            transparent,
-            transparent 8px,
-            var(--primary-gold) 8px,
-            var(--primary-gold) 16px
-        );
-    opacity: 0.7;
-}
-
-.film-strip::before {
-    top: 0;
-}
-
-.film-strip::after {
-    bottom: 0;
-}
-
-/* Бесконечное движение пленки */
-@keyframes continuousFilmMove {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
+/* Бесконечное движение seamless пленки */
+@keyframes seamlessFilmMove {
+    0% { 
+        background-position: 
+            0 0, 
+            0 0, 
+            0 calc(100% - 15px);
+    }
+    100% { 
+        background-position: 
+            0 0, 
+            -160px 0, 
+            -160px calc(100% - 15px);
+    }
 }
 
 /* Быстрая прокрутка пленки при клике */
-.film-strip-container.fast-move {
-    animation: fastFilmMove 0.8s ease-in-out !important;
+.film-strip.fast-move {
+    animation: fastSeamlessMove 0.8s ease-in-out !important;
 }
 
-@keyframes fastFilmMove {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
+@keyframes fastSeamlessMove {
+    0% { 
+        background-position: 
+            0 0, 
+            0 0, 
+            0 calc(100% - 15px);
+    }
+    100% { 
+        background-position: 
+            0 0, 
+            -160px 0, 
+            -160px calc(100% - 15px);
+    }
 }
 
 /* Статичные кнопки навигации */
@@ -540,13 +572,13 @@ h2 {
     }
     
     .film-reel {
-        width: 120px;
-        height: 120px;
+        width: 140px;
+        height: 140px;
     }
     
     .reel-inner {
-        width: 100px;
-        height: 100px;
+        width: 120px;
+        height: 120px;
     }
 }
 
@@ -561,13 +593,13 @@ h2 {
     }
     
     .film-reel {
-        width: 100px;
-        height: 100px;
+        width: 120px;
+        height: 120px;
     }
     
     .reel-inner {
-        width: 80px;
-        height: 80px;
+        width: 100px;
+        height: 100px;
     }
     
     .film-navigation {
@@ -629,12 +661,12 @@ h2 {
     }
     
     .film-reel {
-        width: 80px;
-        height: 80px;
+        width: 100px;
+        height: 100px;
     }
     
     .reel-inner {
-        width: 60px;
-        height: 60px;
+        width: 80px;
+        height: 80px;
     }
 }
