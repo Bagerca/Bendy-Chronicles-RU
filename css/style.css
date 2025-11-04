@@ -62,7 +62,7 @@ body {
     padding: 0 2rem;
 }
 
-/* Бобины - увеличенные с 6 отверстиями и спицами */
+/* Бобины - классическая конструкция с центральным отверстием и спицами */
 .film-reel {
     width: 140px;
     height: 140px;
@@ -74,7 +74,7 @@ body {
     flex-shrink: 0;
 }
 
-.reel-inner {
+.reel-outer {
     width: 120px;
     height: 120px;
     border: 4px solid var(--primary-gold);
@@ -87,51 +87,73 @@ body {
     animation: reelRotate 20s linear infinite;
 }
 
-/* 6 отверстий вместо 4 - равномерно распределенные */
-.reel-hole {
+/* Большое центральное отверстие */
+.reel-center-hole {
     position: absolute;
-    width: 14px;
-    height: 14px;
-    background: var(--primary-gold);
+    width: 40px;
+    height: 40px;
+    background: var(--dark-bg);
+    border: 2px solid var(--primary-gold);
     border-radius: 50%;
-    box-shadow: 0 0 12px var(--secondary-gold);
     top: 50%;
     left: 50%;
-    margin-left: -7px;
-    margin-top: -7px;
+    transform: translate(-50%, -50%);
+    box-shadow: 
+        inset 0 0 10px rgba(0,0,0,0.8),
+        0 0 15px rgba(255, 179, 71, 0.4);
+    z-index: 2;
 }
 
-/* Расположение 6 отверстий (каждые 60 градусов) */
-.reel-hole:nth-child(1) { transform: rotate(0deg) translate(45px) rotate(0deg); }
-.reel-hole:nth-child(2) { transform: rotate(60deg) translate(45px) rotate(-60deg); }
-.reel-hole:nth-child(3) { transform: rotate(120deg) translate(45px) rotate(-120deg); }
-.reel-hole:nth-child(4) { transform: rotate(180deg) translate(45px) rotate(-180deg); }
-.reel-hole:nth-child(5) { transform: rotate(240deg) translate(45px) rotate(-240deg); }
-.reel-hole:nth-child(6) { transform: rotate(300deg) translate(45px) rotate(-300deg); }
-
-/* Спицы между отверстиями */
+/* Спицы, идущие от центра */
 .reel-spoke {
     position: absolute;
-    width: 2px;
-    height: 45px;
-    background: linear-gradient(to bottom, 
-        transparent 0%, 
-        var(--primary-gold) 20%, 
-        var(--primary-gold) 80%, 
-        transparent 100%);
+    width: 3px;
+    height: 50px;
+    background: linear-gradient(
+        to bottom,
+        transparent 0%,
+        var(--primary-gold) 30%,
+        var(--primary-gold) 70%,
+        transparent 100%
+    );
     top: 50%;
     left: 50%;
-    transform-origin: top center;
-    opacity: 0.6;
+    transform-origin: center top;
+    z-index: 1;
 }
 
-/* Расположение спиц (смещены на 30 градусов относительно отверстий) */
-.reel-spoke:nth-child(7) { transform: rotate(30deg) translateY(-45px); }
-.reel-spoke:nth-child(8) { transform: rotate(90deg) translateY(-45px); }
-.reel-spoke:nth-child(9) { transform: rotate(150deg) translateY(-45px); }
-.reel-spoke:nth-child(10) { transform: rotate(210deg) translateY(-45px); }
-.reel-spoke:nth-child(11) { transform: rotate(270deg) translateY(-45px); }
-.reel-spoke:nth-child(12) { transform: rotate(330deg) translateY(-45px); }
+/* Расположение спиц (каждые 60 градусов) */
+.reel-spoke:nth-child(2) { transform: translate(-50%, -50%) rotate(0deg); }
+.reel-spoke:nth-child(3) { transform: translate(-50%, -50%) rotate(60deg); }
+.reel-spoke:nth-child(4) { transform: translate(-50%, -50%) rotate(120deg); }
+.reel-spoke:nth-child(5) { transform: translate(-50%, -50%) rotate(180deg); }
+.reel-spoke:nth-child(6) { transform: translate(-50%, -50%) rotate(240deg); }
+.reel-spoke:nth-child(7) { transform: translate(-50%, -50%) rotate(300deg); }
+
+/* 6 отверстий между спицами */
+.reel-hole {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    background: var(--primary-gold);
+    border-radius: 50%;
+    box-shadow: 
+        0 0 10px var(--secondary-gold),
+        inset 0 0 5px rgba(0,0,0,0.5);
+    top: 50%;
+    left: 50%;
+    margin-left: -8px;
+    margin-top: -8px;
+    z-index: 3;
+}
+
+/* Расположение отверстий между спицами (смещены на 30 градусов) */
+.reel-hole:nth-child(8) { transform: rotate(30deg) translate(42px) rotate(-30deg); }
+.reel-hole:nth-child(9) { transform: rotate(90deg) translate(42px) rotate(-90deg); }
+.reel-hole:nth-child(10) { transform: rotate(150deg) translate(42px) rotate(-150deg); }
+.reel-hole:nth-child(11) { transform: rotate(210deg) translate(42px) rotate(-210deg); }
+.reel-hole:nth-child(12) { transform: rotate(270deg) translate(42px) rotate(-270deg); }
+.reel-hole:nth-child(13) { transform: rotate(330deg) translate(42px) rotate(-330deg); }
 
 @keyframes reelRotate {
     from { transform: rotate(0deg); }
@@ -582,35 +604,34 @@ h2 {
         height: 120px;
     }
     
-    .reel-inner {
+    .reel-outer {
         width: 100px;
         height: 100px;
     }
     
-    .reel-hole {
-        width: 12px;
-        height: 12px;
-        margin-left: -6px;
-        margin-top: -6px;
+    .reel-center-hole {
+        width: 32px;
+        height: 32px;
     }
-    
-    .reel-hole:nth-child(1) { transform: rotate(0deg) translate(38px) rotate(0deg); }
-    .reel-hole:nth-child(2) { transform: rotate(60deg) translate(38px) rotate(-60deg); }
-    .reel-hole:nth-child(3) { transform: rotate(120deg) translate(38px) rotate(-120deg); }
-    .reel-hole:nth-child(4) { transform: rotate(180deg) translate(38px) rotate(-180deg); }
-    .reel-hole:nth-child(5) { transform: rotate(240deg) translate(38px) rotate(-240deg); }
-    .reel-hole:nth-child(6) { transform: rotate(300deg) translate(38px) rotate(-300deg); }
     
     .reel-spoke {
-        height: 38px;
+        height: 40px;
+        width: 2px;
     }
     
-    .reel-spoke:nth-child(7) { transform: rotate(30deg) translateY(-38px); }
-    .reel-spoke:nth-child(8) { transform: rotate(90deg) translateY(-38px); }
-    .reel-spoke:nth-child(9) { transform: rotate(150deg) translateY(-38px); }
-    .reel-spoke:nth-child(10) { transform: rotate(210deg) translateY(-38px); }
-    .reel-spoke:nth-child(11) { transform: rotate(270deg) translateY(-38px); }
-    .reel-spoke:nth-child(12) { transform: rotate(330deg) translateY(-38px); }
+    .reel-hole {
+        width: 14px;
+        height: 14px;
+        margin-left: -7px;
+        margin-top: -7px;
+    }
+    
+    .reel-hole:nth-child(8) { transform: rotate(30deg) translate(35px) rotate(-30deg); }
+    .reel-hole:nth-child(9) { transform: rotate(90deg) translate(35px) rotate(-90deg); }
+    .reel-hole:nth-child(10) { transform: rotate(150deg) translate(35px) rotate(-150deg); }
+    .reel-hole:nth-child(11) { transform: rotate(210deg) translate(35px) rotate(-210deg); }
+    .reel-hole:nth-child(12) { transform: rotate(270deg) translate(35px) rotate(-270deg); }
+    .reel-hole:nth-child(13) { transform: rotate(330deg) translate(35px) rotate(-330deg); }
 }
 
 @media (max-width: 768px) {
@@ -628,35 +649,34 @@ h2 {
         height: 100px;
     }
     
-    .reel-inner {
+    .reel-outer {
         width: 80px;
         height: 80px;
     }
     
-    .reel-hole {
-        width: 10px;
-        height: 10px;
-        margin-left: -5px;
-        margin-top: -5px;
+    .reel-center-hole {
+        width: 26px;
+        height: 26px;
     }
-    
-    .reel-hole:nth-child(1) { transform: rotate(0deg) translate(30px) rotate(0deg); }
-    .reel-hole:nth-child(2) { transform: rotate(60deg) translate(30px) rotate(-60deg); }
-    .reel-hole:nth-child(3) { transform: rotate(120deg) translate(30px) rotate(-120deg); }
-    .reel-hole:nth-child(4) { transform: rotate(180deg) translate(30px) rotate(-180deg); }
-    .reel-hole:nth-child(5) { transform: rotate(240deg) translate(30px) rotate(-240deg); }
-    .reel-hole:nth-child(6) { transform: rotate(300deg) translate(30px) rotate(-300deg); }
     
     .reel-spoke {
-        height: 30px;
+        height: 32px;
+        width: 2px;
     }
     
-    .reel-spoke:nth-child(7) { transform: rotate(30deg) translateY(-30px); }
-    .reel-spoke:nth-child(8) { transform: rotate(90deg) translateY(-30px); }
-    .reel-spoke:nth-child(9) { transform: rotate(150deg) translateY(-30px); }
-    .reel-spoke:nth-child(10) { transform: rotate(210deg) translateY(-30px); }
-    .reel-spoke:nth-child(11) { transform: rotate(270deg) translateY(-30px); }
-    .reel-spoke:nth-child(12) { transform: rotate(330deg) translateY(-30px); }
+    .reel-hole {
+        width: 12px;
+        height: 12px;
+        margin-left: -6px;
+        margin-top: -6px;
+    }
+    
+    .reel-hole:nth-child(8) { transform: rotate(30deg) translate(28px) rotate(-30deg); }
+    .reel-hole:nth-child(9) { transform: rotate(90deg) translate(28px) rotate(-90deg); }
+    .reel-hole:nth-child(10) { transform: rotate(150deg) translate(28px) rotate(-150deg); }
+    .reel-hole:nth-child(11) { transform: rotate(210deg) translate(28px) rotate(-210deg); }
+    .reel-hole:nth-child(12) { transform: rotate(270deg) translate(28px) rotate(-270deg); }
+    .reel-hole:nth-child(13) { transform: rotate(330deg) translate(28px) rotate(-330deg); }
     
     .film-navigation {
         margin: 0;
