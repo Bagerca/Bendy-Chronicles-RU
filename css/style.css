@@ -53,6 +53,11 @@ body {
     backdrop-filter: blur(10px);
     border-bottom: 3px solid var(--primary-gold);
     margin-bottom: 3rem;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 2rem;
+    padding-right: 2rem;
 }
 
 /* Бобины пленки */
@@ -64,6 +69,7 @@ body {
     align-items: center;
     justify-content: center;
     z-index: 20;
+    flex-shrink: 0;
 }
 
 .reel-inner {
@@ -121,6 +127,7 @@ body {
     flex: 1;
     position: relative;
     margin: 0 2rem;
+    min-width: 0; /* Добавлено для правильного flex поведения */
 }
 
 .film-strip {
@@ -132,6 +139,7 @@ body {
         0 10px 30px rgba(0,0,0,0.8),
         inset 0 0 20px rgba(0,0,0,0.5);
     transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    width: 100%;
 }
 
 /* Перфорации */
@@ -157,6 +165,7 @@ body {
     gap: 1.5rem;
     padding: 1rem 0;
     position: relative;
+    width: 100%;
 }
 
 .frame-cell {
@@ -173,6 +182,7 @@ body {
     position: relative;
     overflow: hidden;
     min-width: 120px;
+    flex-shrink: 0;
 }
 
 .frame-cell::before {
@@ -442,13 +452,18 @@ h2 {
         padding: 0.8rem 1rem;
         min-width: 100px;
     }
+    
+    .cinema-header {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
 }
 
 @media (max-width: 768px) {
     .cinema-header {
         flex-direction: column;
         gap: 1rem;
-        padding: 1rem 0;
+        padding: 1rem;
     }
     
     .film-reel {
@@ -462,7 +477,7 @@ h2 {
     }
     
     .film-navigation {
-        margin: 0 1rem;
+        margin: 0;
         width: 100%;
     }
     
@@ -488,5 +503,33 @@ h2 {
     .chronicles,
     .events-calendar {
         grid-template-columns: 1fr;
+    }
+    
+    .frame-cell {
+        min-width: 90px;
+        padding: 0.7rem 0.5rem;
+    }
+    
+    .frame-title {
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .nav-frames {
+        gap: 0.3rem;
+    }
+    
+    .frame-cell {
+        min-width: 70px;
+        padding: 0.5rem 0.3rem;
+    }
+    
+    .frame-title {
+        font-size: 0.8rem;
+    }
+    
+    .frame-number {
+        font-size: 0.7rem;
     }
 }
