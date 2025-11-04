@@ -92,7 +92,7 @@ class FilmNavigation {
     }
     
     startFastAnimation(isForward) {
-        const filmStrip = document.querySelector('.film-strip');
+        const filmContainer = document.querySelector('.film-strip-container');
         const leftReel = document.querySelector('.left-reel .reel-inner');
         const rightReel = document.querySelector('.right-reel .reel-inner');
         
@@ -100,12 +100,12 @@ class FilmNavigation {
         document.querySelector('.projector-light').classList.add('active');
         
         // Временно останавливаем непрерывные анимации
-        filmStrip.style.animationPlayState = 'paused';
+        filmContainer.style.animationPlayState = 'paused';
         leftReel.style.animationPlayState = 'paused';
         rightReel.style.animationPlayState = 'paused';
         
         // Запускаем быстрые анимации
-        filmStrip.classList.add('fast-film-move');
+        filmContainer.classList.add('fast-move');
         leftReel.classList.add('fast-spin');
         rightReel.classList.add('fast-spin');
         
@@ -120,11 +120,11 @@ class FilmNavigation {
         
         // Возвращаем непрерывные анимации после быстрых
         setTimeout(() => {
-            filmStrip.classList.remove('fast-film-move');
+            filmContainer.classList.remove('fast-move');
             leftReel.classList.remove('fast-spin');
             rightReel.classList.remove('fast-spin');
             
-            filmStrip.style.animationPlayState = 'running';
+            filmContainer.style.animationPlayState = 'running';
             leftReel.style.animationPlayState = 'running';
             rightReel.style.animationPlayState = 'running';
             
