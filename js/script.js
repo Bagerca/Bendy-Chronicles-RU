@@ -13,8 +13,8 @@ class FilmNavigation {
     }
     
     bindEvents() {
-        // Обработчики для кинокадров
-        document.querySelectorAll('.film-frame').forEach(frame => {
+        // Обработчики для кинокадров - исправлено на frame-cell
+        document.querySelectorAll('.frame-cell').forEach(frame => {
             frame.addEventListener('click', (e) => {
                 e.preventDefault();
                 const targetPage = frame.getAttribute('data-page');
@@ -49,7 +49,7 @@ class FilmNavigation {
         
         // Запускаем анимации
         this.startFilmAnimation(targetIndex, isForward, animate);
-        this.startReelAnimation(isForward);
+        this.startReelAnimation(isForward, animate);
         
         if (animate) {
             setTimeout(() => {
@@ -67,7 +67,7 @@ class FilmNavigation {
     
     startFilmAnimation(targetIndex, isForward, animate) {
         const filmStrip = document.querySelector('.film-strip');
-        const filmFrames = document.querySelectorAll('.film-frame');
+        const filmFrames = document.querySelectorAll('.frame-cell');
         
         // Снимаем активный класс со всех кадров
         filmFrames.forEach(frame => frame.classList.remove('active'));
@@ -76,8 +76,8 @@ class FilmNavigation {
         filmFrames[targetIndex].classList.add('active');
         
         if (animate) {
-            // Включаем луч проектора
-            document.querySelector('.projector-beam').classList.add('active');
+            // Включаем луч проектора - исправлено на projector-light
+            document.querySelector('.projector-light').classList.add('active');
             
             // Рассчитываем смещение для центрирования
             const frameWidth = 160 + 25; // ширина кадра + gap
@@ -88,7 +88,7 @@ class FilmNavigation {
             
             // Выключаем луч после анимации
             setTimeout(() => {
-                document.querySelector('.projector-beam').classList.remove('active');
+                document.querySelector('.projector-light').classList.remove('active');
             }, 800);
         } else {
             // Без анимации - сразу устанавливаем позицию
@@ -98,9 +98,11 @@ class FilmNavigation {
         }
     }
     
-    startReelAnimation(isForward) {
-        const leftReel = document.querySelector('.left-reel .reel-rim');
-        const rightReel = document.querySelector('.right-reel .reel-rim');
+    startReelAnimation(isForward, animate) {
+        const leftReel = document.querySelector('.left-reel .reel-inner');
+        const rightReel = document.querySelector('.right-reel .reel-inner');
+        
+        if (!animate) return;
         
         // Сбрасываем предыдущие анимации
         leftReel.classList.remove('spin-forward', 'spin-backward');
@@ -122,7 +124,7 @@ class FilmNavigation {
     
     updateContent(targetPage) {
         // Скрываем все страницы
-        document.querySelectorAll('.page').forEach(page => {
+        document.querySelectorAll('.cinema-page').forEach(page => {
             page.classList.remove('active');
         });
         
@@ -145,16 +147,18 @@ class FilmNavigation {
     }
 }
 
+// Глобальная переменная для экземпляра навигации
+let filmNavigationInstance;
+
 // Инициализация при загрузке страницы
 document.addEventListener('DOMContentLoaded', () => {
-    new FilmNavigation();
+    filmNavigationInstance = new FilmNavigation();
 });
 
 // Обработка кнопок браузера "назад/вперед"
 window.addEventListener('popstate', () => {
     const hash = window.location.hash.substring(1);
-    const filmNav = new FilmNavigation();
-    if (filmNav.pages.includes(hash)) {
-        filmNav.switchPage(hash, true);
+    if (filmNavigationInstance && filmNavigationInstance.pages.includes(hash)) {
+        filmNavigationInstance.switchPage(hash, true);
     }
 });
