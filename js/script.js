@@ -71,8 +71,10 @@ class FilmNavigation {
         const isForward = targetIndex > currentIndex;
         
         // Запускаем анимации
-        this.startFilmAnimation(targetIndex, isForward, animate);
-        this.startReelAnimation(isForward, animate);
+        if (animate) {
+            this.startFastAnimation(isForward);
+        }
+        
         this.updateButtons(targetIndex);
         
         if (animate) {
@@ -89,59 +91,45 @@ class FilmNavigation {
         window.history.pushState(null, null, `#${targetPage}`);
     }
     
-    startFilmAnimation(targetIndex, isForward, animate) {
+    startFastAnimation(isForward) {
         const filmStrip = document.querySelector('.film-strip');
-        
-        if (animate) {
-            // Включаем луч проектора
-            document.querySelector('.projector-light').classList.add('active');
-            
-            // Рассчитываем смещение для пленки
-            // Создаем эффект движения пленки под статичными кнопками
-            const movement = isForward ? 100 : -100;
-            filmStrip.style.transform = `translateX(${movement}px)`;
-            
-            // Возвращаем пленку на место с задержкой для создания циклического эффекта
-            setTimeout(() => {
-                filmStrip.style.transform = `translateX(0px)`;
-            }, 400);
-            
-            // Выключаем луч после анимации
-            setTimeout(() => {
-                document.querySelector('.projector-light').classList.remove('active');
-            }, 800);
-        } else {
-            filmStrip.style.transform = `translateX(0px)`;
-        }
-    }
-    
-    startReelAnimation(isForward, animate) {
         const leftReel = document.querySelector('.left-reel .reel-inner');
         const rightReel = document.querySelector('.right-reel .reel-inner');
         
-        if (!animate) return;
+        // Включаем луч проектора
+        document.querySelector('.projector-light').classList.add('active');
         
-        // Временно останавливаем непрерывное вращение
+        // Временно останавливаем непрерывные анимации
+        filmStrip.style.animationPlayState = 'paused';
         leftReel.style.animationPlayState = 'paused';
         rightReel.style.animationPlayState = 'paused';
         
-        // Сбрасываем предыдущие анимации
-        leftReel.classList.remove('spin-forward', 'spin-backward');
-        rightReel.classList.remove('spin-forward', 'spin-backward');
+        // Запускаем быстрые анимации
+        filmStrip.classList.add('fast-film-move');
+        leftReel.classList.add('fast-spin');
+        rightReel.classList.add('fast-spin');
         
-        // Запускаем новые анимации
-        void leftReel.offsetWidth; // Trigger reflow
-        void rightReel.offsetWidth;
+        // Направление для бобин
+        if (!isForward) {
+            leftReel.style.animationDirection = 'reverse';
+            rightReel.style.animationDirection = 'reverse';
+        } else {
+            leftReel.style.animationDirection = 'normal';
+            rightReel.style.animationDirection = 'normal';
+        }
         
-        leftReel.classList.add(isForward ? 'spin-forward' : 'spin-backward');
-        rightReel.classList.add(isForward ? 'spin-forward' : 'spin-backward');
-        
-        // Возвращаем непрерывное вращение после завершения анимации
+        // Возвращаем непрерывные анимации после быстрых
         setTimeout(() => {
-            leftReel.classList.remove('spin-forward', 'spin-backward');
-            rightReel.classList.remove('spin-forward', 'spin-backward');
+            filmStrip.classList.remove('fast-film-move');
+            leftReel.classList.remove('fast-spin');
+            rightReel.classList.remove('fast-spin');
+            
+            filmStrip.style.animationPlayState = 'running';
             leftReel.style.animationPlayState = 'running';
             rightReel.style.animationPlayState = 'running';
+            
+            // Выключаем луч проектора
+            document.querySelector('.projector-light').classList.remove('active');
         }, 800);
     }
     
@@ -175,7 +163,6 @@ class FilmNavigation {
     
     centerCurrentPage() {
         // Для статичных кнопок центрирование не требуется
-        // Активная кнопка уже будет выделена через CSS
         const currentIndex = this.pages.indexOf(this.currentPage);
         this.updateButtons(currentIndex);
     }
