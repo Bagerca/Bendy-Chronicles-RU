@@ -73,6 +73,7 @@ class FilmNavigation {
         // Запускаем анимации
         this.startFilmAnimation(targetIndex, isForward, animate);
         this.startReelAnimation(isForward, animate);
+        this.updateButtons(targetIndex);
         
         if (animate) {
             setTimeout(() => {
@@ -90,34 +91,27 @@ class FilmNavigation {
     
     startFilmAnimation(targetIndex, isForward, animate) {
         const filmStrip = document.querySelector('.film-strip');
-        const filmFrames = document.querySelectorAll('.frame-cell');
-        
-        // Снимаем активный класс со всех кадров
-        filmFrames.forEach(frame => frame.classList.remove('active'));
-        
-        // Добавляем активный класс целевому кадру
-        filmFrames[targetIndex].classList.add('active');
         
         if (animate) {
             // Включаем луч проектора
             document.querySelector('.projector-light').classList.add('active');
             
-            // Рассчитываем смещение для центрирования
-            const frameWidth = 160 + 25; // ширина кадра + gap
-            const offset = (targetIndex - 2) * frameWidth;
+            // Рассчитываем смещение для пленки
+            // Создаем эффект движения пленки под статичными кнопками
+            const movement = isForward ? 100 : -100;
+            filmStrip.style.transform = `translateX(${movement}px)`;
             
-            // Прокручиваем пленку
-            filmStrip.style.transform = `translateX(calc(-50% + ${offset}px))`;
+            // Возвращаем пленку на место с задержкой для создания циклического эффекта
+            setTimeout(() => {
+                filmStrip.style.transform = `translateX(0px)`;
+            }, 400);
             
             // Выключаем луч после анимации
             setTimeout(() => {
                 document.querySelector('.projector-light').classList.remove('active');
             }, 800);
         } else {
-            // Без анимации - сразу устанавливаем позицию
-            const frameWidth = 160 + 25;
-            const offset = (targetIndex - 2) * frameWidth;
-            filmStrip.style.transform = `translateX(calc(-50% + ${offset}px))`;
+            filmStrip.style.transform = `translateX(0px)`;
         }
     }
     
@@ -126,6 +120,10 @@ class FilmNavigation {
         const rightReel = document.querySelector('.right-reel .reel-inner');
         
         if (!animate) return;
+        
+        // Временно останавливаем непрерывное вращение
+        leftReel.style.animationPlayState = 'paused';
+        rightReel.style.animationPlayState = 'paused';
         
         // Сбрасываем предыдущие анимации
         leftReel.classList.remove('spin-forward', 'spin-backward');
@@ -138,11 +136,26 @@ class FilmNavigation {
         leftReel.classList.add(isForward ? 'spin-forward' : 'spin-backward');
         rightReel.classList.add(isForward ? 'spin-forward' : 'spin-backward');
         
-        // Убираем классы анимации после завершения
+        // Возвращаем непрерывное вращение после завершения анимации
         setTimeout(() => {
             leftReel.classList.remove('spin-forward', 'spin-backward');
             rightReel.classList.remove('spin-forward', 'spin-backward');
+            leftReel.style.animationPlayState = 'running';
+            rightReel.style.animationPlayState = 'running';
         }, 800);
+    }
+    
+    updateButtons(targetIndex) {
+        // Снимаем активный класс со всех кнопок
+        document.querySelectorAll('.frame-cell').forEach(frame => {
+            frame.classList.remove('active');
+        });
+        
+        // Добавляем активный класс целевой кнопке
+        const targetButton = document.querySelectorAll('.frame-cell')[targetIndex];
+        if (targetButton) {
+            targetButton.classList.add('active');
+        }
     }
     
     updateContent(targetPage) {
@@ -161,12 +174,10 @@ class FilmNavigation {
     }
     
     centerCurrentPage() {
+        // Для статичных кнопок центрирование не требуется
+        // Активная кнопка уже будет выделена через CSS
         const currentIndex = this.pages.indexOf(this.currentPage);
-        const filmStrip = document.querySelector('.film-strip');
-        const frameWidth = 160 + 25;
-        const offset = (currentIndex - 2) * frameWidth;
-        
-        filmStrip.style.transform = `translateX(calc(-50% + ${offset}px))`;
+        this.updateButtons(currentIndex);
     }
 }
 
