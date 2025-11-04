@@ -1,229 +1,160 @@
-// CinemaNavigation - основной класс для навигации
-class CinemaNavigation {
+class FilmNavigation {
     constructor() {
         this.currentPage = 'home';
         this.pages = ['home', 'products', 'lore', 'timeline', 'events'];
-        this.isTransitioning = false;
-        this.transitionDuration = 800;
+        this.isAnimating = false;
         
         this.init();
     }
     
     init() {
         this.bindEvents();
-        this.initPageTransitions();
-        console.log('🎬 Cinema Navigation initialized');
+        this.centerCurrentPage();
     }
     
     bindEvents() {
-        // Обработчики для навигации
-        document.querySelectorAll('.frame-cell').forEach(cell => {
-            cell.addEventListener('click', (e) => {
+        // Обработчики для кинокадров
+        document.querySelectorAll('.film-frame').forEach(frame => {
+            frame.addEventListener('click', (e) => {
                 e.preventDefault();
-                const targetPage = cell.getAttribute('data-page');
-                this.navigateToPage(targetPage);
+                const targetPage = frame.getAttribute('data-page');
+                this.switchPage(targetPage);
             });
         });
         
-        // Обработчик хеша URL
+        // Обработчик для хеша в URL
         window.addEventListener('hashchange', () => {
             const hash = window.location.hash.substring(1);
-            if (this.pages.includes(hash) && hash !== this.currentPage) {
-                this.navigateToPage(hash);
+            if (this.pages.includes(hash)) {
+                this.switchPage(hash);
             }
         });
         
         // Инициализация по хешу
         const initialHash = window.location.hash.substring(1);
         if (this.pages.includes(initialHash)) {
-            this.navigateToPage(initialHash, false);
+            this.switchPage(initialHash, false);
         }
     }
     
-    initPageTransitions() {
-        // Инициализация переходов между страницами
-        console.log('Page transitions initialized');
+    switchPage(targetPage, animate = true) {
+        if (this.isAnimating || targetPage === this.currentPage) return;
+        
+        this.isAnimating = true;
+        const targetIndex = this.pages.indexOf(targetPage);
+        const currentIndex = this.pages.indexOf(this.currentPage);
+        
+        // Определяем направление анимации
+        const isForward = targetIndex > currentIndex;
+        
+        // Запускаем анимации
+        this.startFilmAnimation(targetIndex, isForward, animate);
+        this.startReelAnimation(isForward);
+        
+        if (animate) {
+            setTimeout(() => {
+                this.updateContent(targetPage);
+                this.isAnimating = false;
+            }, 800);
+        } else {
+            this.updateContent(targetPage);
+            this.isAnimating = false;
+        }
+        
+        // Обновляем URL
+        window.history.pushState(null, null, `#${targetPage}`);
     }
     
-    async navigateToPage(targetPage, animate = true) {
-        if (this.isTransitioning || targetPage === this.currentPage) return;
+    startFilmAnimation(targetIndex, isForward, animate) {
+        const filmStrip = document.querySelector('.film-strip');
+        const filmFrames = document.querySelectorAll('.film-frame');
         
-        this.isTransitioning = true;
+        // Снимаем активный класс со всех кадров
+        filmFrames.forEach(frame => frame.classList.remove('active'));
         
-        try {
-            if (animate) {
-                await this.playTransitionAnimation(targetPage);
-            } else {
-                this.updatePageContent(targetPage);
-            }
+        // Добавляем активный класс целевому кадру
+        filmFrames[targetIndex].classList.add('active');
+        
+        if (animate) {
+            // Включаем луч проектора
+            document.querySelector('.projector-beam').classList.add('active');
             
-            this.currentPage = targetPage;
-            window.history.replaceState(null, null, `#${targetPage}`);
+            // Рассчитываем смещение для центрирования
+            const frameWidth = 160 + 25; // ширина кадра + gap
+            const offset = (targetIndex - 2) * frameWidth;
             
-        } catch (error) {
-            console.error('Navigation error:', error);
-        } finally {
-            this.isTransitioning = false;
+            // Прокручиваем пленку
+            filmStrip.style.transform = `translateX(calc(-50% + ${offset}px))`;
+            
+            // Выключаем луч после анимации
+            setTimeout(() => {
+                document.querySelector('.projector-beam').classList.remove('active');
+            }, 800);
+        } else {
+            // Без анимации - сразу устанавливаем позицию
+            const frameWidth = 160 + 25;
+            const offset = (targetIndex - 2) * frameWidth;
+            filmStrip.style.transform = `translateX(calc(-50% + ${offset}px))`;
         }
     }
     
-    async playTransitionAnimation(targetPage) {
-        // Активируем луч проектора
-        this.activateProjectorLight();
+    startReelAnimation(isForward) {
+        const leftReel = document.querySelector('.left-reel .reel-rim');
+        const rightReel = document.querySelector('.right-reel .reel-rim');
         
-        // Обновляем активную навигацию
-        this.updateNavigation(targetPage);
+        // Сбрасываем предыдущие анимации
+        leftReel.classList.remove('spin-forward', 'spin-backward');
+        rightReel.classList.remove('spin-forward', 'spin-backward');
         
-        // Ждем немного перед сменой контента
-        await this.delay(300);
+        // Запускаем новые анимации
+        void leftReel.offsetWidth; // Trigger reflow
+        void rightReel.offsetWidth;
         
-        // Обновляем контент страницы
-        this.updatePageContent(targetPage);
+        leftReel.classList.add(isForward ? 'spin-forward' : 'spin-backward');
+        rightReel.classList.add(isForward ? 'spin-forward' : 'spin-backward');
         
-        // Деактивируем луч проектора
-        await this.delay(500);
-        this.deactivateProjectorLight();
+        // Убираем классы анимации после завершения
+        setTimeout(() => {
+            leftReel.classList.remove('spin-forward', 'spin-backward');
+            rightReel.classList.remove('spin-forward', 'spin-backward');
+        }, 800);
     }
     
-    activateProjectorLight() {
-        const light = document.getElementById('projectorLight');
-        if (light) {
-            light.classList.add('active');
-        }
-    }
-    
-    deactivateProjectorLight() {
-        const light = document.getElementById('projectorLight');
-        if (light) {
-            light.classList.remove('active');
-        }
-    }
-    
-    updateNavigation(targetPage) {
-        // Обновляем активный элемент навигации
-        document.querySelectorAll('.frame-cell').forEach(cell => {
-            cell.classList.remove('active');
-        });
-        
-        const targetCell = document.querySelector(`[data-page="${targetPage}"]`);
-        if (targetCell) {
-            targetCell.classList.add('active');
-        }
-    }
-    
-    updatePageContent(targetPage) {
+    updateContent(targetPage) {
         // Скрываем все страницы
-        document.querySelectorAll('.cinema-page').forEach(page => {
+        document.querySelectorAll('.page').forEach(page => {
             page.classList.remove('active');
         });
         
         // Показываем целевую страницу
-        const targetPageElement = document.getElementById(targetPage);
-        if (targetPageElement) {
-            targetPageElement.classList.add('active');
+        const targetElement = document.getElementById(targetPage);
+        if (targetElement) {
+            targetElement.classList.add('active');
         }
+        
+        this.currentPage = targetPage;
     }
     
-    delay(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
-}
-
-// CinemaEffects - класс для визуальных эффектов
-class CinemaEffects {
-    constructor() {
-        this.init();
-    }
-    
-    init() {
-        this.createFlickerEffect();
-        this.createDustParticles();
-    }
-    
-    createFlickerEffect() {
-        // Случайные мерцания как в старом кино
-        setInterval(() => {
-            if (Math.random() > 0.7) {
-                const brightness = 0.9 + Math.random() * 0.2;
-                document.body.style.filter = `brightness(${brightness})`;
-                setTimeout(() => {
-                    document.body.style.filter = 'brightness(1)';
-                }, 50 + Math.random() * 100);
-            }
-        }, 3000);
-    }
-    
-    createDustParticles() {
-        // Создаем частицы пыли для атмосферы кинотеатра
-        const overlay = document.querySelector('.projector-overlay');
-        if (!overlay) return;
+    centerCurrentPage() {
+        const currentIndex = this.pages.indexOf(this.currentPage);
+        const filmStrip = document.querySelector('.film-strip');
+        const frameWidth = 160 + 25;
+        const offset = (currentIndex - 2) * frameWidth;
         
-        for (let i = 0; i < 15; i++) {
-            this.createDustParticle(overlay);
-        }
-    }
-    
-    createDustParticle(container) {
-        const particle = document.createElement('div');
-        particle.style.cssText = `
-            position: absolute;
-            width: 2px;
-            height: 2px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            pointer-events: none;
-        `;
-        
-        particle.style.left = `${Math.random() * 100}%`;
-        particle.style.top = `${Math.random() * 100}%`;
-        
-        // Создаем уникальную анимацию для каждой частицы
-        const animationName = `float-${Math.random().toString(36).substr(2, 9)}`;
-        const duration = 10 + Math.random() * 20;
-        
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes ${animationName} {
-                0% { 
-                    transform: translate(0, 0) rotate(0deg); 
-                    opacity: 0; 
-                }
-                10% { 
-                    opacity: 0.3; 
-                }
-                90% { 
-                    opacity: 0.1; 
-                }
-                100% { 
-                    transform: translate(${Math.random() * 100 - 50}px, ${Math.random() * 100 - 50}px) rotate(360deg); 
-                    opacity: 0; 
-                }
-            }
-        `;
-        
-        document.head.appendChild(style);
-        particle.style.animation = `${animationName} ${duration}s linear infinite`;
-        container.appendChild(particle);
+        filmStrip.style.transform = `translateX(calc(-50% + ${offset}px))`;
     }
 }
 
 // Инициализация при загрузке страницы
 document.addEventListener('DOMContentLoaded', () => {
-    // Инициализация навигации
-    const cinemaNav = new CinemaNavigation();
-    
-    // Инициализация визуальных эффектов
-    const cinemaEffects = new CinemaEffects();
-    
-    // Сохраняем в глобальной области для отладки
-    window.cinemaNav = cinemaNav;
-    window.cinemaEffects = cinemaEffects;
-    
-    console.log('🎭 Bendy Chronicles website loaded successfully!');
+    new FilmNavigation();
 });
 
-// Обработка изменения размера окна
-window.addEventListener('resize', () => {
-    // Можно добавить адаптивную логику при необходимости
-    console.log('Window resized:', window.innerWidth, 'x', window.innerHeight);
+// Обработка кнопок браузера "назад/вперед"
+window.addEventListener('popstate', () => {
+    const hash = window.location.hash.substring(1);
+    const filmNav = new FilmNavigation();
+    if (filmNav.pages.includes(hash)) {
+        filmNav.switchPage(hash, true);
+    }
 });
