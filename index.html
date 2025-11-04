@@ -1,18 +1,774 @@
 <!DOCTYPE html>
 <html lang="ru">
-  <head>
-    <title>Bendy Chronicles RU — Календарь событий</title>
-    <link rel="stylesheet" href="styles.css">
+<head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  </head>
-  <body>
-    <div id="calendar-container">
-      <h1 id="current-month-year"></h1>
-      <div id="calendar"></div>
-      <button id="prev-month">←</button>
-      <button id="next-month">→</button>
+    <title>Bendy Chronicles RU - Календарь событий</title>
+    <style>
+        :root {
+            --ink-black: #0a0a0a;
+            --parchment: #f5e6ca;
+            --ink-blue: #1a237e;
+            --blood-red: #b71c1c;
+            --film-border: #2a2a2a;
+            --highlight: #ffd700;
+            --event-game: #4caf50;
+            --event-trailer: #2196f3;
+            --event-announcement: #ff9800;
+            --event-teaser: #9c27b0;
+            --event-future: #607d8b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Courier New', monospace;
+        }
+
+        body {
+            background-color: var(--ink-black);
+            color: var(--parchment);
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-image: radial-gradient(circle, #1a1a1a 0%, #0a0a0a 100%);
+        }
+
+        .header {
+            text-align: center;
+            padding: 20px;
+            width: 100%;
+            border-bottom: 2px solid var(--film-border);
+            background-color: rgba(10, 10, 10, 0.9);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+            letter-spacing: 2px;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .control-btn {
+            background-color: var(--film-border);
+            color: var(--parchment);
+            border: 1px solid var(--parchment);
+            padding: 8px 16px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .control-btn:hover {
+            background-color: var(--ink-blue);
+            transform: translateY(-2px);
+        }
+
+        .control-btn.active {
+            background-color: var(--blood-red);
+            box-shadow: 0 0 10px rgba(183, 28, 28, 0.7);
+        }
+
+        .calendar-container {
+            width: 100%;
+            height: 30vh;
+            position: relative;
+            overflow: hidden;
+            border-top: 15px solid var(--film-border);
+            border-bottom: 15px solid var(--film-border);
+            background: linear-gradient(to bottom, #1a1a1a, #0a0a0a);
+        }
+
+        .film-strip {
+            display: flex;
+            height: 100%;
+            transition: transform 0.3s ease;
+            user-select: none;
+        }
+
+        .month-container {
+            min-width: 100vw;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .month-header {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            border-bottom: 2px solid var(--parchment);
+            padding-bottom: 10px;
+            width: 100%;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+            width: 90%;
+            max-width: 800px;
+        }
+
+        .day-header {
+            text-align: center;
+            font-weight: bold;
+            padding: 5px;
+            border-bottom: 1px solid var(--film-border);
+        }
+
+        .day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--film-border);
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s ease;
+            background-color: rgba(42, 42, 42, 0.5);
+        }
+
+        .day:hover {
+            background-color: rgba(255, 215, 0, 0.1);
+            transform: scale(1.05);
+        }
+
+        .day.empty {
+            background-color: transparent;
+            border: none;
+            cursor: default;
+        }
+
+        .day.today {
+            border: 2px solid var(--highlight);
+            box-shadow: 0 0 10px var(--highlight);
+        }
+
+        .event-indicator {
+            position: absolute;
+            bottom: 5px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .event-game { background-color: var(--event-game); }
+        .event-trailer { background-color: var(--event-trailer); }
+        .event-announcement { background-color: var(--event-announcement); }
+        .event-teaser { background-color: var(--event-teaser); }
+        .event-future { background-color: var(--event-future); }
+
+        .tooltip {
+            position: fixed;
+            background-color: rgba(10, 10, 10, 0.95);
+            border: 2px solid var(--parchment);
+            padding: 15px;
+            border-radius: 8px;
+            max-width: 300px;
+            z-index: 1000;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+            display: none;
+        }
+
+        .tooltip.pinned {
+            display: block;
+        }
+
+        .tooltip-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            border-bottom: 1px solid var(--parchment);
+            padding-bottom: 5px;
+        }
+
+        .tooltip-title {
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .tooltip-type {
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+
+        .tooltip-description {
+            line-height: 1.4;
+        }
+
+        .pin-btn {
+            background: none;
+            border: none;
+            color: var(--parchment);
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        .search-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+        .search-content {
+            background-color: var(--ink-black);
+            border: 2px solid var(--parchment);
+            padding: 30px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+        }
+
+        .search-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: var(--parchment);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .search-inputs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        select, button {
+            padding: 8px 12px;
+            background-color: var(--film-border);
+            color: var(--parchment);
+            border: 1px solid var(--parchment);
+            border-radius: 4px;
+        }
+
+        .search-btn {
+            background-color: var(--ink-blue);
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .search-btn:hover {
+            background-color: var(--blood-red);
+        }
+
+        .legend {
+            display: flex;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        @media (max-width: 768px) {
+            .calendar-container {
+                height: 40vh;
+            }
+            
+            .month-header {
+                font-size: 1.5rem;
+            }
+            
+            .calendar-grid {
+                gap: 5px;
+            }
+            
+            .controls {
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Bendy Chronicles RU</h1>
+        <p>Интерактивный календарь событий вселенной Bendy</p>
     </div>
-    <script src="events.json"></script>
-    <script src="script.js"></script>
-  </body>
+
+    <div class="controls">
+        <button class="control-btn" id="eventsOnlyBtn">Только события</button>
+        <button class="control-btn" id="searchBtn">Быстрый переход</button>
+        <button class="control-btn" id="todayBtn">Сегодня</button>
+    </div>
+
+    <div class="legend">
+        <div class="legend-item">
+            <div class="legend-color event-game"></div>
+            <span>Релиз игры</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color event-trailer"></div>
+            <span>Трейлер</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color event-announcement"></div>
+            <span>Анонс</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color event-teaser"></div>
+            <span>Тизер</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color event-future"></div>
+            <span>Будущие проекты</span>
+        </div>
+    </div>
+
+    <div class="calendar-container">
+        <div class="film-strip" id="filmStrip">
+            <!-- Месяцы будут сгенерированы через JavaScript -->
+        </div>
+    </div>
+
+    <div class="tooltip" id="eventTooltip">
+        <div class="tooltip-header">
+            <div class="tooltip-title" id="tooltipTitle"></div>
+            <div class="tooltip-type" id="tooltipType"></div>
+            <button class="pin-btn" id="pinBtn">📌</button>
+        </div>
+        <div class="tooltip-description" id="tooltipDescription"></div>
+    </div>
+
+    <div class="search-modal" id="searchModal">
+        <div class="search-content">
+            <div class="search-header">
+                <h2>Быстрый переход</h2>
+                <button class="close-btn" id="closeModalBtn">&times;</button>
+            </div>
+            <div class="search-inputs">
+                <select id="yearSelect">
+                    <!-- Годы будут заполнены через JavaScript -->
+                </select>
+                <select id="monthSelect">
+                    <!-- Месяцы будут заполнены через JavaScript -->
+                </select>
+                <button class="search-btn" id="goToDateBtn">Перейти</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Данные событий
+        const bendyEvents = [
+            {
+                date: "2017-02-10",
+                type: "game_release",
+                title: "Bendy and the Ink Machine: Глава 1",
+                description: "Релиз Главы 1: Moving Pictures (ПК, демо-версия)."
+            },
+            {
+                date: "2017-04-18",
+                type: "game_release",
+                title: "Bendy and the Ink Machine: Глава 2",
+                description: "Релиз Главы 2: The Old Song (ПК)."
+            },
+            {
+                date: "2017-01-30",
+                type: "trailer",
+                title: "Анонсирующий трейлер",
+                description: "Анонсирующий трейлер Bendy and the Ink Machine."
+            },
+            {
+                date: "2024-04-18",
+                type: "announcement",
+                title: "Анонс B3NDY",
+                description: "Официальный анонс третьей основной части серии (B3NDY)."
+            },
+            {
+                date: "2025-08-01",
+                type: "future",
+                title: "Начало съёмок фильма",
+                description: "Съёмки фильма запланированы на август 2025 года."
+            },
+            {
+                date: "2017-09-28",
+                type: "game_release",
+                title: "Bendy and the Ink Machine: Глава 3",
+                description: "Релиз Главы 3: Rise and Fall (ПК)."
+            },
+            {
+                date: "2018-10-31",
+                type: "game_release",
+                title: "Bendy and the Ink Machine: Глава 4",
+                description: "Релиз Главы 4: Colossal Wonders (ПК)."
+            },
+            {
+                date: "2018-04-10",
+                type: "trailer",
+                title: "Трейлер Главы 4",
+                description: "Официальный трейлер четвертой главы Bendy and the Ink Machine."
+            },
+            {
+                date: "2022-11-15",
+                type: "game_release",
+                title: "Bendy and the Dark Revival",
+                description: "Релиз полноценного сиквела Bendy and the Dark Revival."
+            },
+            {
+                date: "2021-06-14",
+                type: "teaser",
+                title: "Тизер Bendy and the Dark Revival",
+                description: "Первый тизер новой игры на E3 2021."
+            },
+            {
+                date: "2023-09-12",
+                type: "announcement",
+                title: "Анонс комиксов",
+                description: "Анонс серии комиксов по вселенной Bendy."
+            }
+        ];
+
+        // Основные переменные
+        let currentYear = new Date().getFullYear();
+        let currentMonth = new Date().getMonth();
+        let eventsOnlyMode = false;
+        let isDragging = false;
+        let startX, scrollLeft;
+        let pinnedTooltip = null;
+
+        // Элементы DOM
+        const filmStrip = document.getElementById('filmStrip');
+        const eventsOnlyBtn = document.getElementById('eventsOnlyBtn');
+        const searchBtn = document.getElementById('searchBtn');
+        const todayBtn = document.getElementById('todayBtn');
+        const searchModal = document.getElementById('searchModal');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const yearSelect = document.getElementById('yearSelect');
+        const monthSelect = document.getElementById('monthSelect');
+        const goToDateBtn = document.getElementById('goToDateBtn');
+        const eventTooltip = document.getElementById('eventTooltip');
+        const tooltipTitle = document.getElementById('tooltipTitle');
+        const tooltipType = document.getElementById('tooltipType');
+        const tooltipDescription = document.getElementById('tooltipDescription');
+        const pinBtn = document.getElementById('pinBtn');
+
+        // Инициализация
+        function init() {
+            generateCalendar();
+            setupEventListeners();
+            populateSearchSelects();
+            goToCurrentMonth();
+        }
+
+        // Генерация календаря
+        function generateCalendar() {
+            filmStrip.innerHTML = '';
+            
+            for (let year = 2017; year <= 2025; year++) {
+                for (let month = 0; month < 12; month++) {
+                    // Проверяем, есть ли события в этом месяце
+                    const monthEvents = bendyEvents.filter(event => {
+                        const eventDate = new Date(event.date);
+                        return eventDate.getFullYear() === year && eventDate.getMonth() === month;
+                    });
+                    
+                    // Если режим "Только события" и в месяце нет событий - пропускаем
+                    if (eventsOnlyMode && monthEvents.length === 0) continue;
+                    
+                    const monthContainer = document.createElement('div');
+                    monthContainer.className = 'month-container';
+                    monthContainer.dataset.year = year;
+                    monthContainer.dataset.month = month;
+                    
+                    const monthHeader = document.createElement('div');
+                    monthHeader.className = 'month-header';
+                    monthHeader.textContent = `${getMonthName(month)} ${year}`;
+                    
+                    const calendarGrid = document.createElement('div');
+                    calendarGrid.className = 'calendar-grid';
+                    
+                    // Заголовки дней недели
+                    const daysOfWeek = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+                    daysOfWeek.forEach(day => {
+                        const dayHeader = document.createElement('div');
+                        dayHeader.className = 'day-header';
+                        dayHeader.textContent = day;
+                        calendarGrid.appendChild(dayHeader);
+                    });
+                    
+                    // Дни месяца
+                    const firstDay = new Date(year, month, 1).getDay();
+                    // Корректировка для понедельника как первого дня недели
+                    const firstDayIndex = firstDay === 0 ? 6 : firstDay - 1;
+                    
+                    const daysInMonth = new Date(year, month + 1, 0).getDate();
+                    
+                    // Пустые ячейки перед первым днем
+                    for (let i = 0; i < firstDayIndex; i++) {
+                        const emptyDay = document.createElement('div');
+                        emptyDay.className = 'day empty';
+                        calendarGrid.appendChild(emptyDay);
+                    }
+                    
+                    // Дни месяца
+                    for (let day = 1; day <= daysInMonth; day++) {
+                        const dayElement = document.createElement('div');
+                        dayElement.className = 'day';
+                        dayElement.textContent = day;
+                        dayElement.dataset.date = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                        
+                        // Проверяем, является ли день сегодняшним
+                        const today = new Date();
+                        if (year === today.getFullYear() && month === today.getMonth() && day === today.getDate()) {
+                            dayElement.classList.add('today');
+                        }
+                        
+                        // Проверяем события на этот день
+                        const dayEvents = bendyEvents.filter(event => event.date === dayElement.dataset.date);
+                        
+                        if (dayEvents.length > 0) {
+                            // Добавляем индикатор события
+                            const eventIndicator = document.createElement('div');
+                            eventIndicator.className = `event-indicator event-${dayEvents[0].type.replace('_', '-')}`;
+                            dayElement.appendChild(eventIndicator);
+                            
+                            // Добавляем обработчик события для показа tooltip
+                            dayElement.addEventListener('mouseenter', showEventTooltip);
+                            dayElement.addEventListener('mouseleave', hideEventTooltip);
+                            dayElement.addEventListener('click', pinEventTooltip);
+                        }
+                        
+                        calendarGrid.appendChild(dayElement);
+                    }
+                    
+                    monthContainer.appendChild(monthHeader);
+                    monthContainer.appendChild(calendarGrid);
+                    filmStrip.appendChild(monthContainer);
+                }
+            }
+        }
+
+        // Показать tooltip с информацией о событии
+        function showEventTooltip(e) {
+            if (pinnedTooltip) return;
+            
+            const date = e.target.dataset.date;
+            const event = bendyEvents.find(ev => ev.date === date);
+            
+            if (event) {
+                tooltipTitle.textContent = event.title;
+                tooltipType.textContent = getEventTypeName(event.type);
+                tooltipType.className = `tooltip-type event-${event.type.replace('_', '-')}`;
+                tooltipDescription.textContent = event.description;
+                
+                // Позиционируем tooltip
+                const rect = e.target.getBoundingClientRect();
+                eventTooltip.style.left = `${rect.left + window.scrollX}px`;
+                eventTooltip.style.top = `${rect.bottom + window.scrollY + 10}px`;
+                
+                eventTooltip.style.display = 'block';
+            }
+        }
+
+        // Скрыть tooltip
+        function hideEventTooltip() {
+            if (!pinnedTooltip) {
+                eventTooltip.style.display = 'none';
+            }
+        }
+
+        // Закрепить tooltip
+        function pinEventTooltip(e) {
+            const date = e.target.dataset.date;
+            const event = bendyEvents.find(ev => ev.date === date);
+            
+            if (event) {
+                if (pinnedTooltip === date) {
+                    // Если tooltip уже закреплен для этой даты - открепляем
+                    pinnedTooltip = null;
+                    eventTooltip.classList.remove('pinned');
+                    eventTooltip.style.display = 'none';
+                } else {
+                    // Закрепляем tooltip
+                    pinnedTooltip = date;
+                    eventTooltip.classList.add('pinned');
+                    
+                    // Позиционируем в одном из углов
+                    const viewportWidth = window.innerWidth;
+                    const viewportHeight = window.innerHeight;
+                    const tooltipWidth = eventTooltip.offsetWidth;
+                    const tooltipHeight = eventTooltip.offsetHeight;
+                    
+                    eventTooltip.style.left = `${viewportWidth - tooltipWidth - 20}px`;
+                    eventTooltip.style.top = `${20}px`;
+                }
+            }
+        }
+
+        // Переключение режима "Только события"
+        function toggleEventsOnlyMode() {
+            eventsOnlyMode = !eventsOnlyMode;
+            eventsOnlyBtn.classList.toggle('active', eventsOnlyMode);
+            generateCalendar();
+            goToCurrentMonth();
+        }
+
+        // Переход к текущему месяцу
+        function goToCurrentMonth() {
+            const currentMonthElement = document.querySelector(`.month-container[data-year="${currentYear}"][data-month="${currentMonth}"]`);
+            if (currentMonthElement) {
+                currentMonthElement.scrollIntoView({ behavior: 'smooth', inline: 'center' });
+            }
+        }
+
+        // Переход к выбранной дате
+        function goToSelectedDate() {
+            const year = parseInt(yearSelect.value);
+            const month = parseInt(monthSelect.value);
+            
+            const targetMonth = document.querySelector(`.month-container[data-year="${year}"][data-month="${month}"]`);
+            if (targetMonth) {
+                targetMonth.scrollIntoView({ behavior: 'smooth', inline: 'center' });
+                searchModal.style.display = 'none';
+            }
+        }
+
+        // Заполнение выпадающих списков для поиска
+        function populateSearchSelects() {
+            // Годы
+            yearSelect.innerHTML = '';
+            for (let year = 2017; year <= 2025; year++) {
+                const option = document.createElement('option');
+                option.value = year;
+                option.textContent = year;
+                yearSelect.appendChild(option);
+            }
+            yearSelect.value = currentYear;
+            
+            // Месяцы
+            monthSelect.innerHTML = '';
+            for (let month = 0; month < 12; month++) {
+                const option = document.createElement('option');
+                option.value = month;
+                option.textContent = getMonthName(month);
+                monthSelect.appendChild(option);
+            }
+            monthSelect.value = currentMonth;
+        }
+
+        // Вспомогательные функции
+        function getMonthName(monthIndex) {
+            const months = [
+                'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
+                'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'
+            ];
+            return months[monthIndex];
+        }
+
+        function getEventTypeName(type) {
+            const typeNames = {
+                'game_release': 'Релиз игры',
+                'trailer': 'Трейлер',
+                'announcement': 'Анонс',
+                'teaser': 'Тизер',
+                'future': 'Будущий проект'
+            };
+            return typeNames[type] || type;
+        }
+
+        // Настройка обработчиков событий
+        function setupEventListeners() {
+            // Кнопки управления
+            eventsOnlyBtn.addEventListener('click', toggleEventsOnlyMode);
+            searchBtn.addEventListener('click', () => searchModal.style.display = 'flex');
+            todayBtn.addEventListener('click', goToCurrentMonth);
+            
+            // Модальное окно поиска
+            closeModalBtn.addEventListener('click', () => searchModal.style.display = 'none');
+            goToDateBtn.addEventListener('click', goToSelectedDate);
+            
+            // Перетаскивание календаря
+            filmStrip.addEventListener('mousedown', startDrag);
+            filmStrip.addEventListener('touchstart', startDrag);
+            document.addEventListener('mousemove', drag);
+            document.addEventListener('touchmove', drag);
+            document.addEventListener('mouseup', endDrag);
+            document.addEventListener('touchend', endDrag);
+            
+            // Кнопка закрепления tooltip
+            pinBtn.addEventListener('click', () => {
+                pinnedTooltip = null;
+                eventTooltip.classList.remove('pinned');
+                eventTooltip.style.display = 'none';
+            });
+        }
+
+        // Функции для перетаскивания
+        function startDrag(e) {
+            isDragging = true;
+            startX = (e.type === 'mousedown' ? e.pageX : e.touches[0].pageX) - filmStrip.offsetLeft;
+            scrollLeft = filmStrip.scrollLeft;
+            filmStrip.style.cursor = 'grabbing';
+        }
+
+        function drag(e) {
+            if (!isDragging) return;
+            e.preventDefault();
+            const x = (e.type === 'mousemove' ? e.pageX : e.touches[0].pageX) - filmStrip.offsetLeft;
+            const walk = (x - startX) * 2;
+            filmStrip.scrollLeft = scrollLeft - walk;
+        }
+
+        function endDrag() {
+            isDragging = false;
+            filmStrip.style.cursor = 'grab';
+            
+            // "Примагничивание" к ближайшему месяцу
+            const scrollPosition = filmStrip.scrollLeft;
+            const monthWidth = filmStrip.offsetWidth;
+            const currentIndex = Math.round(scrollPosition / monthWidth);
+            
+            filmStrip.scrollTo({
+                left: currentIndex * monthWidth,
+                behavior: 'smooth'
+            });
+        }
+
+        // Инициализация при загрузке
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
 </html>
