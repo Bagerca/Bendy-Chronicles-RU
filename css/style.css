@@ -58,10 +58,10 @@ body {
     padding: 0 2rem;
 }
 
-/* НОВЫЕ БОБИНЫ - ПРОСТАЯ И ЧЕТКАЯ СТРУКТУРА */
+/* ПРОСТЫЕ И ПРАВИЛЬНЫЕ БОБИНЫ */
 .film-reel {
-    width: 180px;
-    height: 180px;
+    width: 160px;
+    height: 160px;
     position: relative;
     display: flex;
     align-items: center;
@@ -71,23 +71,23 @@ body {
 }
 
 .reel-body {
-    width: 160px;
-    height: 160px;
+    width: 140px;
+    height: 140px;
     border: 4px solid var(--primary-gold);
     border-radius: 50%;
     position: relative;
     background: var(--film-color);
     box-shadow: 
-        inset 0 0 25px rgba(0,0,0,0.8),
-        0 0 30px rgba(255, 179, 71, 0.4);
+        inset 0 0 20px rgba(0,0,0,0.8),
+        0 0 25px rgba(255, 179, 71, 0.3);
     animation: reelRotate 20s linear infinite;
 }
 
 /* Центральное отверстие */
-.reel-center-hole {
+.reel-center {
     position: absolute;
-    width: 45px;
-    height: 45px;
+    width: 35px;
+    height: 35px;
     background: var(--dark-bg);
     border: 3px solid var(--primary-gold);
     border-radius: 50%;
@@ -95,81 +95,74 @@ body {
     left: 50%;
     transform: translate(-50%, -50%);
     z-index: 1;
-    box-shadow: 
-        inset 0 0 15px rgba(0,0,0,0.9),
-        0 0 10px rgba(255, 179, 71, 0.3);
+    box-shadow: inset 0 0 8px rgba(0,0,0,0.8);
 }
 
-/* Контейнер для спиц */
-.reel-spokes-container {
+/* Спицы - создаем через псевдоэлементы для простоты */
+.reel-body::before {
+    content: '';
     position: absolute;
     width: 100%;
     height: 100%;
-    top: 0;
-    left: 0;
+    border-radius: 50%;
+    background: 
+        /* 6 спиц через linear-gradient */
+        linear-gradient(0deg, 
+            transparent 45%, 
+            var(--primary-gold) 45%, 
+            var(--primary-gold) 55%, 
+            transparent 55%),
+        linear-gradient(60deg, 
+            transparent 45%, 
+            var(--primary-gold) 45%, 
+            var(--primary-gold) 55%, 
+            transparent 55%),
+        linear-gradient(120deg, 
+            transparent 45%, 
+            var(--primary-gold) 45%, 
+            var(--primary-gold) 55%, 
+            transparent 55%),
+        linear-gradient(180deg, 
+            transparent 45%, 
+            var(--primary-gold) 45%, 
+            var(--primary-gold) 55%, 
+            transparent 55%),
+        linear-gradient(240deg, 
+            transparent 45%, 
+            var(--primary-gold) 45%, 
+            var(--primary-gold) 55%, 
+            transparent 55%),
+        linear-gradient(300deg, 
+            transparent 45%, 
+            var(--primary-gold) 45%, 
+            var(--primary-gold) 55%, 
+            transparent 55%);
     z-index: 2;
+    opacity: 0.7;
 }
 
-/* Спицы - идут от центра к краю */
-.reel-spoke {
+/* Отверстия - создаем через box-shadow для простоты */
+.reel-body::after {
+    content: '';
     position: absolute;
-    width: 4px;
-    height: 70px;
-    background: linear-gradient(
-        to bottom,
-        transparent 0%,
-        var(--primary-gold) 20%,
-        var(--primary-gold) 80%,
-        transparent 100%
-    );
-    top: 50%;
-    left: 50%;
-    transform-origin: center top;
-    z-index: 2;
-}
-
-/* Расположение 6 спиц (каждые 60 градусов) */
-.reel-spoke:nth-child(1) { transform: translate(-50%, -50%) rotate(0deg); }
-.reel-spoke:nth-child(2) { transform: translate(-50%, -50%) rotate(60deg); }
-.reel-spoke:nth-child(3) { transform: translate(-50%, -50%) rotate(120deg); }
-.reel-spoke:nth-child(4) { transform: translate(-50%, -50%) rotate(180deg); }
-.reel-spoke:nth-child(5) { transform: translate(-50%, -50%) rotate(240deg); }
-.reel-spoke:nth-child(6) { transform: translate(-50%, -50%) rotate(300deg); }
-
-/* Контейнер для отверстий */
-.reel-holes-container {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    z-index: 3;
-}
-
-/* Отверстия - расположены между спицами */
-.reel-hole {
-    position: absolute;
-    width: 18px;
-    height: 18px;
+    width: 14px;
+    height: 14px;
     background: var(--primary-gold);
     border-radius: 50%;
-    box-shadow: 
-        0 0 15px var(--secondary-gold),
-        inset 0 0 8px rgba(0,0,0,0.7);
     top: 50%;
     left: 50%;
-    margin-left: -9px;
-    margin-top: -9px;
+    transform: translate(-50%, -50%);
+    box-shadow: 
+        /* 6 отверстий через box-shadow */
+        0 -48px 0 0 var(--primary-gold),
+        42px -24px 0 0 var(--primary-gold),
+        42px 24px 0 0 var(--primary-gold),
+        0 48px 0 0 var(--primary-gold),
+        -42px 24px 0 0 var(--primary-gold),
+        -42px -24px 0 0 var(--primary-gold);
     z-index: 3;
+    filter: drop-shadow(0 0 8px var(--secondary-gold));
 }
-
-/* Расположение 6 отверстий МЕЖДУ спицами (смещены на 30 градусов) */
-.reel-hole:nth-child(1) { transform: rotate(30deg) translate(60px) rotate(-30deg); }
-.reel-hole:nth-child(2) { transform: rotate(90deg) translate(60px) rotate(-90deg); }
-.reel-hole:nth-child(3) { transform: rotate(150deg) translate(60px) rotate(-150deg); }
-.reel-hole:nth-child(4) { transform: rotate(210deg) translate(60px) rotate(-210deg); }
-.reel-hole:nth-child(5) { transform: rotate(270deg) translate(60px) rotate(-270deg); }
-.reel-hole:nth-child(6) { transform: rotate(330deg) translate(60px) rotate(-330deg); }
 
 @keyframes reelRotate {
     from { transform: rotate(0deg); }
@@ -463,38 +456,31 @@ h2 {
 /* Адаптивность для бобин */
 @media (max-width: 1024px) {
     .film-reel {
-        width: 150px;
-        height: 150px;
+        width: 140px;
+        height: 140px;
     }
     
     .reel-body {
-        width: 130px;
-        height: 130px;
+        width: 120px;
+        height: 120px;
     }
     
-    .reel-center-hole {
-        width: 35px;
-        height: 35px;
+    .reel-center {
+        width: 30px;
+        height: 30px;
     }
     
-    .reel-spoke {
-        height: 55px;
-        width: 3px;
+    .reel-body::after {
+        width: 12px;
+        height: 12px;
+        box-shadow: 
+            0 -42px 0 0 var(--primary-gold),
+            36px -21px 0 0 var(--primary-gold),
+            36px 21px 0 0 var(--primary-gold),
+            0 42px 0 0 var(--primary-gold),
+            -36px 21px 0 0 var(--primary-gold),
+            -36px -21px 0 0 var(--primary-gold);
     }
-    
-    .reel-hole {
-        width: 14px;
-        height: 14px;
-        margin-left: -7px;
-        margin-top: -7px;
-    }
-    
-    .reel-hole:nth-child(1) { transform: rotate(30deg) translate(48px) rotate(-30deg); }
-    .reel-hole:nth-child(2) { transform: rotate(90deg) translate(48px) rotate(-90deg); }
-    .reel-hole:nth-child(3) { transform: rotate(150deg) translate(48px) rotate(-150deg); }
-    .reel-hole:nth-child(4) { transform: rotate(210deg) translate(48px) rotate(-210deg); }
-    .reel-hole:nth-child(5) { transform: rotate(270deg) translate(48px) rotate(-270deg); }
-    .reel-hole:nth-child(6) { transform: rotate(330deg) translate(48px) rotate(-330deg); }
 }
 
 @media (max-width: 768px) {
@@ -504,38 +490,31 @@ h2 {
     }
     
     .film-reel {
-        width: 120px;
-        height: 120px;
-    }
-    
-    .reel-body {
         width: 100px;
         height: 100px;
     }
     
-    .reel-center-hole {
-        width: 28px;
-        height: 28px;
+    .reel-body {
+        width: 80px;
+        height: 80px;
     }
     
-    .reel-spoke {
-        height: 42px;
-        width: 2px;
+    .reel-center {
+        width: 22px;
+        height: 22px;
     }
     
-    .reel-hole {
-        width: 12px;
-        height: 12px;
-        margin-left: -6px;
-        margin-top: -6px;
+    .reel-body::after {
+        width: 10px;
+        height: 10px;
+        box-shadow: 
+            0 -32px 0 0 var(--primary-gold),
+            28px -16px 0 0 var(--primary-gold),
+            28px 16px 0 0 var(--primary-gold),
+            0 32px 0 0 var(--primary-gold),
+            -28px 16px 0 0 var(--primary-gold),
+            -28px -16px 0 0 var(--primary-gold);
     }
-    
-    .reel-hole:nth-child(1) { transform: rotate(30deg) translate(38px) rotate(-30deg); }
-    .reel-hole:nth-child(2) { transform: rotate(90deg) translate(38px) rotate(-90deg); }
-    .reel-hole:nth-child(3) { transform: rotate(150deg) translate(38px) rotate(-150deg); }
-    .reel-hole:nth-child(4) { transform: rotate(210deg) translate(38px) rotate(-210deg); }
-    .reel-hole:nth-child(5) { transform: rotate(270deg) translate(38px) rotate(-270deg); }
-    .reel-hole:nth-child(6) { transform: rotate(330deg) translate(38px) rotate(-330deg); }
     
     .film-navigation {
         margin: 0;
