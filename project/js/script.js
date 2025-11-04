@@ -1,13 +1,44 @@
 document.addEventListener('DOMContentLoaded', function() {
     const navLinks = document.querySelectorAll('.nav-link');
     const pageSections = document.querySelectorAll('.page-section');
-    const pageTransition = document.getElementById('pageTransition');
+    const filmStrip = document.querySelector('.film-strip');
+    const leftReel = document.querySelector('.reel-left');
+    const rightReel = document.querySelector('.reel-right');
+    const projectorLight = document.querySelector('.projector-light');
+    
+    let currentPage = 'home';
+    const pageOrder = ['home', 'products', 'lore', 'timeline', 'events'];
+
+    // Функция для получения индекса страницы
+    function getPageIndex(page) {
+        return pageOrder.indexOf(page);
+    }
 
     // Функция переключения страниц с анимацией
     function switchPage(targetPage) {
-        // Активируем анимацию перехода
-        pageTransition.classList.add('active');
+        if (targetPage === currentPage) return;
+
+        const currentIndex = getPageIndex(currentPage);
+        const targetIndex = getPageIndex(targetPage);
         
+        // Определяем направление перемотки
+        const isForward = targetIndex > currentIndex;
+        
+        // Активируем свет проектора
+        projectorLight.classList.add('active');
+        
+        // Запускаем анимацию бобин
+        leftReel.classList.add(isForward ? 'spin-forward' : 'spin-backward');
+        rightReel.classList.add(isForward ? 'spin-forward' : 'spin-backward');
+        
+        // Вычисляем смещение для кинопленки
+        const linkWidth = 140 + 40; // ширина кнопки + gap
+        const offset = (targetIndex - 2) * linkWidth; // Центрируем активный элемент
+        
+        // Прокручиваем кинопленку
+        filmStrip.style.transform = `translateX(calc(-50% + ${offset}px))`;
+        
+        // Ждем завершения анимации прокрутки
         setTimeout(() => {
             // Скрываем все страницы
             pageSections.forEach(section => {
@@ -28,12 +59,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
             
-            // Завершаем анимацию перехода
+            // Сбрасываем анимации бобин
             setTimeout(() => {
-                pageTransition.classList.remove('active');
-            }, 500);
+                leftReel.classList.remove('spin-forward', 'spin-backward');
+                rightReel.classList.remove('spin-forward', 'spin-backward');
+                projectorLight.classList.remove('active');
+            }, 200);
             
-        }, 500);
+            currentPage = targetPage;
+        }, 800);
     }
 
     // Обработчики кликов для навигации
@@ -45,8 +79,11 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Добавляем эффект "проектора" при загрузке
+    // Инициализация - центрируем начальную позицию
     setTimeout(() => {
-        document.querySelector('.projector-effect').style.animation = 'projectorScan 3s linear infinite';
-    }, 1000);
+        const homeIndex = getPageIndex('home');
+        const linkWidth = 140 + 40;
+        const initialOffset = (homeIndex - 2) * linkWidth;
+        filmStrip.style.transform = `translateX(calc(-50% + ${initialOffset}px))`;
+    }, 100);
 });
