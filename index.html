@@ -129,6 +129,10 @@
                         <h4>1930-е</h4>
                         <p>Создание первых анимационных фильмов</p>
                     </div>
+                    <div class="timeline-point">
+                        <h4>1940-е</h4>
+                        <p>Расцвет студии и появление культовых персонажей</p>
+                    </div>
                 </div>
             </div>
         </section>
@@ -145,6 +149,10 @@
                     <div class="chronicle-item">
                         <h4>Глава 2: Старые друзья</h4>
                         <p>Возвращение забытых персонажей</p>
+                    </div>
+                    <div class="chronicle-item">
+                        <h4>Глава 3: Воскрешение</h4>
+                        <p>Новые открытия и старые секреты</p>
                     </div>
                 </div>
             </div>
@@ -163,6 +171,10 @@
                         <h4>Выставка артов</h4>
                         <p>Работы создателей вселенной</p>
                     </div>
+                    <div class="event-card">
+                        <h4>Творческие встречи</h4>
+                        <p>Обсуждение с разработчиками</p>
+                    </div>
                 </div>
             </div>
         </section>
@@ -177,5 +189,29 @@
     </audio>
 
     <script src="js/script.js"></script>
+    <script>
+        // Инициализация звуков (опционально)
+        document.addEventListener('DOMContentLoaded', function() {
+            const projectorSound = document.getElementById('projectorSound');
+            const filmSound = document.getElementById('filmSound');
+            
+            // Воспроизведение звуков при переключении страниц
+            const navItems = document.querySelectorAll('.frame-cell');
+            navItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    if (projectorSound) {
+                        projectorSound.currentTime = 0;
+                        projectorSound.play().catch(e => console.log('Audio play failed:', e));
+                    }
+                    if (filmSound) {
+                        setTimeout(() => {
+                            filmSound.currentTime = 0;
+                            filmSound.play().catch(e => console.log('Audio play failed:', e));
+                        }, 200);
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>
