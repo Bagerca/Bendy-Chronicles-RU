@@ -51,6 +51,7 @@ body {
     backdrop-filter: blur(10px);
     border-bottom: 3px solid var(--primary-gold);
     margin-bottom: 3rem;
+    overflow: hidden;
 }
 
 .header-container {
@@ -63,7 +64,7 @@ body {
     padding: 0 2rem;
 }
 
-/* Бобины пленки */
+/* Бобины пленки - улучшенный дизайн */
 .film-reel {
     width: 100px;
     height: 100px;
@@ -81,42 +82,52 @@ body {
     border: 4px solid var(--primary-gold);
     border-radius: 50%;
     position: relative;
-    background: conic-gradient(from 0deg, var(--dark-bg), var(--film-color), var(--dark-bg));
+    background: 
+        conic-gradient(
+            from 0deg,
+            var(--dark-bg) 0%,
+            var(--film-color) 25%,
+            var(--dark-bg) 50%,
+            var(--film-color) 75%,
+            var(--dark-bg) 100%
+        );
     box-shadow: 
         inset 0 0 20px rgba(0,0,0,0.8),
         0 0 30px rgba(255, 179, 71, 0.3);
+    animation: continuousSpin 6s linear infinite;
 }
 
+/* 4 отверстия вместо 3 */
 .reel-hole {
     position: absolute;
     width: 12px;
     height: 12px;
     background: var(--primary-gold);
     border-radius: 50%;
-    box-shadow: 0 0 10px var(--secondary-gold);
+    box-shadow: 
+        0 0 10px var(--secondary-gold),
+        inset 0 0 5px rgba(0,0,0,0.5);
 }
 
 .reel-hole:nth-child(1) { top: 10px; left: 50%; transform: translateX(-50%); }
 .reel-hole:nth-child(2) { top: 50%; right: 10px; transform: translateY(-50%); }
 .reel-hole:nth-child(3) { bottom: 10px; left: 50%; transform: translateX(-50%); }
+.reel-hole:nth-child(4) { top: 50%; left: 10px; transform: translateY(-50%); }
 
-/* Анимации для бобин при переключении */
-@keyframes spin-forward {
+/* Непрерывное вращение бобин */
+@keyframes continuousSpin {
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
 }
 
-@keyframes spin-backward {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(-360deg); }
+/* Анимации для бобин при переключении */
+@keyframes fastSpin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
-.spin-forward {
-    animation: spin-forward 0.8s ease-in-out;
-}
-
-.spin-backward {
-    animation: spin-backward 0.8s ease-in-out;
+.fast-spin {
+    animation: fastSpin 0.8s ease-in-out !important;
 }
 
 /* Навигация - кинопленка */
@@ -130,20 +141,47 @@ body {
     justify-content: center;
 }
 
-/* Движущаяся пленка с перфорациями */
+/* Движущаяся пленка с перфорациями на всю ширину */
 .film-strip {
     position: absolute;
     top: 0;
-    left: 0;
-    width: 100%;
+    left: -100%;
+    width: 300%;
     height: 100%;
-    background: var(--film-color);
+    background: 
+        linear-gradient(to bottom, var(--film-color) 0%, var(--film-color) 100%),
+        repeating-linear-gradient(
+            90deg,
+            transparent,
+            transparent 8px,
+            var(--primary-gold) 8px,
+            var(--primary-gold) 16px
+        );
+    background-size: 100% 100%, auto 15px;
+    background-position: 0 0, 0 0;
+    background-repeat: no-repeat, repeat-x;
     border-radius: 8px;
     box-shadow: 
-        0 10px 30px rgba(0,0,0,0.8),
-        inset 0 0 20px rgba(0,0,0,0.5);
-    overflow: hidden;
-    transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        inset 0 0 20px rgba(0,0,0,0.5),
+        0 10px 30px rgba(0,0,0,0.8);
+    animation: continuousFilmMove 12s linear infinite;
+    transition: transform 0.8s ease-in-out;
+}
+
+/* Непрерывное движение пленки */
+@keyframes continuousFilmMove {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(33.333%); }
+}
+
+/* Быстрая прокрутка пленки при клике */
+.fast-film-move {
+    animation: fastFilmMove 0.8s ease-in-out !important;
+}
+
+@keyframes fastFilmMove {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(33.333%); }
 }
 
 /* Перфорации */
@@ -450,20 +488,6 @@ h2 {
 .event-card p {
     color: var(--text-secondary);
     font-size: 0.9rem;
-}
-
-/* Анимация непрерывного вращения бобин */
-@keyframes continuousSpin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-}
-
-.left-reel .reel-inner {
-    animation: continuousSpin 4s linear infinite;
-}
-
-.right-reel .reel-inner {
-    animation: continuousSpin 4s linear infinite reverse;
 }
 
 /* Адаптивность */
