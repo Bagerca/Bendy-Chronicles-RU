@@ -1,4 +1,3 @@
-// data.js
 const bendyEvents = [
   {
     date: "2017-02-10",
