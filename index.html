@@ -3,119 +3,141 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Кинематографичный сайт</title>
+    <title>Bendy Chronicles RU</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <!-- Шапка в виде кинопленки с проектором -->
+    <!-- Шапка с кинопленкой -->
     <header class="film-header">
-        <div class="projector-left">
-            <div class="reel reel-left">
-                <div class="reel-hole"></div>
-                <div class="reel-hole"></div>
-                <div class="reel-hole"></div>
-                <div class="reel-hole"></div>
-            </div>
+        <div class="projector-reel left-reel">
+            <div class="reel-core"></div>
+            <div class="reel-rim"></div>
         </div>
         
-        <div class="film-strip-container">
+        <div class="film-container">
             <div class="film-strip">
-                <ul class="nav-links">
-                    <li><a href="#" class="nav-link active" data-page="home">Главная</a></li>
-                    <li><a href="#" class="nav-link" data-page="products">Продукты</a></li>
-                    <li><a href="#" class="nav-link" data-page="lore">Лор</a></li>
-                    <li><a href="#" class="nav-link" data-page="timeline">Таймлайн</a></li>
-                    <li><a href="#" class="nav-link" data-page="events">События</a></li>
-                </ul>
+                <nav class="film-nav">
+                    <a href="#home" class="film-frame active" data-page="home">
+                        <span class="frame-label">Главная</span>
+                    </a>
+                    <a href="#products" class="film-frame" data-page="products">
+                        <span class="frame-label">Продукты</span>
+                    </a>
+                    <a href="#lore" class="film-frame" data-page="lore">
+                        <span class="frame-label">Лор</span>
+                    </a>
+                    <a href="#timeline" class="film-frame" data-page="timeline">
+                        <span class="frame-label">Таймлайн</span>
+                    </a>
+                    <a href="#events" class="film-frame" data-page="events">
+                        <span class="frame-label">События</span>
+                    </a>
+                </nav>
             </div>
         </div>
 
-        <div class="projector-right">
-            <div class="reel reel-right">
-                <div class="reel-hole"></div>
-                <div class="reel-hole"></div>
-                <div class="reel-hole"></div>
-                <div class="reel-hole"></div>
-            </div>
+        <div class="projector-reel right-reel">
+            <div class="reel-core"></div>
+            <div class="reel-rim"></div>
         </div>
 
-        <div class="projector-light"></div>
+        <div class="projector-beam"></div>
     </header>
 
     <!-- Основной контент -->
-    <main class="page-content">
-        <!-- Главная страница -->
-        <section id="home" class="page-section active">
-            <h1>Добро пожаловать в мир кино!</h1>
-            <p>Этот сайт посвящен магии кинематографа. Здесь вы найдете всё о наших проектах, истории создания и предстоящих событиях.</p>
-            
-            <h2>О нашей студии</h2>
-            <p>Мы создаем уникальные кинематографические произведения, которые переносят зрителей в другие миры и заставляют задуматься.</p>
-            
-            <h2>Последние новости</h2>
-            <p>Скоро анонс нашего нового проекта "Забытые кадры" - документального фильма о потерянных шедеврах мирового кино.</p>
+    <main class="main-content">
+        <section id="home" class="page active">
+            <div class="content-wrapper">
+                <h1>Добро пожаловать в Bendy Chronicles!</h1>
+                <p>Этот сайт посвящен магии кинематографа и вселенной Bendy.</p>
+                
+                <div class="content-grid">
+                    <div class="content-card">
+                        <h2>О проекте</h2>
+                        <p>Bendy Chronicles - это уникальное сочетание классической анимации и современных технологий.</p>
+                    </div>
+                    <div class="content-card">
+                        <h2>Новости</h2>
+                        <p>Следите за обновлениями и новыми главами нашей истории.</p>
+                    </div>
+                </div>
+            </div>
         </section>
 
-        <!-- Продукты -->
-        <section id="products" class="page-section">
-            <h1>Наши проекты</h1>
-            <p>Здесь представлены наши кинематографические работы и медиапродукты.</p>
-            
-            <h2>Художественные фильмы</h2>
-            <p>"Тени прошлого" - драматический триллер (2024)</p>
-            <p>"Последний кадр" - романтическая комедия (2023)</p>
-            
-            <h2>Документальные проекты</h2>
-            <p>"Искусство света" - серия о кинематографистах</p>
-            <p>"За кадром" - проект о создании фильмов</p>
+        <section id="products" class="page">
+            <div class="content-wrapper">
+                <h1>Наши продукты</h1>
+                <p>Исследуйте мир Bendy через различные медиаформаты.</p>
+                
+                <div class="products-grid">
+                    <div class="product-card">
+                        <h3>Комиксы</h3>
+                        <p>Графические новеллы и комиксы</p>
+                    </div>
+                    <div class="product-card">
+                        <h3>Мерч</h3>
+                        <p>Официальная продукция</p>
+                    </div>
+                    <div class="product-card">
+                        <h3>Медиа</h3>
+                        <p>Видео и аудиоконтент</p>
+                    </div>
+                </div>
+            </div>
         </section>
 
-        <!-- Лор -->
-        <section id="lore" class="page-section">
-            <h1>Вселенная нашего кино</h1>
-            <p>Погрузитесь в глубины созданных нами миров и историй.</p>
-            
-            <h2>Хроники мира "Теней прошлого"</h2>
-            <p>Мир, где воспоминания становятся реальностью, а прошлое преследует каждого героя.</p>
-            
-            <h2>Вселенная "Последнего кадра"</h2>
-            <p>История о фотографе, который обнаруживает, что его снимки влияют на реальность.</p>
-            
-            <h2>Мифология документальных проектов</h2>
-            <p>Исследование связи между искусством, технологией и человеческим восприятием.</p>
+        <section id="lore" class="page">
+            <div class="content-wrapper">
+                <h1>Лор вселенной</h1>
+                <p>Погрузитесь в глубины истории Bendy и его мира.</p>
+                
+                <div class="lore-content">
+                    <div class="timeline-item">
+                        <h3>Создание студии</h3>
+                        <p>История Joey Drew Studios</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h3>Персонажи</h3>
+                        <p>Bendy, Boris, Alice и другие</p>
+                    </div>
+                </div>
+            </div>
         </section>
 
-        <!-- Таймлайн -->
-        <section id="timeline" class="page-section">
-            <h1>Хронология проектов</h1>
-            <p>История развития нашей студии и ключевые вехи.</p>
-            
-            <h2>2020 - Основание</h2>
-            <p>Создание студии и работа над первыми короткометражными фильмами.</p>
-            
-            <h2>2021-2022 - Первые успехи</h2>
-            <p>Участие в международных фестивалях, признание критиков.</p>
-            
-            <h2>2023 - Прорыв</h2>
-            <p>Выпуск первого полнометражного фильма "Последний кадр".</p>
-            
-            <h2>2024 - Новые горизонты</h2>
-            <p>Работа над масштабным проектом "Тени прошлого".</p>
+        <section id="timeline" class="page">
+            <div class="content-wrapper">
+                <h1>Хронология</h1>
+                <p>Ключевые события развития вселенной Bendy.</p>
+                
+                <div class="timeline">
+                    <div class="timeline-event">
+                        <h4>2017</h4>
+                        <p>Выход первой игры</p>
+                    </div>
+                    <div class="timeline-event">
+                        <h4>2019</h4>
+                        <p>Развитие лора</p>
+                    </div>
+                </div>
+            </div>
         </section>
 
-        <!-- События -->
-        <section id="events" class="page-section">
-            <h1>События и показы</h1>
-            <p>Ближайшие мероприятия и кинопоказы.</p>
-            
-            <h2>Кинофестиваль "Новый взгляд"</h2>
-            <p>15-20 декабря 2024 - Показ наших фильмов в рамках конкурсной программы.</p>
-            
-            <h2>Творческая встреча</h2>
-            <p>22 декабря 2024 - Встреча с режиссером и актерами нашего нового проекта.</p>
-            
-            <h2>Мастер-классы</h2>
-            <p>Январь 2025 - Серия мастер-классов по операторскому искусству и режиссуре.</p>
+        <section id="events" class="page">
+            <div class="content-wrapper">
+                <h1>События</h1>
+                <p>Предстоящие мероприятия и встречи.</p>
+                
+                <div class="events-list">
+                    <div class="event-item">
+                        <h4>Комикон 2024</h4>
+                        <p>Участие в выставке</p>
+                    </div>
+                    <div class="event-item">
+                        <h4>Встреча фанатов</h4>
+                        <p>Онлайн-ивент</p>
+                    </div>
+                </div>
+            </div>
         </section>
     </main>
 
