@@ -44,20 +44,23 @@ body {
 
 /* Основной хедер */
 .cinema-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    width: 100%;
     padding: 2rem 0;
     position: relative;
     background: linear-gradient(180deg, rgba(10,10,10,0.95) 0%, transparent 100%);
     backdrop-filter: blur(10px);
     border-bottom: 3px solid var(--primary-gold);
     margin-bottom: 3rem;
+}
+
+.header-container {
     max-width: 1200px;
-    margin-left: auto;
-    margin-right: auto;
-    padding-left: 2rem;
-    padding-right: 2rem;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    padding: 0 2rem;
 }
 
 /* Бобины пленки */
@@ -68,7 +71,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 20;
+    z-index: 30;
     flex-shrink: 0;
 }
 
@@ -82,7 +85,6 @@ body {
     box-shadow: 
         inset 0 0 20px rgba(0,0,0,0.8),
         0 0 30px rgba(255, 179, 71, 0.3);
-    animation: reelRotate 20s linear infinite;
 }
 
 .reel-hole {
@@ -97,11 +99,6 @@ body {
 .reel-hole:nth-child(1) { top: 10px; left: 50%; transform: translateX(-50%); }
 .reel-hole:nth-child(2) { top: 50%; right: 10px; transform: translateY(-50%); }
 .reel-hole:nth-child(3) { bottom: 10px; left: 50%; transform: translateX(-50%); }
-
-@keyframes reelRotate {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-}
 
 /* Анимации для бобин при переключении */
 @keyframes spin-forward {
@@ -127,24 +124,34 @@ body {
     flex: 1;
     position: relative;
     margin: 0 2rem;
-    min-width: 0; /* Добавлено для правильного flex поведения */
+    height: 140px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
+/* Движущаяся пленка с перфорациями */
 .film-strip {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     background: var(--film-color);
-    padding: 0.5rem 0;
     border-radius: 8px;
-    position: relative;
     box-shadow: 
         0 10px 30px rgba(0,0,0,0.8),
         inset 0 0 20px rgba(0,0,0,0.5);
+    overflow: hidden;
     transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    width: 100%;
 }
 
 /* Перфорации */
 .perforations-top,
 .perforations-bottom {
+    position: absolute;
+    left: 0;
+    width: 100%;
     height: 15px;
     background: 
         repeating-linear-gradient(
@@ -154,18 +161,25 @@ body {
             var(--primary-gold) 8px,
             var(--primary-gold) 16px
         );
-    margin: 0 -10px;
     opacity: 0.7;
 }
 
-/* Фреймы навигации */
+.perforations-top {
+    top: 0;
+}
+
+.perforations-bottom {
+    bottom: 0;
+}
+
+/* Статичные кнопки навигации */
 .nav-frames {
     display: flex;
     justify-content: center;
     gap: 1.5rem;
-    padding: 1rem 0;
     position: relative;
-    width: 100%;
+    z-index: 20;
+    padding: 1rem 0;
 }
 
 .frame-cell {
@@ -438,6 +452,20 @@ h2 {
     font-size: 0.9rem;
 }
 
+/* Анимация непрерывного вращения бобин */
+@keyframes continuousSpin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.left-reel .reel-inner {
+    animation: continuousSpin 4s linear infinite;
+}
+
+.right-reel .reel-inner {
+    animation: continuousSpin 4s linear infinite reverse;
+}
+
 /* Адаптивность */
 @media (max-width: 1024px) {
     .main-title {
@@ -453,17 +481,19 @@ h2 {
         min-width: 100px;
     }
     
-    .cinema-header {
-        padding-left: 1rem;
-        padding-right: 1rem;
+    .header-container {
+        padding: 0 1rem;
     }
 }
 
 @media (max-width: 768px) {
     .cinema-header {
+        padding: 1rem 0;
+    }
+    
+    .header-container {
         flex-direction: column;
         gap: 1rem;
-        padding: 1rem;
     }
     
     .film-reel {
@@ -479,6 +509,7 @@ h2 {
     .film-navigation {
         margin: 0;
         width: 100%;
+        height: 120px;
     }
     
     .nav-frames {
