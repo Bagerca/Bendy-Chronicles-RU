@@ -64,7 +64,7 @@ body {
     padding: 0 2rem;
 }
 
-/* Увеличенные бобины пленки с исправленным центром */
+/* Увеличенные бобины пленки */
 .film-reel {
     width: 180px;
     height: 180px;
@@ -100,7 +100,7 @@ body {
     animation: continuousSpin 25s linear infinite;
 }
 
-/* Центральная часть бобины - исправленное позиционирование */
+/* Центральная часть бобины - ФИКСИРОВАННОЕ ПОЗИЦИОНИРОВАНИЕ */
 .reel-center {
     position: absolute;
     top: 50%;
@@ -116,20 +116,20 @@ body {
     z-index: 2;
 }
 
-/* Спицы от центра к отверстиям - исправленное позиционирование */
+/* Спицы от центра к отверстиям - ФИКСИРОВАННОЕ ПОЗИЦИОНИРОВАНИЕ */
 .reel-spoke {
     position: absolute;
     top: 50%;
     left: 50%;
     width: 3px;
-    height: 70px;
-    background: linear-gradient(to top, 
+    height: 60px;
+    background: linear-gradient(to bottom, 
         transparent 0%, 
-        var(--primary-gold) 30%, 
+        var(--primary-gold) 20%, 
         var(--secondary-gold) 50%, 
-        var(--primary-gold) 70%, 
+        var(--primary-gold) 80%, 
         transparent 100%);
-    transform-origin: center top;
+    transform-origin: 50% 0%;
     transform: translate(-50%, -50%) rotate(calc(var(--i) * 60deg));
     z-index: 1;
 }
@@ -142,7 +142,7 @@ body {
 .reel-spoke:nth-child(6) { --i: 4; }
 .reel-spoke:nth-child(7) { --i: 5; }
 
-/* 6 отверстий для улучшенного дизайна - исправленное позиционирование */
+/* 6 отверстий - ФИКСИРОВАННОЕ ПОЗИЦИОНИРОВАНИЕ */
 .reel-hole {
     position: absolute;
     width: 18px;
@@ -157,37 +157,30 @@ body {
     transform: translate(-50%, -50%);
 }
 
-/* Расположение 6 отверстий на концах спиц - исправленное позиционирование */
+/* Расположение 6 отверстий - ФИКСИРОВАННЫЕ КООРДИНАТЫ */
 .reel-hole:nth-child(8) { 
-    top: 15px; 
+    top: 20px; 
     left: 50%; 
 }
 .reel-hole:nth-child(9) { 
-    top: 45px; 
-    right: 15px; 
-    left: auto;
-    transform: translate(50%, -50%);
+    top: 60px; 
+    left: 85px; 
 }
 .reel-hole:nth-child(10) { 
-    bottom: 45px; 
-    right: 15px; 
-    left: auto;
-    transform: translate(50%, 50%);
+    top: 120px; 
+    left: 85px; 
 }
 .reel-hole:nth-child(11) { 
-    bottom: 15px; 
+    top: 140px; 
     left: 50%; 
-    transform: translate(-50%, 50%);
 }
 .reel-hole:nth-child(12) { 
-    bottom: 45px; 
+    top: 120px; 
     left: 15px; 
-    transform: translate(-50%, 50%);
 }
 .reel-hole:nth-child(13) { 
-    top: 45px; 
+    top: 60px; 
     left: 15px; 
-    transform: translate(-50%, -50%);
 }
 
 /* Непрерывное вращение бобин */
@@ -225,9 +218,7 @@ body {
     width: 100%;
     height: 100%;
     background: 
-        /* Основной цвет пленки */
         var(--film-color),
-        /* Верхние перфорации */
         repeating-linear-gradient(
             90deg,
             transparent,
@@ -235,7 +226,6 @@ body {
             var(--primary-gold) 8px,
             var(--primary-gold) 16px
         ),
-        /* Нижние перфорации */
         repeating-linear-gradient(
             90deg,
             transparent,
