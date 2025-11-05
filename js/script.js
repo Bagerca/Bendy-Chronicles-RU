@@ -9,6 +9,7 @@ class FilmNavigation {
     init() {
         this.bindEvents();
         this.setupAudio();
+        this.setupReels();
         
         // Инициализация по хешу
         const hash = window.location.hash.substring(1);
@@ -43,6 +44,18 @@ class FilmNavigation {
         } catch (error) {
             console.log('Audio setup:', error);
         }
+    }
+    
+    setupReels() {
+        // Интерактивность для бобин в шапке
+        document.querySelectorAll('.header-reel .reel-base').forEach(reel => {
+            reel.addEventListener('click', function() {
+                this.style.animationDuration = '5s';
+                setTimeout(() => {
+                    this.style.animationDuration = '40s';
+                }, 3000);
+            });
+        });
     }
     
     switchPage(targetPage, animate = true) {
@@ -86,6 +99,15 @@ class FilmNavigation {
             filmStrip.classList.add('fast-move');
             setTimeout(() => filmStrip.classList.remove('fast-move'), 800);
         }
+        
+        // Ускоренное вращение бобин при переключении
+        const reels = document.querySelectorAll('.header-reel .reel-base');
+        reels.forEach(reel => {
+            reel.style.animationDuration = '3s';
+            setTimeout(() => {
+                reel.style.animationDuration = '40s';
+            }, 3000);
+        });
         
         // Звуки
         if (this.projectorSound) {
