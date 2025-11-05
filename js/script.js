@@ -92,16 +92,16 @@ class FilmNavigation {
         reels.forEach(reel => {
             reel.style.animationDuration = '0.8s';
             setTimeout(() => {
-                reel.style.animationDuration = '30s';
+                reel.style.animationDuration = '25s';
             }, 800);
         });
         
         // Ускорение внутренней спирали
-        const spirals = document.querySelectorAll('.inner-spiral');
-        spirals.forEach(spiral => {
-            spiral.style.animationDuration = '0.4s';
+        const gears = document.querySelectorAll('.inner-gear');
+        gears.forEach(gear => {
+            gear.style.animationDuration = '0.4s';
             setTimeout(() => {
-                spiral.style.animationDuration = '15s';
+                gear.style.animationDuration = '10s';
             }, 800);
         });
         
