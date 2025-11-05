@@ -87,24 +87,6 @@ class FilmNavigation {
             setTimeout(() => filmStrip.classList.remove('fast-move'), 800);
         }
         
-        // Ускоренное вращение бобин при переключении
-        const reels = document.querySelectorAll('.reel-outer');
-        reels.forEach(reel => {
-            reel.style.animationDuration = '0.8s';
-            setTimeout(() => {
-                reel.style.animationDuration = '25s';
-            }, 800);
-        });
-        
-        // Ускорение внутренней спирали
-        const gears = document.querySelectorAll('.inner-gear');
-        gears.forEach(gear => {
-            gear.style.animationDuration = '0.4s';
-            setTimeout(() => {
-                gear.style.animationDuration = '10s';
-            }, 800);
-        });
-        
         // Звуки
         if (this.projectorSound) {
             this.projectorSound.currentTime = 0;
