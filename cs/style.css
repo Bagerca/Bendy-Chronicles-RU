@@ -558,4 +558,264 @@ body {
     font-size: 4rem;
     font-weight: 900;
     text-align: center;
-    backgrou
+    background: linear-gradient(135deg, var(--primary-gold), var(--secondary-gold), #FF6B6B);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 1rem;
+    text-shadow: 0 0 30px rgba(255, 179, 71, 0.5);
+    letter-spacing: 3px;
+}
+
+.subtitle {
+    text-align: center;
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+    margin-bottom: 3rem;
+    font-style: italic;
+}
+
+h2 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 2.5rem;
+    color: var(--primary-gold);
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+/* Сетки контента */
+.content-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+.feature-card {
+    background: linear-gradient(145deg, rgba(42, 42, 42, 0.8), rgba(26, 26, 26, 0.9));
+    padding: 2rem;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 179, 71, 0.2);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.feature-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary-gold), #4ECDC4);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.feature-card:hover::before {
+    transform: scaleX(1);
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+}
+
+.card-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.feature-card h3 {
+    color: var(--primary-gold);
+    margin-bottom: 1rem;
+    font-size: 1.3rem;
+}
+
+.feature-card p {
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+/* Дополнительные стили для контентных страниц */
+.products-showcase,
+.lore-timeline,
+.chronicles,
+.events-calendar {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.product-item,
+.timeline-point,
+.chronicle-item,
+.event-card {
+    background: linear-gradient(145deg, rgba(42, 42, 42, 0.8), rgba(26, 26, 26, 0.9));
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 179, 71, 0.2);
+    transition: all 0.3s ease;
+}
+
+.product-item:hover,
+.timeline-point:hover,
+.chronicle-item:hover,
+.event-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--primary-gold);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+}
+
+.product-item h4,
+.timeline-point h4,
+.chronicle-item h4,
+.event-card h4 {
+    color: var(--primary-gold);
+    margin-bottom: 0.5rem;
+    font-family: 'Orbitron', sans-serif;
+}
+
+.product-item p,
+.timeline-point p,
+.chronicle-item p,
+.event-card p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+/* Адаптивность для бобин и остального контента */
+@media (max-width: 1024px) {
+    .main-title {
+        font-size: 3rem;
+    }
+    
+    .nav-frames {
+        gap: 1rem;
+    }
+    
+    .frame-cell {
+        padding: 0.8rem 1rem;
+        min-width: 100px;
+    }
+    
+    .header-container {
+        padding: 0 1rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .cinema-header {
+        padding: 1rem 0;
+    }
+    
+    .header-container {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    /* Адаптация бобин для мобильных */
+    .film-reel {
+        width: 150px;
+        height: 150px;
+    }
+    
+    .reel-outer {
+        width: 130px;
+        height: 130px;
+    }
+    
+    .reel-hole {
+        width: 14px;
+        height: 14px;
+    }
+    
+    .reel-hole:nth-child(1) { transform: translate(-50%, -50%) rotate(0deg) translateX(55px) rotate(0deg); }
+    .reel-hole:nth-child(2) { transform: translate(-50%, -50%) rotate(60deg) translateX(55px) rotate(-60deg); }
+    .reel-hole:nth-child(3) { transform: translate(-50%, -50%) rotate(120deg) translateX(55px) rotate(-120deg); }
+    .reel-hole:nth-child(4) { transform: translate(-50%, -50%) rotate(180deg) translateX(55px) rotate(-180deg); }
+    .reel-hole:nth-child(5) { transform: translate(-50%, -50%) rotate(240deg) translateX(55px) rotate(-240deg); }
+    .reel-hole:nth-child(6) { transform: translate(-50%, -50%) rotate(300deg) translateX(55px) rotate(-300deg); }
+    
+    .bolt {
+        width: 10px;
+        height: 10px;
+    }
+    
+    .bolt:nth-child(7) { transform: translate(-50%, -50%) rotate(30deg) translateX(70px) rotate(-30deg); }
+    .bolt:nth-child(8) { transform: translate(-50%, -50%) rotate(90deg) translateX(70px) rotate(-90deg); }
+    .bolt:nth-child(9) { transform: translate(-50%, -50%) rotate(150deg) translateX(70px) rotate(-150deg); }
+    .bolt:nth-child(10) { transform: translate(-50%, -50%) rotate(210deg) translateX(70px) rotate(-210deg); }
+    .bolt:nth-child(11) { transform: translate(-50%, -50%) rotate(270deg) translateX(70px) rotate(-270deg); }
+    .bolt:nth-child(12) { transform: translate(-50%, -50%) rotate(330deg) translateX(70px) rotate(-330deg); }
+    
+    .inner-gear {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .center-axle {
+        width: 25px;
+        height: 25px;
+    }
+    
+    .film-navigation {
+        margin: 0;
+        width: 100%;
+        height: 120px;
+    }
+    
+    .nav-frames {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    
+    .main-title {
+        font-size: 2.5rem;
+    }
+    
+    .page-content {
+        padding: 2rem 1rem;
+    }
+    
+    .content-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .products-showcase,
+    .lore-timeline,
+    .chronicles,
+    .events-calendar {
+        grid-template-columns: 1fr;
+    }
+    
+    .frame-cell {
+        min-width: 90px;
+        padding: 0.7rem 0.5rem;
+    }
+    
+    .frame-title {
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .nav-frames {
+        gap: 0.3rem;
+    }
+    
+    .frame-cell {
+        min-width: 70px;
+        padding: 0.5rem 0.3rem;
+    }
+    
+    .frame-title {
+        font-size: 0.8rem;
+    }
+    
+    .frame-number {
+        font-size: 0.7rem;
+    }
+}
