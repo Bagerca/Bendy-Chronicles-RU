@@ -87,14 +87,21 @@ class FilmNavigation {
             setTimeout(() => filmStrip.classList.remove('fast-move'), 800);
         }
         
-        // Быстрое вращение бобин
+        // Ускоренное вращение бобин при переключении
         const reels = document.querySelectorAll('.reel-outer');
         reels.forEach(reel => {
-            reel.style.animationPlayState = 'paused';
-            reel.classList.add('fast-spin');
+            reel.style.animationDuration = '0.8s';
             setTimeout(() => {
-                reel.classList.remove('fast-spin');
-                reel.style.animationPlayState = 'running';
+                reel.style.animationDuration = '30s';
+            }, 800);
+        });
+        
+        // Ускорение внутренней спирали
+        const spirals = document.querySelectorAll('.inner-spiral');
+        spirals.forEach(spiral => {
+            spiral.style.animationDuration = '0.4s';
+            setTimeout(() => {
+                spiral.style.animationDuration = '15s';
             }, 800);
         });
         
