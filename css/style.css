@@ -62,227 +62,11 @@ body {
     padding: 0 2rem;
 }
 
-/* ПРЕМИУМ БОБИНЫ */
-.film-reel {
+/* Плейсхолдеры для будущих бобин */
+.film-reel-placeholder {
     width: 200px;
     height: 200px;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 30;
     flex-shrink: 0;
-}
-
-.reel-outer {
-    width: 180px;
-    height: 180px;
-    border: 8px solid transparent;
-    border-radius: 50%;
-    position: relative;
-    background: 
-        radial-gradient(circle at 30% 30%, #3a2c1a 0%, #1a140a 100%),
-        repeating-linear-gradient(45deg, 
-            transparent, 
-            transparent 5px, 
-            rgba(0,0,0,0.2) 5px, 
-            rgba(0,0,0,0.2) 10px
-        );
-    box-shadow: 
-        inset 0 0 60px rgba(0,0,0,0.9),
-        0 0 50px rgba(255, 179, 71, 0.5),
-        0 0 0 3px rgba(255, 179, 71, 0.3),
-        0 0 100px rgba(255, 179, 71, 0.2);
-    animation: reelRotate 25s linear infinite;
-    overflow: hidden;
-}
-
-/* Текстурированный обод */
-.reel-outer::before {
-    content: '';
-    position: absolute;
-    top: -5px;
-    left: -5px;
-    right: -5px;
-    bottom: -5px;
-    background: 
-        repeating-radial-gradient(
-            circle at 20% 20%,
-            rgba(255, 179, 71, 0.1),
-            rgba(255, 179, 71, 0.1) 2px,
-            transparent 2px,
-            transparent 8px
-        );
-    border-radius: 50%;
-    z-index: -1;
-}
-
-.reel-inner {
-    width: 100%;
-    height: 100%;
-    position: relative;
-    animation: reelRotate 20s linear infinite reverse;
-}
-
-/* 6 отверстий - премиум стиль */
-.reel-hole {
-    position: absolute;
-    width: 18px;
-    height: 18px;
-    background: 
-        radial-gradient(circle at 30% 30%, 
-            var(--primary-gold) 0%, 
-            #ffd700 100%);
-    border-radius: 50%;
-    box-shadow: 
-        0 0 20px var(--secondary-gold),
-        inset 0 0 10px rgba(255, 255, 255, 0.5),
-        0 0 0 2px rgba(0,0,0,0.5);
-    top: 50%;
-    left: 50%;
-    transform-origin: 0 0;
-    z-index: 2;
-}
-
-/* Расположение 6 отверстий */
-.reel-hole:nth-child(1) { transform: translate(-50%, -50%) rotate(0deg) translateX(70px) rotate(0deg); }
-.reel-hole:nth-child(2) { transform: translate(-50%, -50%) rotate(60deg) translateX(70px) rotate(-60deg); }
-.reel-hole:nth-child(3) { transform: translate(-50%, -50%) rotate(120deg) translateX(70px) rotate(-120deg); }
-.reel-hole:nth-child(4) { transform: translate(-50%, -50%) rotate(180deg) translateX(70px) rotate(-180deg); }
-.reel-hole:nth-child(5) { transform: translate(-50%, -50%) rotate(240deg) translateX(70px) rotate(-240deg); }
-.reel-hole:nth-child(6) { transform: translate(-50%, -50%) rotate(300deg) translateX(70px) rotate(-300deg); }
-
-/* Болты крепления */
-.bolt {
-    position: absolute;
-    width: 12px;
-    height: 12px;
-    background: 
-        radial-gradient(circle at 30% 30%, 
-            #888 0%, 
-            #555 100%);
-    border-radius: 50%;
-    top: 50%;
-    left: 50%;
-    transform-origin: 0 0;
-    box-shadow: 
-        0 0 5px rgba(0,0,0,0.8),
-        inset 0 0 3px rgba(255, 255, 255, 0.3);
-    z-index: 2;
-}
-
-.bolt::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 6px;
-    height: 6px;
-    background: 
-        linear-gradient(135deg, 
-            transparent 40%, 
-            #333 40%, 
-            #333 60%, 
-            transparent 60%),
-        linear-gradient(45deg, 
-            transparent 40%, 
-            #333 40%, 
-            #333 60%, 
-            transparent 60%);
-    border-radius: 1px;
-}
-
-.bolt:nth-child(7) { transform: translate(-50%, -50%) rotate(30deg) translateX(85px) rotate(-30deg); }
-.bolt:nth-child(8) { transform: translate(-50%, -50%) rotate(90deg) translateX(85px) rotate(-90deg); }
-.bolt:nth-child(9) { transform: translate(-50%, -50%) rotate(150deg) translateX(85px) rotate(-150deg); }
-.bolt:nth-child(10) { transform: translate(-50%, -50%) rotate(210deg) translateX(85px) rotate(-210deg); }
-.bolt:nth-child(11) { transform: translate(-50%, -50%) rotate(270deg) translateX(85px) rotate(-270deg); }
-.bolt:nth-child(12) { transform: translate(-50%, -50%) rotate(330deg) translateX(85px) rotate(-330deg); }
-
-/* Внутренний механизм */
-.inner-gear {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 100px;
-    height: 100px;
-    border: 3px solid rgba(255, 179, 71, 0.5);
-    border-radius: 50%;
-    background: 
-        repeating-conic-gradient(
-            from 0deg,
-            rgba(255, 179, 71, 0.1) 0deg 10deg,
-            transparent 10deg 20deg
-        );
-    box-shadow: 
-        inset 0 0 20px rgba(255, 179, 71, 0.2),
-        0 0 15px rgba(255, 179, 71, 0.1);
-    animation: gearRotate 10s linear infinite reverse;
-    z-index: 1;
-}
-
-/* Центральная ось */
-.center-axle {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 30px;
-    height: 30px;
-    background: 
-        radial-gradient(circle at 30% 30%, 
-            #888 0%, 
-            #555 100%);
-    border-radius: 50%;
-    box-shadow: 
-        0 0 10px rgba(0,0,0,0.8),
-        inset 0 0 5px rgba(255, 255, 255, 0.2);
-    z-index: 3;
-}
-
-.center-axle::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 10px;
-    height: 10px;
-    background: #333;
-    border-radius: 50%;
-}
-
-/* Эффект свечения */
-.glow-effect {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    border-radius: 50%;
-    background: 
-        radial-gradient(circle at 30% 30%, 
-            rgba(255, 179, 71, 0.2) 0%, 
-            transparent 70%);
-    animation: glowPulse 4s ease-in-out infinite;
-    z-index: -1;
-}
-
-@keyframes reelRotate {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-}
-
-@keyframes gearRotate {
-    from { transform: translate(-50%, -50%) rotate(0deg); }
-    to { transform: translate(-50%, -50%) rotate(360deg); }
-}
-
-@keyframes glowPulse {
-    0%, 100% { opacity: 0.5; }
-    50% { opacity: 0.8; }
 }
 
 /* Навигация - кинопленка */
@@ -686,7 +470,7 @@ h2 {
     font-size: 0.9rem;
 }
 
-/* Адаптивность для бобин и остального контента */
+/* Адаптивность */
 @media (max-width: 1024px) {
     .main-title {
         font-size: 3rem;
@@ -716,49 +500,9 @@ h2 {
         gap: 1rem;
     }
     
-    /* Адаптация бобин для мобильных */
-    .film-reel {
+    .film-reel-placeholder {
         width: 150px;
         height: 150px;
-    }
-    
-    .reel-outer {
-        width: 130px;
-        height: 130px;
-    }
-    
-    .reel-hole {
-        width: 14px;
-        height: 14px;
-    }
-    
-    .reel-hole:nth-child(1) { transform: translate(-50%, -50%) rotate(0deg) translateX(55px) rotate(0deg); }
-    .reel-hole:nth-child(2) { transform: translate(-50%, -50%) rotate(60deg) translateX(55px) rotate(-60deg); }
-    .reel-hole:nth-child(3) { transform: translate(-50%, -50%) rotate(120deg) translateX(55px) rotate(-120deg); }
-    .reel-hole:nth-child(4) { transform: translate(-50%, -50%) rotate(180deg) translateX(55px) rotate(-180deg); }
-    .reel-hole:nth-child(5) { transform: translate(-50%, -50%) rotate(240deg) translateX(55px) rotate(-240deg); }
-    .reel-hole:nth-child(6) { transform: translate(-50%, -50%) rotate(300deg) translateX(55px) rotate(-300deg); }
-    
-    .bolt {
-        width: 10px;
-        height: 10px;
-    }
-    
-    .bolt:nth-child(7) { transform: translate(-50%, -50%) rotate(30deg) translateX(70px) rotate(-30deg); }
-    .bolt:nth-child(8) { transform: translate(-50%, -50%) rotate(90deg) translateX(70px) rotate(-90deg); }
-    .bolt:nth-child(9) { transform: translate(-50%, -50%) rotate(150deg) translateX(70px) rotate(-150deg); }
-    .bolt:nth-child(10) { transform: translate(-50%, -50%) rotate(210deg) translateX(70px) rotate(-210deg); }
-    .bolt:nth-child(11) { transform: translate(-50%, -50%) rotate(270deg) translateX(70px) rotate(-270deg); }
-    .bolt:nth-child(12) { transform: translate(-50%, -50%) rotate(330deg) translateX(70px) rotate(-330deg); }
-    
-    .inner-gear {
-        width: 80px;
-        height: 80px;
-    }
-    
-    .center-axle {
-        width: 25px;
-        height: 25px;
     }
     
     .film-navigation {
