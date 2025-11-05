@@ -124,16 +124,4 @@ class FilmNavigation {
         });
         
         const targetElement = document.getElementById(targetPage);
-        if (targetElement) {
-            targetElement.classList.add('active');
-        }
-        
-        this.currentPage = targetPage;
-    }
-}
-
-// Инициализация
-let filmNavigation;
-document.addEventListener('DOMContentLoaded', () => {
-    filmNavigation = new FilmNavigation();
-});
+        if (targetElement
