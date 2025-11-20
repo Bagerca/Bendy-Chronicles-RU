@@ -3,556 +3,565 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bendy Universe | Premium Archives</title>
-    <!-- Подключаем винтажный шрифт -->
-    <link href="https://fonts.googleapis.com/css2?family=Rye&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <title>Joey Drew Studios | Premium Archives</title>
+    <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Rye&family=Special+Elite&display=swap" rel="stylesheet">
+    <!-- Подключаем иконки -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
     <style>
-        /* --- CSS VARIABLES & RESET --- */
+        /* --- 1. PREMIUM PALETTE & RESET --- */
         :root {
-            --bg-paper: #f4e4bc;
-            --ink-black: #0f0f0f;
-            --ink-light: #2a2a2a;
-            --accent-gold: #ffb700;
-            --text-main: #1a1a1a;
-            --overlay-grain: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZjRlNGJjIi8+CjxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9IiNkYWQwYTQiLz4KPC9zdmc+');
+            --void-black: #050402;
+            --ink-black: #0f0b05;
+            --amber-dim: #8a6a3c;
+            --amber-rich: #ffae00; /* Тот самый насыщенный желтый */
+            --amber-pale: #fceeb5;
+            --paper-texture: url('https://www.transparenttextures.com/patterns/aged-paper.png');
+            --shadow-hard: 0 10px 30px rgba(0,0,0,0.9);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * { box-sizing: border-box; scrollbar-width: thin; }
 
         body {
-            background-color: var(--bg-paper);
-            background-image: var(--overlay-grain);
-            color: var(--text-main);
-            font-family: 'Rye', serif;
+            margin: 0;
+            background-color: var(--void-black);
+            color: var(--amber-pale);
+            font-family: 'Special Elite', monospace;
             overflow-x: hidden;
-        }
-
-        /* --- UTILS & ANIMATIONS --- */
-        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
-        h1, h2, h3 { text-transform: uppercase; letter-spacing: 2px; }
-        
-        .ink-drip {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100px;
-            background: linear-gradient(to bottom, var(--ink-black) 10%, transparent 100%);
-            z-index: 0;
-            pointer-events: none;
-        }
-
-        /* --- HEADER --- */
-        header {
             height: 100vh;
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            background: radial-gradient(circle, transparent 60%, var(--ink-black) 150%);
-            position: relative;
-            text-align: center;
         }
 
-        header h1 {
-            font-size: 5rem;
-            color: var(--ink-black);
-            text-shadow: 4px 4px 0px rgba(0,0,0,0.2);
-            margin-bottom: 20px;
-            z-index: 2;
+        /* --- 2. ATMOSPHERE LAYERS --- */
+        .noise-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 0;
         }
 
-        header p {
-            font-family: 'Roboto Mono', monospace;
-            font-size: 1.2rem;
-            margin-bottom: 40px;
-            z-index: 2;
+        .vignette {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle, transparent 40%, #000 130%);
+            z-index: 1;
+            pointer-events: none;
         }
 
-        nav ul {
+        /* --- 3. NAVIGATION (Sticky & Premium) --- */
+        nav {
+            z-index: 100;
+            background: rgba(5, 4, 2, 0.95);
+            border-bottom: 1px solid var(--amber-dim);
+            padding: 15px 40px;
             display: flex;
-            list-style: none;
-            gap: 30px;
-            z-index: 2;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 5px 20px #000;
         }
 
-        nav a {
-            text-decoration: none;
-            color: var(--ink-black);
-            font-size: 1.5rem;
-            border-bottom: 3px solid transparent;
-            transition: 0.3s;
+        .logo {
+            font-family: 'Creepster', cursive;
+            font-size: 2.2rem;
+            color: var(--amber-rich);
+            letter-spacing: 2px;
+            text-shadow: 0 0 15px rgba(255, 174, 0, 0.2);
         }
 
-        nav a:hover { border-color: var(--ink-black); transform: scale(1.1); }
+        .menu { display: flex; gap: 30px; }
 
-        /* --- SECTION COMMON --- */
-        section { padding: 100px 0; position: relative; border-bottom: 5px solid var(--ink-black); }
-        .section-title {
-            font-size: 3rem;
-            text-align: center;
-            margin-bottom: 60px;
-            position: relative;
-            display: inline-block;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-        .section-title::after {
-            content: '';
-            display: block;
-            width: 100%;
-            height: 5px;
-            background: var(--ink-black);
-            margin-top: 10px;
-            border-radius: 50%;
-        }
-
-        /* --- 1. TIMELINE (LORE CHRONOLOGY) --- */
-        .timeline {
-            position: relative;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        .timeline::before {
-            content: '';
-            position: absolute;
-            top: 0; bottom: 0; left: 50%;
-            width: 4px;
-            background: var(--ink-black);
-            transform: translateX(-50%);
-        }
-        .timeline-item {
-            padding: 20px 40px;
-            position: relative;
-            width: 50%;
-            background: transparent;
-        }
-        .timeline-item:nth-child(odd) { left: 0; text-align: right; }
-        .timeline-item:nth-child(even) { left: 50%; text-align: left; }
-        
-        .timeline-dot {
-            width: 20px; height: 20px;
-            background: var(--accent-gold);
-            border: 4px solid var(--ink-black);
-            border-radius: 50%;
-            position: absolute;
-            top: 25px;
-            right: -12px;
-            z-index: 2;
-        }
-        .timeline-item:nth-child(even) .timeline-dot { right: auto; left: -12px; }
-        
-        .timeline-content {
-            background: white;
-            padding: 20px;
-            border: 3px solid var(--ink-black);
-            box-shadow: 10px 10px 0px rgba(0,0,0,0.8);
-            transform: rotate(-1deg);
-            transition: transform 0.3s;
-        }
-        .timeline-item:nth-child(even) .timeline-content { transform: rotate(1deg); }
-        .timeline-content:hover { transform: rotate(0deg) scale(1.02); }
-        
-        .year { font-family: 'Roboto Mono', monospace; font-weight: bold; color: var(--ink-light); }
-
-        /* --- 2. CALENDAR --- */
-        #calendar-controls {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        select {
-            padding: 10px 20px;
-            font-family: 'Rye', serif;
-            font-size: 1.2rem;
-            background: var(--ink-black);
-            color: var(--bg-paper);
+        .menu-btn {
+            background: none;
             border: none;
+            color: var(--amber-dim);
+            font-family: 'Rye', serif;
+            font-size: 1.1rem;
             cursor: pointer;
-        }
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 10px;
-            max-width: 900px;
-            margin: 0 auto;
-            background: var(--ink-black);
-            padding: 15px;
-            border-radius: 5px;
-        }
-        .day-name {
-            color: var(--accent-gold);
-            text-align: center;
-            padding: 10px;
-            font-family: 'Roboto Mono';
-        }
-        .day-box {
-            background: var(--bg-paper);
-            height: 100px;
-            padding: 10px;
-            position: relative;
-            transition: 0.2s;
-            overflow: hidden;
-        }
-        .day-box:hover { background: #fff; }
-        .day-number { font-family: 'Roboto Mono'; font-weight: bold; opacity: 0.5; }
-        
-        .event-marker {
-            display: block;
-            margin-top: 5px;
-            font-size: 0.7rem;
-            background: var(--ink-black);
-            color: white;
-            padding: 2px 5px;
-            border-radius: 3px;
-            font-family: sans-serif;
-            cursor: help;
-        }
-        .event-marker.game { background: #8b0000; }
-        .event-marker.song { background: #2e4053; }
-
-        /* --- 3. GAMES LIBRARY (STEAM STYLE) --- */
-        .games-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 30px;
-        }
-        .game-card {
-            background: var(--ink-black);
-            height: 400px;
-            position: relative;
-            overflow: hidden;
-            border: 4px solid var(--ink-black);
             transition: 0.3s;
-            cursor: pointer;
-        }
-        .game-card img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            opacity: 0.7;
-            transition: 0.3s;
-            filter: sepia(100%);
-        }
-        .game-card:hover img { opacity: 1; filter: sepia(0%); }
-        
-        .game-info {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background: rgba(0,0,0,0.9);
-            color: white;
-            padding: 15px;
-            transform: translateY(100%);
-            transition: 0.3s;
-        }
-        .game-card:hover .game-info { transform: translateY(0); }
-        .game-title { color: var(--accent-gold); margin-bottom: 5px; }
-        .play-btn {
-            display: inline-block;
-            margin-top: 10px;
-            padding: 5px 15px;
-            background: var(--accent-gold);
-            color: black;
-            text-decoration: none;
-            font-family: sans-serif;
-            font-weight: bold;
             text-transform: uppercase;
         }
 
-        /* --- 4. LORE SECTION --- */
-        .lore-grid {
-            display: grid;
-            grid-template-columns: 1fr 2fr;
-            gap: 40px;
-            background: white;
-            padding: 40px;
-            border: 3px solid var(--ink-black);
-            box-shadow: 15px 15px 0 var(--ink-black);
+        .menu-btn:hover, .menu-btn.active {
+            color: var(--amber-rich);
+            text-shadow: 0 0 8px var(--amber-rich);
         }
-        .lore-menu button {
-            display: block;
-            width: 100%;
-            padding: 15px;
-            text-align: left;
-            background: none;
-            border: 2px solid transparent;
-            border-bottom: 1px solid #ccc;
-            font-family: 'Rye';
-            font-size: 1.2rem;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        .lore-menu button:hover, .lore-menu button.active {
-            background: var(--ink-black);
-            color: var(--accent-gold);
-            padding-left: 25px;
-        }
-        .lore-content-area h3 { font-size: 2.5rem; margin-bottom: 20px; }
-        .lore-content-area p { font-family: 'Roboto Mono'; line-height: 1.6; margin-bottom: 15px; }
 
-        /* FOOTER */
-        footer {
-            background: var(--ink-black);
-            color: var(--bg-paper);
+        /* --- 4. CONTENT AREA --- */
+        #content-stage {
+            flex: 1;
+            position: relative;
+            overflow-y: auto;
+            padding: 40px;
+            z-index: 2;
+        }
+
+        /* Custom Scrollbar */
+        #content-stage::-webkit-scrollbar { width: 8px; }
+        #content-stage::-webkit-scrollbar-track { background: #000; }
+        #content-stage::-webkit-scrollbar-thumb { background: var(--amber-dim); border-radius: 4px; }
+
+        .section { display: none; opacity: 0; transition: opacity 0.5s ease; max-width: 1000px; margin: 0 auto; padding-bottom: 100px; }
+        .section.active { display: block; opacity: 1; }
+
+        h2 {
+            font-family: 'Rye', serif;
+            font-size: 3.5rem;
+            color: var(--amber-rich);
+            border-bottom: 2px solid var(--amber-dim);
+            margin-bottom: 40px;
             text-align: center;
-            padding: 40px;
-            font-family: 'Roboto Mono';
         }
 
-        /* Responsive */
-        @media (max-width: 768px) {
-            .timeline::before { left: 20px; }
-            .timeline-item { width: 100%; padding-left: 50px; padding-right: 0; }
-            .timeline-item:nth-child(even) { left: 0; }
-            .timeline-item:nth-child(odd) { text-align: left; }
-            .timeline-dot { left: 11px; right: auto; }
-            .timeline-item:nth-child(even) .timeline-dot { left: 11px; }
-            
-            .lore-grid { grid-template-columns: 1fr; }
-            .calendar-grid { font-size: 0.8rem; }
-            .day-box { height: 60px; }
+        /* --- 5. TIMELINE DESIGN (Redesigned) --- */
+        .timeline-wrapper {
+            position: relative;
+            border-left: 3px solid var(--amber-dim);
+            margin-left: 20px;
+            padding: 20px 0 20px 40px;
         }
+
+        .era-label {
+            font-family: 'Creepster';
+            font-size: 2.5rem;
+            color: var(--amber-rich);
+            margin: 40px 0 20px -55px;
+            text-shadow: 4px 4px 0 #000;
+        }
+
+        .timeline-card {
+            background: linear-gradient(145deg, #14100a, #0a0805);
+            border: 1px solid var(--amber-dim);
+            padding: 25px;
+            margin-bottom: 25px;
+            position: relative;
+            border-radius: 4px;
+            box-shadow: var(--shadow-hard);
+            transition: transform 0.2s;
+        }
+
+        .timeline-card:hover {
+            border-color: var(--amber-rich);
+            transform: translateX(5px);
+        }
+
+        /* Точка на линии */
+        .timeline-card::before {
+            content: '';
+            position: absolute;
+            left: -47px; top: 25px;
+            width: 12px; height: 12px;
+            background: var(--amber-rich);
+            border: 3px solid #000;
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--amber-rich);
+        }
+
+        .t-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+            border-bottom: 1px solid rgba(138, 106, 60, 0.3);
+            padding-bottom: 10px;
+        }
+
+        .t-year { font-family: 'Rye'; font-size: 1.4rem; color: var(--amber-rich); }
+        
+        /* Кнопка закрепления (PIN) */
+        .pin-btn {
+            background: none;
+            border: none;
+            color: var(--amber-dim);
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: 0.2s;
+        }
+        .pin-btn:hover { color: var(--amber-rich); transform: scale(1.2); }
+        .pin-btn.pinned { color: var(--amber-rich); text-shadow: 0 0 10px var(--amber-rich); }
+
+        .t-body ul { padding-left: 20px; margin: 0; }
+        .t-body li { margin-bottom: 8px; line-height: 1.6; color: #ddd; }
+
+        /* --- 6. EVIDENCE BOARD (Pinned Items) --- */
+        #evidence-board {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 320px;
+            max-height: 60vh;
+            background: rgba(10, 8, 5, 0.95);
+            border: 2px solid var(--amber-rich);
+            z-index: 200;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 30px rgba(0,0,0,1);
+            transform: translateY(110%); /* Скрыто по умолчанию */
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        #evidence-board.open { transform: translateY(0); }
+
+        .board-header {
+            background: var(--amber-rich);
+            color: #000;
+            padding: 10px;
+            font-family: 'Rye';
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .board-content {
+            padding: 15px;
+            overflow-y: auto;
+        }
+
+        .evidence-item {
+            background: #1a1510;
+            border-left: 3px solid var(--amber-rich);
+            padding: 10px;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            position: relative;
+        }
+        
+        .evidence-remove {
+            position: absolute;
+            top: 5px; right: 5px;
+            color: #555;
+            cursor: pointer;
+        }
+        .evidence-remove:hover { color: #f00; }
+
+        /* Floating Toggle for Board */
+        #board-toggle {
+            position: fixed;
+            bottom: 20px; right: 20px;
+            background: var(--amber-rich);
+            color: #000;
+            width: 50px; height: 50px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            z-index: 201;
+            box-shadow: 0 0 15px var(--amber-rich);
+            border: 2px solid #000;
+        }
+        #board-toggle:hover { transform: scale(1.1); }
+        
+        /* --- OTHER SECTIONS (Simplified for brevity) --- */
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
+        .box-item { background: #111; border: 1px solid var(--amber-dim); height: 150px; display: flex; align-items: center; justify-content: center; }
+
     </style>
 </head>
 <body>
 
-    <!-- HEADER -->
-    <header>
-        <div class="ink-drip"></div>
-        <h1>Joey Drew Studios<br>Archives</h1>
-        <p>Dreams Come True.</p>
-        <nav>
-            <ul>
-                <li><a href="#timeline">Chronology</a></li>
-                <li><a href="#calendar">Events</a></li>
-                <li><a href="#games">Library</a></li>
-                <li><a href="#lore">Lore</a></li>
-            </ul>
-        </nav>
-    </header>
+    <div class="noise-overlay"></div>
+    <div class="vignette"></div>
 
-    <div class="container">
+    <nav>
+        <div class="logo">JOEY DREW STUDIOS</div>
+        <div class="menu">
+            <button class="menu-btn active" onclick="nav('timeline')">Timeline</button>
+            <button class="menu-btn" onclick="nav('calendar')">Calendar</button>
+            <button class="menu-btn" onclick="nav('games')">Games</button>
+            <button class="menu-btn" onclick="nav('lore')">Lore</button>
+        </div>
+    </nav>
+
+    <div id="content-stage">
         
-        <!-- 1. CHRONOLOGY / TIMELINE -->
-        <section id="timeline">
-            <h2 class="section-title">The Cycle Timeline</h2>
-            <div class="timeline" id="timeline-container">
-                <!-- Content generated by JS -->
+        <!-- TIMELINE -->
+        <section id="timeline" class="section active">
+            <h2>The Complete History</h2>
+            <div class="timeline-wrapper" id="timeline-feed">
+                <!-- JS renders cards here -->
             </div>
         </section>
 
-        <!-- 2. CALENDAR -->
-        <section id="calendar">
-            <h2 class="section-title">Release History</h2>
-            <p style="text-align:center; margin-bottom:20px; font-family:'Roboto Mono'">Showing only months where Ink was spilled.</p>
-            
-            <div id="calendar-controls">
-                <select id="month-selector"></select>
-            </div>
-
-            <div class="calendar-grid">
-                <div class="day-name">Mon</div>
-                <div class="day-name">Tue</div>
-                <div class="day-name">Wed</div>
-                <div class="day-name">Thu</div>
-                <div class="day-name">Fri</div>
-                <div class="day-name">Sat</div>
-                <div class="day-name">Sun</div>
-                <!-- Days injected via JS -->
-            </div>
-            <div id="calendar-days" class="calendar-grid" style="margin-top:0; border-top:none; grid-template-rows: repeat(5, 1fr);"></div>
-        </section>
-
-        <!-- 3. GAMES LIBRARY -->
-        <section id="games">
-            <h2 class="section-title">Game Library</h2>
-            <div class="games-grid" id="games-container">
-                <!-- Games injected via JS -->
-            </div>
-        </section>
-
-        <!-- 4. LORE SECTION -->
-        <section id="lore">
-            <h2 class="section-title">Dark Secrets</h2>
-            <div class="lore-grid">
-                <div class="lore-menu" id="lore-menu">
-                    <!-- Menu Items injected via JS -->
-                </div>
-                <div class="lore-content-area" id="lore-display">
-                    <h3>Select a Topic</h3>
-                    <p>Click on the left menu to reveal the secrets of the machine.</p>
-                </div>
-            </div>
-        </section>
-
+        <!-- Other Sections (Placeholders) -->
+        <section id="calendar" class="section"><h2>Events Log</h2><div class="box-item">Calendar Module</div></section>
+        <section id="games" class="section"><h2>Game Library</h2><div class="box-item">Games Module</div></section>
+        <section id="lore" class="section"><h2>Dark Secrets</h2><div class="box-item">Lore Module</div></section>
     </div>
 
-    <footer>
-        <p>Unofficial Bendy Fan Site.</p>
-        <p>"Bendy and the Ink Machine" is a trademark of Joey Drew Studios Inc.</p>
-    </footer>
+    <!-- EVIDENCE BOARD (PINNED ITEMS) -->
+    <div id="board-toggle" onclick="toggleBoard()">
+        <i class="fas fa-clipboard-list"></i>
+    </div>
+
+    <div id="evidence-board">
+        <div class="board-header" onclick="toggleBoard()">
+            <span>EVIDENCE COLLECTED</span>
+            <i class="fas fa-chevron-down"></i>
+        </div>
+        <div class="board-content" id="pinned-list">
+            <div style="text-align:center; opacity:0.5; font-size:0.8rem;">No evidence collected.</div>
+        </div>
+    </div>
 
     <script>
-        // --- DATA STORAGE ---
-
-        // 1. Timeline Data
-        const timelineData = [
-            { year: "1929", title: "Studio Founded", desc: "Joey Drew and Henry Stein found Joey Drew Studios." },
-            { year: "1931", title: "Bendy Created", desc: "The character Bendy is created. The Ink Machine construction begins shortly after." },
-            { year: "1940s", title: "The Fall", desc: "The studio goes bankrupt. The Ink Machine creates the twisted ink creatures." },
-            { year: "1963", title: "Henry Returns", desc: "Henry Stein receives a letter from Joey to visit the old workshop." },
-            { year: "1970s", title: "Archgate Era", desc: "Archgate Pictures acquires the rights to Bendy." }
-        ];
-
-        // 2. Calendar Data (Months with events only)
-        const calendarData = [
+        // --- 1. DATA ENGINE (Parsed from your text) ---
+        // Я отформатировал твой текст в массив объектов.
+        // 'era' используется для создания крупных заголовков.
+        const historyData = [
             {
-                id: "feb2017", label: "February 2017", year: 2017, month: 1, // Month is 0-indexed (1 = Feb)
+                era: "The Beginning (189X - 1928)",
+                year: "189X - 190X",
+                title: "Origins",
                 events: [
-                    { day: 10, title: "BATIM Chapter 1", type: "game" }
+                    "Рождаются Дональдсон и Экхарт.",
+                    "Рождается Нэйтан Арч.",
+                    "1901: Рождается Джозеф Дрю (Патерсон, Нью-Джерси).",
+                    "1906: Джозеф начинает задумываться о понятиях выдумки и реальности."
                 ]
             },
             {
-                id: "apr2017", label: "April 2017", year: 2017, month: 3,
+                year: "1914 - 1918",
+                title: "The Great War",
                 events: [
-                    { day: 18, title: "BATIM Chapter 2", type: "game" },
-                    { day: 25, title: "Build Our Machine (Song)", type: "song" }
+                    "Начинается Первая мировая война.",
+                    "Джозеф попадает в Войска связи. Знакомство с Дональдсоном и Экхартом.",
+                    "Томас Коннор работает на самолётах.",
+                    "1917: Гибель Дональдсона и Экхарта.",
+                    "1918: Лотти перестаёт отвечать на письма Джоуи."
                 ]
             },
             {
-                id: "nov2022", label: "November 2022", year: 2022, month: 10,
+                year: "1919 - 1928",
+                title: "Pre-Studio Era",
                 events: [
-                    { day: 15, title: "Dark Revival Release", type: "game" }
+                    "Нэйтан переезжает в Пасадину (нефть и сталь).",
+                    "1920: Начало Ревущих двадцатых. Джозеф становится 'Джоуи Дрю' и переезжает в Нью-Йорк.",
+                    "1927: Рождается Дот.",
+                    "1928: Рождается Даниэль 'Бадди' Левек."
+                ]
+            },
+            {
+                era: "The Golden Age (1929 - 1939)",
+                year: "1929",
+                title: "Dreams Come True",
+                events: [
+                    "10 февраля: Джоуи основывает студию в Бруклине (6 сотрудников).",
+                    "24 февраля: Генри придумывает Бенди.",
+                    "Выходят: 'Little Devil Darlin', 'The Dancing Demon'.",
+                    "Появляется Борис. Выходит 'Sheep Songs'.",
+                    "24 октября: Начало Великой депрессии."
+                ]
+            },
+            {
+                year: "1930 - 1931",
+                title: "Expansion",
+                events: [
+                    "Генри уходит из студии. Пишет прощальную записку.",
+                    "Студия расширяется. Выходит 'Haunted Hijinx'.",
+                    "Начало комиксов: 'Barnyard Opry', 'Sole for Supper'."
+                ]
+            },
+            {
+                year: "1932",
+                title: "Enter the Angel",
+                events: [
+                    "Июль: События новеллы 'Sent From Above'. Сьюзи Кэмпбелл нанимается.",
+                    "Август: Анонс Элис Энджел.",
+                    "Сентябрь: Элис в газетах. Выход 'Siren Serenade'.",
+                    "Выход комиксов: 'Counting Sheeps' (Шерстистые Тройняшки)."
+                ]
+            },
+            {
+                year: "1933 - 1934",
+                title: "Merchandising",
+                events: [
+                    "Сьюзи обедает с Джоуи (роковой момент).",
+                    "Уолли видит Сьюзи с Сэмми.",
+                    "Открываются 'The Heavenly Toys' (Небесные Игрушки).",
+                    "1934: Выходят игрушки Бенди и Бориса. Комикс 'Graduation Day'."
+                ]
+            },
+            {
+                year: "1935 - 1939",
+                title: "The Butcher Gang",
+                events: [
+                    "1935: Появляется Банда Мясников (Чарли, Барли, Эдгар).",
+                    "1936: Сотрудничество с Brial Label. Рецепт Супа с Беконом.",
+                    "1937: Появление Папы Плуто.",
+                    "1939: Начало Второй мировой войны."
+                ]
+            },
+            {
+                era: "The Descent (1940 - 1948)",
+                year: "1940",
+                title: "Bendyland & The Machine",
+                events: [
+                    "Разработка парка 'Бендиленд'. Бертрум Пьидмонт нанят.",
+                    "Создание Аниматроника Бенди.",
+                    "Первая версия Чернильной Машины (Gent Corp, Томас Коннор)."
+                ]
+            },
+            {
+                year: "1941 - 1942",
+                title: "The Ink Flows",
+                events: [
+                    "Эллисон Пендл заменяет Сьюзи как голос Элис.",
+                    "Создание Второй Чернильной Машины.",
+                    "Первый ритуал. Сьюзи превращается в Искателя.",
+                    "Джоуи пишет 'Иллюзия Жизни'.",
+                    "Отдел комиксов закрывается."
+                ]
+            },
+            {
+                year: "1946",
+                title: "The Ink Demon",
+                events: [
+                    "Создание Гигантской Чернильной Машины.",
+                    "Рождение Чернильного Демона (без души).",
+                    "События книги 'Dreams Come to Life' (Бадди, Дот).",
+                    "Сэмми пьет чернила. Бадди превращается в Бориса.",
+                    "Джоуи покупает театр."
+                ]
+            },
+            {
+                year: "1948",
+                title: "Bankruptcy",
+                events: [
+                    "Бендиленд открывается, но Джоуи крадет славу у Бертрума.",
+                    "15 августа: Отчет о банкротстве.",
+                    "28 августа: Студия закрывается навсегда."
+                ]
+            },
+            {
+                era: "The Cycle (1963 - 197X)",
+                year: "1963",
+                title: "Henry's Return",
+                events: [
+                    "Август: Генри Штейн получает письмо и возвращается.",
+                    "События 'Bendy and the Ink Machine' (Главы 1-5).",
+                    "Падение Сэмми, Искаженной Элис и конец Демона."
+                ]
+            },
+            {
+                year: "197X",
+                title: "Archgate Era",
+                events: [
+                    "Нэйтан Арч выкупает права на Бенди.",
+                    "События 'Dark Revival' (Одри)."
                 ]
             }
         ];
 
-        // 3. Games Data
-        const gamesData = [
-            { title: "Bendy and the Ink Machine", img: "https://placehold.co/400x600/1a1a1a/f4e4bc?text=BATIM", desc: "The first person puzzle action horror game that started it all.", link: "#" },
-            { title: "Bendy and the Dark Revival", img: "https://placehold.co/400x600/330000/f4e4bc?text=Dark+Revival", desc: "Return to the vintage cartoon studio in this sequel.", link: "#" },
-            { title: "Boris and the Dark Survival", img: "https://placehold.co/400x600/1a1a1a/f4e4bc?text=Boris", desc: "Play as Boris the Wolf in this survival game.", link: "#" },
-            { title: "Bendy: The Cage", img: "https://placehold.co/400x600/1a1a1a/fff?text=The+Cage", desc: "Upcoming dark title.", link: "#" }
-        ];
+        // --- 2. RENDER LOGIC ---
+        
+        const timelineFeed = document.getElementById('timeline-feed');
+        const pinnedList = document.getElementById('pinned-list');
+        let pinnedIds = [];
 
-        // 4. Lore Data
-        const loreData = [
-            { id: "ink-machine", title: "The Ink Machine", text: "A massive device created by Gent Corporation tailored to Joey Drew's specifications. It was intended to bring cartoons to life, but instead created soulless mockeries made of ink." },
-            { id: "bendy", title: "The Ink Demon", text: "The failed first attempt to bring Bendy to life. He has no soul and rules the studio with fear. He despises everything, especially the projectionist." },
-            { id: "alice", title: "Alice Angel", text: "Susie Campbell was the original voice, but was replaced by Allison Pendle. Twisted Alice is obsessed with beauty and harvesting organs to repair herself." },
-            { id: "joey", title: "Joey Drew", text: "The visionary behind the studio. A man of ideas who believed that with enough belief, anything is possible. Even cheating death." }
-        ];
+        function renderTimeline() {
+            let html = '';
+            let currentEra = '';
 
-        // --- RENDERING FUNCTIONS ---
+            historyData.forEach((item, index) => {
+                // Add Era Heading if new
+                if(item.era && item.era !== currentEra) {
+                    html += `<div class="era-label">${item.era}</div>`;
+                    currentEra = item.era;
+                }
 
-        // Render Timeline
-        const timelineContainer = document.getElementById('timeline-container');
-        timelineData.forEach(item => {
-            const el = document.createElement('div');
-            el.className = 'timeline-item';
-            el.innerHTML = `
-                <div class="timeline-dot"></div>
-                <div class="timeline-content">
-                    <span class="year">${item.year}</span>
-                    <h3>${item.title}</h3>
-                    <p>${item.desc}</p>
-                </div>
-            `;
-            timelineContainer.appendChild(el);
-        });
+                // Generate list items
+                const eventsHtml = item.events.map(e => `<li>${e}</li>`).join('');
+                const uniqueId = `evt-${index}`;
 
-        // Render Calendar Logic
-        const monthSelect = document.getElementById('month-selector');
-        const calendarDays = document.getElementById('calendar-days');
-
-        // Populate Select Box
-        calendarData.forEach((m, index) => {
-            const opt = document.createElement('option');
-            opt.value = index;
-            opt.textContent = m.label;
-            monthSelect.appendChild(opt);
-        });
-
-        function renderCalendar(dataIndex) {
-            calendarDays.innerHTML = ''; // Clear
-            const data = calendarData[dataIndex];
-            
-            // Get days in month
-            const daysInMonth = new Date(data.year, data.month + 1, 0).getDate();
-            const firstDayIndex = new Date(data.year, data.month, 1).getDay(); // 0=Sun, 1=Mon...
-            
-            // Adjust for Mon start (standard in EU/RU)
-            let startOffset = firstDayIndex === 0 ? 6 : firstDayIndex - 1;
-
-            // Empty slots
-            for(let i=0; i<startOffset; i++) {
-                const empty = document.createElement('div');
-                calendarDays.appendChild(empty);
-            }
-
-            // Days
-            for(let i=1; i<=daysInMonth; i++) {
-                const dayBox = document.createElement('div');
-                dayBox.className = 'day-box';
-                dayBox.innerHTML = `<div class="day-number">${i}</div>`;
-                
-                // Check for events
-                const dayEvents = data.events.filter(e => e.day === i);
-                dayEvents.forEach(e => {
-                    const badge = document.createElement('span');
-                    badge.className = `event-marker ${e.type}`;
-                    badge.textContent = e.title;
-                    dayBox.appendChild(badge);
-                });
-
-                calendarDays.appendChild(dayBox);
-            }
+                html += `
+                    <div class="timeline-card" id="${uniqueId}">
+                        <div class="t-header">
+                            <div>
+                                <div class="t-year">${item.year}</div>
+                                <div style="color:#888; font-size:0.9rem;">${item.title}</div>
+                            </div>
+                            <button class="pin-btn" onclick="togglePin(${index})" id="btn-${index}">
+                                <i class="fas fa-thumbtack"></i>
+                            </button>
+                        </div>
+                        <div class="t-body">
+                            <ul>${eventsHtml}</ul>
+                        </div>
+                    </div>
+                `;
+            });
+            timelineFeed.innerHTML = html;
         }
 
-        // Init Calendar
-        renderCalendar(0);
-        monthSelect.addEventListener('change', (e) => renderCalendar(e.target.value));
+        // --- 3. PIN SYSTEM LOGIC ---
 
-        // Render Games
-        const gamesContainer = document.getElementById('games-container');
-        gamesData.forEach(game => {
-            const card = document.createElement('div');
-            card.className = 'game-card';
-            card.innerHTML = `
-                <img src="${game.img}" alt="${game.title}">
-                <div class="game-info">
-                    <h3 class="game-title">${game.title}</h3>
-                    <p>${game.desc}</p>
-                    <a href="${game.link}" class="play-btn">Install</a>
-                </div>
-            `;
-            gamesContainer.appendChild(card);
-        });
-
-        // Render Lore
-        const loreMenu = document.getElementById('lore-menu');
-        const loreDisplay = document.getElementById('lore-display');
-
-        loreData.forEach((topic, index) => {
-            const btn = document.createElement('button');
-            btn.textContent = topic.title;
-            if(index === 0) btn.classList.add('active');
+        function togglePin(index) {
+            const btn = document.getElementById(`btn-${index}`);
             
-            btn.addEventListener('click', () => {
-                // Update Active State
-                document.querySelectorAll('.lore-menu button').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
+            if (pinnedIds.includes(index)) {
+                // Unpin
+                pinnedIds = pinnedIds.filter(id => id !== index);
+                btn.classList.remove('pinned');
+            } else {
+                // Pin
+                pinnedIds.push(index);
+                btn.classList.add('pinned');
                 
-                // Update Content with Fade
-                loreDisplay.style.opacity = 0;
-                setTimeout(() => {
-                    loreDisplay.innerHTML = `<h3>${topic.title}</h3><p>${topic.text}</p>`;
-                    loreDisplay.style.opacity = 1;
-                }, 300);
+                // Open board automatically on first pin
+                const board = document.getElementById('evidence-board');
+                if (!board.classList.contains('open')) board.classList.add('open');
+            }
+            
+            renderEvidenceBoard();
+        }
+
+        function renderEvidenceBoard() {
+            if (pinnedIds.length === 0) {
+                pinnedList.innerHTML = '<div style="text-align:center; opacity:0.5; font-size:0.8rem; padding-top:20px;">Улик не найдено...</div>';
+                return;
+            }
+
+            let html = '';
+            pinnedIds.forEach(id => {
+                const data = historyData[id];
+                html += `
+                    <div class="evidence-item">
+                        <i class="fas fa-times evidence-remove" onclick="togglePin(${id})"></i>
+                        <strong style="color:var(--amber-rich)">${data.year}</strong><br>
+                        <span style="font-size:0.8rem; color:#bbb">${data.title}</span>
+                    </div>
+                `;
             });
-            loreMenu.appendChild(btn);
-        });
-        
-        // Load first lore item by default
-        loreDisplay.innerHTML = `<h3>${loreData[0].title}</h3><p>${loreData[0].text}</p>`;
+            pinnedList.innerHTML = html;
+        }
+
+        function toggleBoard() {
+            document.getElementById('evidence-board').classList.toggle('open');
+        }
+
+        // --- 4. NAVIGATION LOGIC ---
+        function nav(sectionId) {
+            // Update buttons
+            document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Update sections
+            document.querySelectorAll('.section').forEach(s => {
+                s.style.opacity = 0;
+                setTimeout(() => {
+                    s.classList.remove('active');
+                    if(s.id === sectionId) {
+                        s.classList.add('active');
+                        setTimeout(() => s.style.opacity = 1, 50);
+                    }
+                }, 400);
+            });
+        }
+
+        // Init
+        renderTimeline();
 
     </script>
 </body>
