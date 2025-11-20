@@ -1,0 +1,197 @@
+:root {
+    --gold: #c5a059;
+    --dark-gold: #8a6d3b;
+    --black: #0a0a0a;
+    --bg-dark: #050505;
+    --glow: 0 0 10px rgba(197, 160, 89, 0.5);
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg-dark);
+    color: var(--gold);
+    font-family: 'Courier Prime', monospace;
+    overflow-x: hidden;
+}
+
+/* --- ШАПКА --- */
+.film-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px 0;
+    background: linear-gradient(to bottom, #000, #111);
+    border-bottom: 2px solid var(--dark-gold);
+    position: relative;
+    gap: 20px;
+}
+
+/* --- БОБИНЫ (REELS) --- */
+.reel-container {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2;
+}
+
+.reel {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 4px solid var(--gold);
+    box-shadow: var(--glow), inset 0 0 20px #000;
+    background: 
+        /* Спицы бобины */
+        conic-gradient(from 0deg, 
+            transparent 0deg, transparent 30deg, 
+            var(--gold) 30deg, var(--gold) 35deg, 
+            transparent 35deg, transparent 120deg,
+            var(--gold) 120deg, var(--gold) 125deg,
+            transparent 125deg, transparent 240deg,
+            var(--gold) 240deg, var(--gold) 245deg,
+            transparent 245deg
+        ),
+        radial-gradient(circle at center, transparent 60%, #000 61%);
+    background-color: rgba(20, 20, 20, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    /* Анимация вращения */
+    animation: spin 20s linear infinite;
+}
+
+/* Внутренний круг с текстом (не вращается) */
+.reel-inner {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    background: #000;
+    border: 2px solid var(--gold);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 3;
+    box-shadow: 0 0 15px var(--gold);
+}
+
+.reel-text {
+    font-family: 'Rye', serif; /* Шрифт в стиле вестерн/ретро */
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: var(--gold);
+    transform: rotate(-15deg); /* Стильный наклон текста */
+}
+
+/* Обратное вращение для правой бобины для симметрии */
+.reverse-spin {
+    animation: spin-reverse 20s linear infinite;
+}
+
+/* --- КИНОЛЕНТА (НАВИГАЦИЯ) --- */
+.film-strip {
+    position: relative;
+    flex-grow: 1;
+    max-width: 800px;
+    background: #1a1a1a;
+    border-top: 2px solid var(--dark-gold);
+    border-bottom: 2px solid var(--dark-gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 80px;
+    /* Текстура пленки */
+    background-image: repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.5) 2px,
+        rgba(0,0,0,0.5) 4px
+    );
+}
+
+/* Перфорация пленки (дырочки) сверху и снизу */
+.film-holes-top, .film-holes-bottom {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 10px;
+    background-image: radial-gradient(#000 40%, transparent 45%);
+    background-size: 20px 20px; /* Размер дырочек */
+    background-repeat: repeat-x;
+}
+
+.film-holes-top { top: 4px; }
+.film-holes-bottom { bottom: 4px; }
+
+.nav-list {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    justify-content: space-around;
+    z-index: 2;
+}
+
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    opacity: 0.7;
+    padding: 5px 15px;
+    border: 1px solid transparent;
+}
+
+.nav-item:hover, .nav-item.active {
+    opacity: 1;
+    text-shadow: 0 0 8px var(--gold);
+    background: rgba(197, 160, 89, 0.1);
+    border: 1px solid rgba(197, 160, 89, 0.3);
+}
+
+.nav-num {
+    font-size: 12px;
+    font-weight: bold;
+    color: var(--dark-gold);
+    margin-bottom: 4px;
+}
+
+.nav-text {
+    font-size: 16px;
+    text-transform: uppercase;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+/* --- АНИМАЦИИ --- */
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes spin-reverse {
+    from { transform: rotate(360deg); }
+    to { transform: rotate(0deg); }
+}
+
+/* Контент для примера */
+main h1 {
+    text-align: center;
+    margin-top: 50px;
+    font-family: 'Rye', serif;
+    font-size: 60px;
+    text-transform: uppercase;
+    text-shadow: 0 0 20px var(--gold);
+    letter-spacing: 5px;
+    background: -webkit-linear-gradient(#fff, var(--gold));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
