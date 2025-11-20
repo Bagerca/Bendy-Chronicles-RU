@@ -62,7 +62,7 @@
             position: fixed;
             top: 0; width: 100%;
             padding: 15px 5%;
-            background: rgba(5, 5, 5, 0.85);
+            background: rgba(5, 5, 5, 0.95);
             backdrop-filter: blur(10px);
             border-bottom: var(--border);
             display: flex;
@@ -241,26 +241,60 @@
         .insp-badge { display: inline-block; background: var(--accent-gold); color: #000; padding: 3px 8px; font-weight: bold; font-size: 0.8rem; border-radius: 4px; margin-bottom: 10px; }
         .insp-img { width: 100%; height: 250px; background-size: cover; background-position: center; border-radius: 12px; margin-top: 20px; border: var(--border); }
 
-        /* --- 7. GAMES LIBRARY --- */
-        .games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; }
+        /* --- 7. GAMES LIBRARY (UPDATED) --- */
+        .games-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); /* Чуть уже для постеров */
+            gap: 30px; 
+        }
         
         .game-card {
-            height: 450px; background: #000; border-radius: 12px; overflow: hidden;
-            position: relative; transition: 0.4s; border: var(--border); cursor: pointer;
+            aspect-ratio: 2/3; /* Формат постера */
+            background: #000; 
+            border-radius: 12px; 
+            overflow: hidden;
+            position: relative; 
+            transition: 0.4s; 
+            border: var(--border); 
+            cursor: pointer;
         }
-        .game-card img { width: 100%; height: 100%; object-fit: cover; transition: 0.4s; opacity: 0.6; filter: grayscale(100%); }
-        .game-card:hover img { opacity: 1; filter: grayscale(0%); transform: scale(1.05); }
+        .game-card img { 
+            width: 100%; height: 100%; 
+            object-fit: cover; 
+            transition: 0.4s; 
+            opacity: 0.7; 
+            filter: grayscale(80%); 
+        }
+        .game-card:hover {
+            border-color: var(--accent-gold);
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.7);
+        }
+        .game-card:hover img { 
+            opacity: 1; 
+            filter: grayscale(0%); 
+            transform: scale(1.05); 
+        }
         
         .game-info {
             position: absolute; bottom: 0; left: 0; width: 100%;
-            background: linear-gradient(to top, #000 10%, transparent);
-            padding: 20px; transform: translateY(100px); transition: 0.4s;
+            background: linear-gradient(to top, #050505 20%, transparent);
+            padding: 20px; 
+            transform: translateY(100%); 
+            transition: 0.4s;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            height: 100%;
         }
         .game-card:hover .game-info { transform: translateY(0); }
+        
         .install-btn {
             display: inline-block; background: var(--accent-gold); color: #000;
-            padding: 10px 20px; text-decoration: none; font-weight: bold; margin-top: 10px; border-radius: 4px;
+            padding: 10px 0; text-align: center; text-decoration: none; font-weight: bold; margin-top: 10px; border-radius: 4px;
+            font-family: 'Oswald'; text-transform: uppercase; letter-spacing: 1px;
         }
+        .install-btn:hover { background: #fff; }
 
         /* --- 8. LORE SECTION --- */
         .lore-grid { display: grid; grid-template-columns: 300px 1fr; gap: 30px; height: 600px; background: var(--bg-panel); border: var(--border); border-radius: 12px; overflow: hidden; }
@@ -280,6 +314,8 @@
             .inspector { border-left: none; padding-left: 0; border-top: 1px solid #333; padding-top: 30px; margin-top: 30px; }
             .lore-grid { grid-template-columns: 1fr; }
             .sidebar { width: 100%; }
+            header { flex-direction: column; gap: 15px; }
+            nav { gap: 15px; }
         }
     </style>
 </head>
@@ -293,7 +329,7 @@
         <nav>
             <button class="nav-btn active" onclick="switchSection('timeline')">Timeline</button>
             <button class="nav-btn" onclick="switchSection('calendar')">Log</button>
-            <button class="nav-btn" onclick="switchSection('games')">Games</button>
+            <button class="nav-btn" onclick="switchSection('games')">Library</button>
             <button class="nav-btn" onclick="switchSection('lore')">Files</button>
         </nav>
     </header>
@@ -347,10 +383,11 @@
             </div>
         </section>
 
-        <!-- 3. GAMES -->
+        <!-- 3. GAMES (LIBRARY) -->
         <section id="games" class="section">
             <div class="page-title">Game Library</div>
-            <div class="page-subtitle">Цифровое наследие Joey Drew Studios.</div>
+            <div class="page-subtitle">Цифровое наследие Joey Drew Studios (и не только).</div>
+            <!-- Сетка игр -->
             <div class="games-grid" id="games-grid"></div>
         </section>
 
@@ -390,7 +427,6 @@
     <script>
         // --- 1. DATASETS ---
         
-        // (Вставлен твой текст, структурированный по эрам)
         const timelineData = [
             {
                 era: "The Beginning (189X - 1928)",
@@ -483,31 +519,37 @@
             }
         ];
 
-        // Календарь (Добавь сюда свои даты)
         const calendarData = [
             {
                 year: 2017, month: 1, label: "FEB 2017",
-                events: [ { d: 10, t: "BATIM Chapter 1", type: "game", desc: "Первая глава 'Moving Pictures' выпущена в Steam.", img: "https://placehold.co/600x400/111/gold?text=CH1" } ]
+                events: [ { d: 10, t: "BATIM Chapter 1", type: "game", desc: "Первая глава 'Moving Pictures' выпущена в Steam.", img: "img/batim.jpg" } ]
             },
             {
                 year: 2017, month: 3, label: "APR 2017",
                 events: [
-                    { d: 18, t: "BATIM Chapter 2", type: "game", desc: "Релиз второй главы 'The Old Song'.", img: "https://placehold.co/600x400/111/gold?text=CH2" },
+                    { d: 18, t: "BATIM Chapter 2", type: "game", desc: "Релиз второй главы 'The Old Song'.", img: "img/batim.jpg" },
                     { d: 25, t: "Build Our Machine", type: "media", desc: "Релиз фанатской песни от DAGames.", img: "https://placehold.co/600x400/222/fff?text=SONG" }
                 ]
             },
             {
                 year: 2022, month: 10, label: "NOV 2022",
-                events: [ { d: 15, t: "Dark Revival", type: "game", desc: "Полноценный сиквел истории.", img: "https://placehold.co/600x400/400/gold?text=BATDR" } ]
+                events: [ { d: 15, t: "Dark Revival", type: "game", desc: "Полноценный сиквел истории.", img: "img/batdr.jpg" } ]
             }
         ];
 
-        // Игры
+        // --- GAMES LIBRARY DATA (ОБНОВЛЕНО ПОД ТВОИ КАРТИНКИ) ---
+        // Убедись, что картинки лежат в папке "img"
         const gamesData = [
-            { title: "Bendy and the Ink Machine", img: "https://placehold.co/300x450/111/gold?text=BATIM", desc: "The original horror classic." },
-            { title: "Bendy and the Dark Revival", img: "https://placehold.co/300x450/300/gold?text=BATDR", desc: "The dark sequel." },
-            { title: "Boris and the Dark Survival", img: "https://placehold.co/300x450/222/888?text=BORIS", desc: "Survival experience." },
-            { title: "Bendy: The Cage", img: "https://placehold.co/300x450/000/fff?text=CAGE", desc: "Coming soon." }
+            { title: "Bendy and the Ink Machine", img: "img/batim.jpg", desc: "The original horror classic." },
+            { title: "Bendy and the Dark Revival", img: "img/batdr.jpg", desc: "Break the cycle." },
+            { title: "BATIM: Demo", img: "img/demo.jpg", desc: "Where the nightmare began." },
+            { title: "Bendy: The Cage", img: "img/cage.jpg", desc: "Survival in The Pit." },
+            { title: "Secrets of the Machine", img: "img/secrets.jpg", desc: "Uncover the mystery." },
+            { title: "Bendy: Lone Wolf", img: "img/lonewolf.jpg", desc: "Boris's struggle." },
+            { title: "Bendy in Nightmare Run", img: "img/run.jpg", desc: "Boss Runner Action." },
+            { title: "Bendy & The Brine Barrel", img: "img/barrel.jpg", desc: "A neon twist on the formula." },
+            { title: "Bendy & The Ink Factory", img: "img/factory.jpg", desc: "Industrial darkness." },
+            { title: "Hello Bendy", img: "img/hello.jpg", desc: "The crossover event." }
         ];
 
         // Лор
@@ -650,19 +692,22 @@
             document.getElementById('insp-title').innerText = evt.t;
             document.getElementById('insp-date').innerText = `${evt.d} ${m} ${y}`;
             document.getElementById('insp-desc').innerText = evt.desc;
+            
+            // Если картинка локальная, браузер её найдет, если внешняя - тоже
             document.getElementById('insp-img').style.backgroundImage = `url('${evt.img}')`;
         }
 
         // Games Logic
         const gamesGrid = document.getElementById('games-grid');
         gamesData.forEach(g => {
+            // Если файл картинки не найден, будет серый фон.
             gamesGrid.innerHTML += `
                 <div class="game-card">
-                    <img src="${g.img}">
+                    <img src="${g.img}" onerror="this.src='https://placehold.co/400x600/111/gold?text=NO+IMAGE'">
                     <div class="game-info">
-                        <h3 style="color:var(--accent-gold); font-family:'Oswald'; text-transform:uppercase;">${g.title}</h3>
-                        <p style="color:#ccc; font-size:0.9rem; margin-bottom:10px;">${g.desc}</p>
-                        <a href="#" class="install-btn">VIEW INFO</a>
+                        <h3 style="color:var(--accent-gold); font-family:'Oswald'; text-transform:uppercase; line-height:1.2;">${g.title}</h3>
+                        <p style="color:#ccc; font-size:0.85rem; margin:10px 0;">${g.desc}</p>
+                        <a href="#" class="install-btn">VIEW DATA</a>
                     </div>
                 </div>
             `;
