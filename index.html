@@ -1,43 +1,696 @@
-<!-- CALENDAR SECTION -->
-<section id="calendar" class="section">
-    <div class="section-header">
-        <h1>Release Log</h1>
-        <p>Ключевые даты выпуска контента студии.</p>
-    </div>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bendy Universe | Digital Archive</title>
+    
+    <!-- Fonts: Inter (UI) & Oswald (Headings) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Oswald:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
-    <div class="calendar-container">
-        <!-- Левая часть: Сетка календаря -->
-        <div class="calendar-main">
-            <div class="cal-header">
-                <button class="cal-nav-btn" onclick="changeMonth(-1)"><i class="fas fa-chevron-left"></i></button>
-                <div class="cal-title" id="cal-month-label">LOADING...</div>
-                <button class="cal-nav-btn" onclick="changeMonth(1)"><i class="fas fa-chevron-right"></i></button>
-            </div>
+    <style>
+        /* --- 1. GLOBAL VARIABLES & RESET --- */
+        :root {
+            --bg-dark: #050505;
+            --bg-panel: #111111;
+            --bg-card: #1a1a1a;
             
-            <div class="weekdays-grid">
-                <div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div><div>Sun</div>
-            </div>
+            --accent-gold: #FFD700; /* Premium Gold */
+            --accent-gold-dim: #b8860b;
             
-            <div class="days-grid" id="cal-days-grid">
-                <!-- Days injected by JS -->
-            </div>
-        </div>
+            --text-main: #f0f0f0;
+            --text-muted: #888888;
+            
+            --border: 1px solid #333;
+            --shadow: 0 10px 30px rgba(0,0,0,0.5);
+            
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
 
-        <!-- Правая часть: Инспектор события -->
-        <div class="calendar-inspector" id="cal-inspector">
-            <div class="inspector-placeholder">
-                <i class="fas fa-mouse-pointer"></i>
-                <p>Выберите дату с маркером,<br>чтобы увидеть детали.</p>
+        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Background Ambiance */
+        .bg-glow {
+            position: fixed;
+            top: -20%; left: 50%; transform: translateX(-50%);
+            width: 80%; height: 60%;
+            background: radial-gradient(circle, rgba(255, 215, 0, 0.05), transparent 70%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-dark); }
+        ::-webkit-scrollbar-thumb { background: #444; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent-gold); }
+
+        /* --- 2. HEADER --- */
+        header {
+            position: fixed;
+            top: 0; width: 100%;
+            padding: 15px 5%;
+            background: rgba(5, 5, 5, 0.85);
+            backdrop-filter: blur(10px);
+            border-bottom: var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-family: 'Oswald', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .logo span { color: var(--accent-gold); }
+
+        nav { display: flex; gap: 30px; }
+
+        .nav-btn {
+            background: none; border: none;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            padding: 5px 0;
+        }
+        .nav-btn:hover, .nav-btn.active { color: #fff; }
+        .nav-btn.active::after {
+            content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 2px; background: var(--accent-gold);
+        }
+
+        /* --- 3. MAIN CONTAINER --- */
+        main {
+            margin-top: 80px;
+            padding: 40px 5%;
+            max-width: 1400px;
+            margin-left: auto; margin-right: auto;
+            width: 100%;
+        }
+
+        .section { display: none; opacity: 0; animation: fadeIn 0.6s forwards; }
+        .section.active { display: block; }
+
+        @keyframes fadeIn { to { opacity: 1; } }
+
+        .page-title {
+            font-family: 'Oswald';
+            font-size: 3rem;
+            margin-bottom: 10px;
+            background: linear-gradient(to right, #fff, #999);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .page-subtitle { color: var(--text-muted); margin-bottom: 50px; max-width: 600px; }
+
+        /* --- 4. TIMELINE SECTION --- */
+        .timeline-container {
+            position: relative;
+            max-width: 900px;
+            margin: 0 auto;
+            padding-left: 40px;
+            border-left: 1px solid #333;
+        }
+
+        .era-title {
+            font-family: 'Oswald';
+            font-size: 2rem;
+            color: var(--accent-gold);
+            margin: 60px 0 30px -55px;
+            display: flex; align-items: center;
+        }
+        .era-title::before {
+            content: ''; display: block; width: 15px; height: 15px;
+            background: var(--bg-dark); border: 2px solid var(--accent-gold);
+            border-radius: 50%; margin-right: 40px; box-shadow: 0 0 15px var(--accent-gold);
+        }
+
+        .timeline-card {
+            background: var(--bg-card);
+            border: var(--border);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            position: relative;
+            transition: var(--transition);
+        }
+        .timeline-card:hover {
+            border-color: var(--accent-gold);
+            transform: translateX(10px);
+            box-shadow: var(--shadow);
+        }
+        .timeline-card::before {
+            content: ''; position: absolute; left: -41px; top: 30px;
+            width: 40px; height: 1px; background: #333;
+        }
+        .timeline-card:hover::before { background: var(--accent-gold); }
+
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .year-tag { background: rgba(255, 215, 0, 0.1); color: var(--accent-gold); padding: 4px 8px; border-radius: 4px; font-weight: 600; font-size: 0.9rem; }
+        
+        .pin-btn {
+            background: transparent; border: 1px solid #444;
+            color: #666; width: 35px; height: 35px; border-radius: 50%;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            transition: var(--transition);
+        }
+        .pin-btn:hover { color: #fff; border-color: #fff; }
+        .pin-btn.pinned { background: var(--accent-gold); border-color: var(--accent-gold); color: #000; }
+
+        .event-list li {
+            list-style: none; margin-bottom: 8px; padding-left: 15px; position: relative; color: #ccc; font-size: 0.95rem; line-height: 1.5;
+        }
+        .event-list li::before { content: '•'; color: var(--accent-gold); position: absolute; left: 0; }
+
+        /* --- 5. SIDEBAR (EVIDENCE) --- */
+        .sidebar {
+            position: fixed; top: 0; right: -400px;
+            width: 400px; height: 100vh;
+            background: var(--bg-panel);
+            border-left: var(--border);
+            z-index: 2000;
+            padding: 30px;
+            transition: right 0.4s cubic-bezier(0.7, 0, 0.2, 1);
+            display: flex; flex-direction: column;
+            box-shadow: -10px 0 50px rgba(0,0,0,0.8);
+        }
+        .sidebar.open { right: 0; }
+        
+        .sidebar-header { display: flex; justify-content: space-between; align-items: center; border-bottom: var(--border); padding-bottom: 20px; margin-bottom: 20px; }
+        .close-sidebar { cursor: pointer; color: #fff; font-size: 1.2rem; }
+
+        .pinned-item {
+            background: #222; padding: 15px; border-radius: 8px; margin-bottom: 10px;
+            border-left: 3px solid var(--accent-gold); display: flex; justify-content: space-between;
+        }
+
+        /* --- 6. CALENDAR SECTION --- */
+        .calendar-layout {
+            display: grid; grid-template-columns: 1.5fr 1fr; gap: 40px;
+            background: var(--bg-panel); border: var(--border); border-radius: 16px; padding: 40px;
+        }
+        
+        .cal-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .cal-month { font-family: 'Oswald'; font-size: 2rem; color: #fff; }
+        .nav-arrow { background: none; border: 1px solid #444; color: #fff; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; transition: 0.3s; }
+        .nav-arrow:hover { border-color: var(--accent-gold); color: var(--accent-gold); }
+
+        .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; text-align: center; }
+        .day-head { color: var(--text-muted); margin-bottom: 10px; font-size: 0.8rem; }
+        
+        .day-cell {
+            aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+            border-radius: 8px; position: relative; color: #555; font-size: 1.1rem;
+        }
+        .day-cell.has-event {
+            background: rgba(255,255,255,0.05); color: #fff; cursor: pointer;
+        }
+        .day-cell.has-event:hover, .day-cell.active {
+            border: 1px solid var(--accent-gold); color: var(--accent-gold); background: rgba(255, 215, 0, 0.1);
+        }
+
+        /* Markers */
+        .marker { position: absolute; bottom: 10px; }
+        .marker.game { width: 8px; height: 8px; background: var(--accent-gold); transform: rotate(45deg); box-shadow: 0 0 10px var(--accent-gold); }
+        .marker.media { width: 6px; height: 6px; background: #fff; border-radius: 50%; }
+
+        /* Inspector */
+        .inspector { display: flex; flex-direction: column; justify-content: center; border-left: 1px solid #333; padding-left: 40px; }
+        .inspector-placeholder { text-align: center; color: #555; }
+        .insp-content { animation: fadeIn 0.4s; }
+        .insp-badge { display: inline-block; background: var(--accent-gold); color: #000; padding: 3px 8px; font-weight: bold; font-size: 0.8rem; border-radius: 4px; margin-bottom: 10px; }
+        .insp-img { width: 100%; height: 250px; background-size: cover; background-position: center; border-radius: 12px; margin-top: 20px; border: var(--border); }
+
+        /* --- 7. GAMES LIBRARY --- */
+        .games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; }
+        
+        .game-card {
+            height: 450px; background: #000; border-radius: 12px; overflow: hidden;
+            position: relative; transition: 0.4s; border: var(--border); cursor: pointer;
+        }
+        .game-card img { width: 100%; height: 100%; object-fit: cover; transition: 0.4s; opacity: 0.6; filter: grayscale(100%); }
+        .game-card:hover img { opacity: 1; filter: grayscale(0%); transform: scale(1.05); }
+        
+        .game-info {
+            position: absolute; bottom: 0; left: 0; width: 100%;
+            background: linear-gradient(to top, #000 10%, transparent);
+            padding: 20px; transform: translateY(100px); transition: 0.4s;
+        }
+        .game-card:hover .game-info { transform: translateY(0); }
+        .install-btn {
+            display: inline-block; background: var(--accent-gold); color: #000;
+            padding: 10px 20px; text-decoration: none; font-weight: bold; margin-top: 10px; border-radius: 4px;
+        }
+
+        /* --- 8. LORE SECTION --- */
+        .lore-grid { display: grid; grid-template-columns: 300px 1fr; gap: 30px; height: 600px; background: var(--bg-panel); border: var(--border); border-radius: 12px; overflow: hidden; }
+        
+        .lore-menu { overflow-y: auto; background: #0a0a0a; border-right: var(--border); }
+        .lore-item {
+            padding: 20px; border-bottom: 1px solid #222; color: #888; cursor: pointer; transition: 0.2s; font-family: 'Oswald'; letter-spacing: 1px;
+        }
+        .lore-item:hover, .lore-item.active { background: #1a1a1a; color: var(--accent-gold); border-left: 3px solid var(--accent-gold); }
+        
+        .lore-content { padding: 40px; overflow-y: auto; }
+        .lore-text { color: #ccc; line-height: 1.8; font-size: 1.1rem; margin-top: 20px; white-space: pre-line; }
+
+        /* RESPONSIVE */
+        @media (max-width: 900px) {
+            .calendar-layout { grid-template-columns: 1fr; }
+            .inspector { border-left: none; padding-left: 0; border-top: 1px solid #333; padding-top: 30px; margin-top: 30px; }
+            .lore-grid { grid-template-columns: 1fr; }
+            .sidebar { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-glow"></div>
+
+    <!-- NAVIGATION -->
+    <header>
+        <div class="logo">JOEY DREW <span>ARCHIVES</span></div>
+        <nav>
+            <button class="nav-btn active" onclick="switchSection('timeline')">Timeline</button>
+            <button class="nav-btn" onclick="switchSection('calendar')">Log</button>
+            <button class="nav-btn" onclick="switchSection('games')">Games</button>
+            <button class="nav-btn" onclick="switchSection('lore')">Files</button>
+        </nav>
+    </header>
+
+    <main>
+        
+        <!-- 1. TIMELINE -->
+        <section id="timeline" class="section active">
+            <div class="page-title">Chronology</div>
+            <div class="page-subtitle">Полная история цикла. От основания студии до темного возрождения.</div>
+            
+            <div class="timeline-container" id="timeline-feed">
+                <!-- Cards via JS -->
             </div>
-            <div class="inspector-content hidden" id="inspector-details">
-                <div class="event-badge" id="insp-type">GAME RELEASE</div>
-                <h2 id="insp-title">Bendy and the Ink Machine</h2>
-                <div class="insp-date" id="insp-date-text">February 10, 1929</div>
-                <p id="insp-desc">The first chapter was released, setting the tone for the horror that would follow.</p>
-                <div class="insp-image-box" id="insp-img">
-                    <!-- Image injected via JS background -->
+        </section>
+
+        <!-- 2. CALENDAR -->
+        <section id="calendar" class="section">
+            <div class="page-title">Release Log</div>
+            <div class="page-subtitle">Ключевые даты выпуска контента студии.</div>
+
+            <div class="calendar-layout">
+                <!-- Left: Grid -->
+                <div class="cal-main">
+                    <div class="cal-nav">
+                        <button class="nav-arrow" onclick="changeMonth(-1)"><i class="fas fa-chevron-left"></i></button>
+                        <div class="cal-month" id="cal-month-label">LOADING</div>
+                        <button class="nav-arrow" onclick="changeMonth(1)"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                    <div class="cal-grid">
+                        <div class="day-head">MON</div><div class="day-head">TUE</div><div class="day-head">WED</div>
+                        <div class="day-head">THU</div><div class="day-head">FRI</div><div class="day-head">SAT</div><div class="day-head">SUN</div>
+                    </div>
+                    <div class="cal-grid" id="cal-days-grid" style="margin-top: 10px;"></div>
+                </div>
+
+                <!-- Right: Inspector -->
+                <div class="inspector" id="cal-inspector">
+                    <div class="inspector-placeholder">
+                        <i class="fas fa-fingerprint" style="font-size: 3rem; margin-bottom: 20px; opacity: 0.3;"></i>
+                        <p>Выберите дату с маркером,<br>чтобы расшифровать данные.</p>
+                    </div>
+                    <div class="insp-content" id="insp-details" style="display:none;">
+                        <span class="insp-badge" id="insp-type">GAME RELEASE</span>
+                        <h2 style="font-family:'Oswald'; font-size:2.5rem; line-height:1.1; margin-bottom:10px;" id="insp-title">Title</h2>
+                        <div style="color:#888; font-family:monospace; margin-bottom:20px;" id="insp-date">Date</div>
+                        <p style="color:#ccc; line-height:1.6;" id="insp-desc">Description</p>
+                        <div class="insp-img" id="insp-img"></div>
+                    </div>
                 </div>
             </div>
+        </section>
+
+        <!-- 3. GAMES -->
+        <section id="games" class="section">
+            <div class="page-title">Game Library</div>
+            <div class="page-subtitle">Цифровое наследие Joey Drew Studios.</div>
+            <div class="games-grid" id="games-grid"></div>
+        </section>
+
+        <!-- 4. LORE -->
+        <section id="lore" class="section">
+            <div class="page-title">Classified Files</div>
+            <div class="page-subtitle">Доступ к документам ограничен. Уровень допуска: 5.</div>
+            
+            <div class="lore-grid">
+                <div class="lore-menu" id="lore-menu"></div>
+                <div class="lore-content" id="lore-display">
+                    <h2 style="color:#555;">Выберите файл для чтения...</h2>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- SIDEBAR BUTTON & PANEL -->
+    <div style="position:fixed; bottom:30px; right:30px; z-index:2001;">
+        <button onclick="toggleSidebar()" style="width:60px; height:60px; border-radius:50%; background:var(--accent-gold); border:none; font-size:1.5rem; cursor:pointer; box-shadow:0 0 20px rgba(255,215,0,0.4);">
+            <i class="fas fa-paperclip"></i>
+        </button>
+    </div>
+
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h3 style="font-family:'Oswald';">Pinned Evidence</h3>
+            <i class="fas fa-times close-sidebar" onclick="toggleSidebar()"></i>
+        </div>
+        <div id="pinned-container" style="overflow-y: auto; flex: 1;">
+            <p style="color:#666; text-align:center; margin-top:50px;">Нет закрепленных данных.</p>
         </div>
     </div>
-</section>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // --- 1. DATASETS ---
+        
+        // (Вставлен твой текст, структурированный по эрам)
+        const timelineData = [
+            {
+                era: "The Beginning (189X - 1928)",
+                year: "189X - 190X",
+                title: "Истоки",
+                events: [
+                    "Рождаются Дональдсон и Экхарт.",
+                    "Рождается Нэйтан Арч.",
+                    "1900: Бертрум Пьидмонт начинает карьеру создателя парков.",
+                    "1901: Рождается Джозеф Дрю (Патерсон, Нью-Джерси)."
+                ]
+            },
+            {
+                year: "1914 - 1918",
+                title: "Великая Война",
+                events: [
+                    "28 июля 1914: Начинается Первая мировая война.",
+                    "1916: Джозеф попадает в Войска связи.",
+                    "1917: Дональдс и Экхарт погибают в бою.",
+                    "Март 1918: Джозеф и Нэйтан работают вместе в лаборатории."
+                ]
+            },
+            {
+                era: "The Golden Age (1929 - 1939)",
+                year: "1929",
+                title: "Основание Студии",
+                events: [
+                    "10 февраля: Джоуи основывает студию в Бруклине (6 сотрудников).",
+                    "24 февраля: Генри придумывает персонажа Бенди.",
+                    "Выходят мультфильмы: 'Little Devil Darlin' и 'The Dancing Demon'.",
+                    "24 октября: Начало Великой депрессии."
+                ]
+            },
+            {
+                year: "1931",
+                title: "Расширение",
+                events: [
+                    "Генри уходит из студии. Оставляет записку Джоуи.",
+                    "10 февраля: Аудиозапись Джоуи о расширении.",
+                    "Начало выпуска комиксов 'Barnyard Opry'."
+                ]
+            },
+            {
+                year: "1932",
+                title: "Эра Ангела",
+                events: [
+                    "Июль: Сьюзи Кэмпбелл нанимается на работу.",
+                    "Август: Анонс Элис Энджел.",
+                    "Сентябрь: Выход 'Sent From Above' и 'Siren Serenade'."
+                ]
+            },
+            {
+                era: "The Descent (1940 - 1948)",
+                year: "1940",
+                title: "Бендиленд и Машина",
+                events: [
+                    "Разработка Бендиленда. Найм Бертрума Пьидмонта.",
+                    "Создание Аниматроника Бенди.",
+                    "Создание первой Чернильной Машины (Gent Corp)."
+                ]
+            },
+            {
+                year: "1946",
+                title: "Рождение Демона",
+                events: [
+                    "Создание Гигантской Чернильной Машины.",
+                    "Появление Чернильного Демона (The Ink Demon).",
+                    "События книги 'Dreams Come to Life'. Смерть Бадди.",
+                    "Студия под следствием."
+                ]
+            },
+            {
+                year: "1948",
+                title: "Конец Студии",
+                events: [
+                    "Бендиленд открывается, но Джоуи присваивает славу.",
+                    "15 августа: Отчет о банкротстве.",
+                    "28 августа: Студия закрывается."
+                ]
+            },
+            {
+                era: "The Cycle (1963 - ...)",
+                year: "1963",
+                title: "Возвращение Генри",
+                events: [
+                    "Август: Генри Штейн получает письмо от Джоуи.",
+                    "События игры 'Bendy and the Ink Machine'.",
+                    "Генри запускает машину и попадает в Цикл."
+                ]
+            }
+        ];
+
+        // Календарь (Добавь сюда свои даты)
+        const calendarData = [
+            {
+                year: 2017, month: 1, label: "FEB 2017",
+                events: [ { d: 10, t: "BATIM Chapter 1", type: "game", desc: "Первая глава 'Moving Pictures' выпущена в Steam.", img: "https://placehold.co/600x400/111/gold?text=CH1" } ]
+            },
+            {
+                year: 2017, month: 3, label: "APR 2017",
+                events: [
+                    { d: 18, t: "BATIM Chapter 2", type: "game", desc: "Релиз второй главы 'The Old Song'.", img: "https://placehold.co/600x400/111/gold?text=CH2" },
+                    { d: 25, t: "Build Our Machine", type: "media", desc: "Релиз фанатской песни от DAGames.", img: "https://placehold.co/600x400/222/fff?text=SONG" }
+                ]
+            },
+            {
+                year: 2022, month: 10, label: "NOV 2022",
+                events: [ { d: 15, t: "Dark Revival", type: "game", desc: "Полноценный сиквел истории.", img: "https://placehold.co/600x400/400/gold?text=BATDR" } ]
+            }
+        ];
+
+        // Игры
+        const gamesData = [
+            { title: "Bendy and the Ink Machine", img: "https://placehold.co/300x450/111/gold?text=BATIM", desc: "The original horror classic." },
+            { title: "Bendy and the Dark Revival", img: "https://placehold.co/300x450/300/gold?text=BATDR", desc: "The dark sequel." },
+            { title: "Boris and the Dark Survival", img: "https://placehold.co/300x450/222/888?text=BORIS", desc: "Survival experience." },
+            { title: "Bendy: The Cage", img: "https://placehold.co/300x450/000/fff?text=CAGE", desc: "Coming soon." }
+        ];
+
+        // Лор
+        const loreData = [
+            { title: "Project: Ink Demon", text: "Subject #1 failed attempting to bond with the ink. The result was a soulless husk that despises the light.\n\nStatus: Active and Dangerous." },
+            { title: "The Gent Pipe", text: "Standard issue weapon provided by Gent Corporation. Durable, heavy, and capable of breaking thick ink deposits." },
+            { title: "Joey's Audio Log", text: "'I believe that if you dream big enough, you can cheat death itself. The Machine is the key.'" },
+            { title: "Susie Campbell", text: "Former voice actress for Alice Angel. Replaced by Allison Pendle. Last seen in the lower levels screaming about 'perfection'." }
+        ];
+
+        // --- 2. APP LOGIC ---
+
+        // Navigation
+        function switchSection(id) {
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            document.querySelectorAll('.section').forEach(s => {
+                s.style.opacity = 0;
+                setTimeout(() => {
+                    s.classList.remove('active');
+                    if(s.id === id) s.classList.add('active');
+                }, 300);
+            });
+        }
+
+        // Timeline Renderer
+        const tlFeed = document.getElementById('timeline-feed');
+        let pinnedIds = [];
+
+        function renderTimeline() {
+            let html = '';
+            let curEra = '';
+            timelineData.forEach((item, idx) => {
+                if(item.era && item.era !== curEra) {
+                    html += `<div class="era-title">${item.era}</div>`;
+                    curEra = item.era;
+                }
+                const evts = item.events.map(e => `<li>${e}</li>`).join('');
+                html += `
+                    <div class="timeline-card">
+                        <div class="card-header">
+                            <div><span class="year-tag">${item.year}</span> <span style="margin-left:10px; font-weight:600; color:#fff;">${item.title}</span></div>
+                            <button class="pin-btn" id="pin-${idx}" onclick="togglePin(${idx})"><i class="fas fa-thumbtack"></i></button>
+                        </div>
+                        <ul class="event-list">${evts}</ul>
+                    </div>
+                `;
+            });
+            tlFeed.innerHTML = html;
+        }
+
+        function togglePin(idx) {
+            const btn = document.getElementById(`pin-${idx}`);
+            if(pinnedIds.includes(idx)) {
+                pinnedIds = pinnedIds.filter(i => i !== idx);
+                btn.classList.remove('pinned');
+            } else {
+                pinnedIds.push(idx);
+                btn.classList.add('pinned');
+                toggleSidebar(true); // Open sidebar on pin
+            }
+            renderSidebar();
+        }
+
+        function renderSidebar() {
+            const cont = document.getElementById('pinned-container');
+            if(pinnedIds.length === 0) {
+                cont.innerHTML = '<p style="color:#666; text-align:center; margin-top:50px;">Нет закрепленных данных.</p>';
+                return;
+            }
+            cont.innerHTML = pinnedIds.map(id => {
+                const d = timelineData[id];
+                return `
+                    <div class="pinned-item">
+                        <div>
+                            <div style="color:var(--accent-gold); font-size:0.9rem;">${d.year}</div>
+                            <div style="color:#fff; font-size:0.8rem;">${d.title}</div>
+                        </div>
+                        <i class="fas fa-trash" style="cursor:pointer; color:#555;" onclick="togglePin(${id})"></i>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function toggleSidebar(forceOpen = false) {
+            const sb = document.getElementById('sidebar');
+            if(forceOpen) sb.classList.add('open');
+            else sb.classList.toggle('open');
+        }
+
+        // Calendar Logic
+        let calIdx = 0;
+        const calLabel = document.getElementById('cal-month-label');
+        const calGrid = document.getElementById('cal-days-grid');
+        const insp = document.getElementById('insp-details');
+        const placeholder = document.querySelector('.inspector-placeholder');
+
+        function changeMonth(dir) {
+            calIdx += dir;
+            if(calIdx < 0) calIdx = calendarData.length - 1;
+            if(calIdx >= calendarData.length) calIdx = 0;
+            renderCalendar(calIdx);
+            placeholder.style.display = 'block';
+            insp.style.display = 'none';
+        }
+
+        function renderCalendar(idx) {
+            const data = calendarData[idx];
+            calLabel.innerText = data.label;
+            calGrid.innerHTML = '';
+            
+            const daysInMonth = new Date(data.year, data.month + 1, 0).getDate();
+            const startOffset = (new Date(data.year, data.month, 1).getDay() + 6) % 7;
+
+            for(let i=0; i<startOffset; i++) calGrid.innerHTML += `<div></div>`;
+
+            for(let i=1; i<=daysInMonth; i++) {
+                const evt = data.events.find(e => e.d === i);
+                const el = document.createElement('div');
+                el.className = 'day-cell';
+                el.innerText = i;
+                if(evt) {
+                    el.classList.add('has-event');
+                    el.innerHTML += `<div class="marker ${evt.type}"></div>`;
+                    el.onclick = () => showInspector(evt, data.year, data.label);
+                }
+                calGrid.appendChild(el);
+            }
+        }
+
+        function showInspector(evt, y, m) {
+            document.querySelectorAll('.day-cell').forEach(c => c.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            
+            placeholder.style.display = 'none';
+            insp.style.display = 'block';
+            
+            document.getElementById('insp-type').innerText = evt.type.toUpperCase();
+            document.getElementById('insp-title').innerText = evt.t;
+            document.getElementById('insp-date').innerText = `${evt.d} ${m} ${y}`;
+            document.getElementById('insp-desc').innerText = evt.desc;
+            document.getElementById('insp-img').style.backgroundImage = `url('${evt.img}')`;
+        }
+
+        // Games Logic
+        const gamesGrid = document.getElementById('games-grid');
+        gamesData.forEach(g => {
+            gamesGrid.innerHTML += `
+                <div class="game-card">
+                    <img src="${g.img}">
+                    <div class="game-info">
+                        <h3 style="color:var(--accent-gold); font-family:'Oswald'; text-transform:uppercase;">${g.title}</h3>
+                        <p style="color:#ccc; font-size:0.9rem; margin-bottom:10px;">${g.desc}</p>
+                        <a href="#" class="install-btn">VIEW INFO</a>
+                    </div>
+                </div>
+            `;
+        });
+
+        // Lore Logic
+        const loreMenu = document.getElementById('lore-menu');
+        const loreDisplay = document.getElementById('lore-display');
+        
+        loreData.forEach((l, i) => {
+            const div = document.createElement('div');
+            div.className = 'lore-item';
+            div.innerText = `FILE_00${i+1}: ${l.title}`;
+            div.onclick = () => {
+                document.querySelectorAll('.lore-item').forEach(x => x.classList.remove('active'));
+                div.classList.add('active');
+                loreDisplay.innerHTML = `
+                    <h2 style="font-family:'Oswald'; color:var(--accent-gold); font-size:2.5rem;">${l.title}</h2>
+                    <div class="lore-text">${l.text}</div>
+                `;
+            };
+            loreMenu.appendChild(div);
+        });
+
+        // Init
+        renderTimeline();
+        renderCalendar(0);
+
+    </script>
+</body>
+</html>
