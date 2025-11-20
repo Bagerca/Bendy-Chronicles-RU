@@ -9,8 +9,9 @@ class FilmNavigation {
     init() {
         this.bindEvents();
         this.setupAudio();
-        this.setupReels(); // Это теперь важно для управления скоростью
+        this.setupReels();
         
+        // Инициализация по хешу
         const hash = window.location.hash.substring(1);
         if (this.pages.includes(hash)) {
             this.switchPage(hash, false);
@@ -18,6 +19,7 @@ class FilmNavigation {
     }
     
     bindEvents() {
+        // Обработчики для кнопок
         document.querySelectorAll('.frame-cell').forEach(frame => {
             frame.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -26,6 +28,7 @@ class FilmNavigation {
             });
         });
         
+        // Обработчик хеша
         window.addEventListener('hashchange', () => {
             const hash = window.location.hash.substring(1);
             if (this.pages.includes(hash) && hash !== this.currentPage) {
@@ -38,49 +41,37 @@ class FilmNavigation {
         try {
             this.projectorSound = document.getElementById('projectorSound');
             this.filmSound = document.getElementById('filmSound');
-        } catch (error) { console.log('Audio setup error', error); }
+        } catch (error) {
+            console.log('Audio setup:', error);
+        }
     }
     
     setupReels() {
-        // Добавляем интерактивность при клике на сами бобины
-        document.querySelectorAll('.header-reel').forEach(reel => {
-            reel.addEventListener('click', () => {
-                this.triggerFastSpin();
+        // Интерактивность для бобин в шапке
+        document.querySelectorAll('.header-reel .reel-base').forEach(reel => {
+            reel.addEventListener('click', function() {
+                this.style.animationDuration = '5s';
+                setTimeout(() => {
+                    this.style.animationDuration = '40s';
+                }, 3000);
             });
         });
     }
     
-    // Функция ускорения анимации (вызывается при клике на навигацию или бобину)
-    triggerFastSpin() {
-        const root = document.documentElement;
-        
-        // Устанавливаем быструю скорость (3с вместо 20с)
-        root.style.setProperty('--reel-speed', '3s');
-        
-        // Звуки
-        if (this.filmSound) {
-            this.filmSound.currentTime = 0;
-            this.filmSound.play().catch(()=>{});
-        }
-
-        // Возвращаем нормальную скорость через 2 секунды
-        setTimeout(() => {
-            root.style.setProperty('--reel-speed', '20s');
-        }, 2000);
-    }
-    
     switchPage(targetPage, animate = true) {
         if (this.isAnimating || targetPage === this.currentPage) return;
+        
         this.isAnimating = true;
         
-        document.querySelectorAll('.frame-cell').forEach(frame => frame.classList.remove('active'));
-        const targetBtn = document.querySelector(`[data-page="${targetPage}"]`);
-        if (targetBtn) targetBtn.classList.add('active');
+        // Обновляем кнопки
+        document.querySelectorAll('.frame-cell').forEach(frame => {
+            frame.classList.remove('active');
+        });
+        document.querySelector(`[data-page="${targetPage}"]`).classList.add('active');
         
+        // Запускаем анимации
         if (animate) {
-            this.startAnimations(); // Запускает визуальные эффекты
-            this.triggerFastSpin(); // Ускоряет пленку
-            
+            this.startAnimations();
             setTimeout(() => {
                 this.updateContent(targetPage);
                 this.isAnimating = false;
@@ -90,30 +81,63 @@ class FilmNavigation {
             this.isAnimating = false;
         }
         
+        // Обновляем URL
         window.history.pushState(null, null, `#${targetPage}`);
     }
     
     startAnimations() {
+        // Луч проектора
         const projectorLight = document.querySelector('.projector-light');
         if (projectorLight) {
             projectorLight.classList.add('active');
             setTimeout(() => projectorLight.classList.remove('active'), 800);
         }
         
+        // Быстрая прокрутка пленки
+        const filmStrip = document.querySelector('.film-strip');
+        if (filmStrip) {
+            filmStrip.classList.add('fast-move');
+            setTimeout(() => filmStrip.classList.remove('fast-move'), 800);
+        }
+        
+        // Ускоренное вращение бобин при переключении
+        const reels = document.querySelectorAll('.header-reel .reel-base');
+        reels.forEach(reel => {
+            reel.style.animationDuration = '3s';
+            setTimeout(() => {
+                reel.style.animationDuration = '40s';
+            }, 3000);
+        });
+        
+        // Звуки
         if (this.projectorSound) {
             this.projectorSound.currentTime = 0;
-            this.projectorSound.play().catch(()=>{});
+            this.projectorSound.play().catch(() => {});
+        }
+        if (this.filmSound) {
+            setTimeout(() => {
+                this.filmSound.currentTime = 0;
+                this.filmSound.play().catch(() => {});
+            }, 200);
         }
     }
     
     updateContent(targetPage) {
-        document.querySelectorAll('.cinema-page').forEach(page => page.classList.remove('active'));
+        document.querySelectorAll('.cinema-page').forEach(page => {
+            page.classList.remove('active');
+        });
+        
         const targetElement = document.getElementById(targetPage);
-        if (targetElement) targetElement.classList.add('active');
+        if (targetElement) {
+            targetElement.classList.add('active');
+        }
+        
         this.currentPage = targetPage;
     }
 }
 
+// Инициализация
+let filmNavigation;
 document.addEventListener('DOMContentLoaded', () => {
-    new FilmNavigation();
+    filmNavigation = new FilmNavigation();
 });
