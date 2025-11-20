@@ -4,64 +4,158 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bendy Chronicles</title>
-    <link rel="stylesheet" href="style.css">
-    <!-- Подключаем ретро-шрифт (похож на печатную машинку или постеры 30-х) -->
-    <link href="https://fonts.googleapis.com/css2?family=Rye&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎬</text></svg>">
 </head>
 <body>
-
-    <header class="film-header">
-        <!-- Левая бобина -->
-        <div class="reel-container">
-            <div class="reel">
-                <div class="reel-inner">
-                    <span class="reel-text">WELCOME</span>
+    <div class="projector-overlay"></div>
+    
+    <header class="cinema-header">
+        <div class="header-container">
+            <!-- Левая бобина с надписью WELCOME -->
+            <div class="film-reel left-reel header-reel">
+                <div class="reel-base">
+                    <div class="hole"></div>
+                    <div class="hole"></div>
+                    <div class="hole"></div>
+                    <div class="hole"></div>
+                    <div class="hole"></div>
+                    <div class="hole"></div>
+                    <div class="scroll">
+                        <div class="scroll-text">WELCOME</div>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Центральная лента (Навигация) -->
-        <nav class="film-strip">
-            <div class="film-holes-top"></div>
-            <ul class="nav-list">
-                <li class="nav-item active">
-                    <span class="nav-num">01</span>
-                    <span class="nav-text">Главная</span>
-                </li>
-                <li class="nav-item">
-                    <span class="nav-num">02</span>
-                    <span class="nav-text">Продукты</span>
-                </li>
-                <li class="nav-item">
-                    <span class="nav-num">03</span>
-                    <span class="nav-text">Лор</span>
-                </li>
-                <li class="nav-item">
-                    <span class="nav-num">04</span>
-                    <span class="nav-text">Хроники</span>
-                </li>
-                <li class="nav-item">
-                    <span class="nav-num">05</span>
-                    <span class="nav-text">События</span>
-                </li>
-            </ul>
-            <div class="film-holes-bottom"></div>
-        </nav>
+            <nav class="film-navigation">
+                <!-- Пленка с перфорациями -->
+                <div class="film-strip"></div>
+                
+                <!-- Кнопки навигации -->
+                <div class="nav-frames">
+                    <a href="#home" class="frame-cell active" data-page="home">
+                        <span class="frame-number">01</span>
+                        <span class="frame-title">Главная</span>
+                    </a>
+                    <a href="#products" class="frame-cell" data-page="products">
+                        <span class="frame-number">02</span>
+                        <span class="frame-title">Продукты</span>
+                    </a>
+                    <a href="#lore" class="frame-cell" data-page="lore">
+                        <span class="frame-number">03</span>
+                        <span class="frame-title">Лор</span>
+                    </a>
+                    <a href="#timeline" class="frame-cell" data-page="timeline">
+                        <span class="frame-number">04</span>
+                        <span class="frame-title">Хроники</span>
+                    </a>
+                    <a href="#events" class="frame-cell" data-page="events">
+                        <span class="frame-number">05</span>
+                        <span class="frame-title">События</span>
+                    </a>
+                </div>
+            </nav>
 
-        <!-- Правая бобина -->
-        <div class="reel-container">
-            <div class="reel reverse-spin">
-                <div class="reel-inner">
-                    <span class="reel-text">HOME</span>
+            <!-- Правая бобина с надписью HOME -->
+            <div class="film-reel right-reel header-reel">
+                <div class="reel-base">
+                    <div class="hole"></div>
+                    <div class="hole"></div>
+                    <div class="hole"></div>
+                    <div class="hole"></div>
+                    <div class="hole"></div>
+                    <div class="hole"></div>
+                    <div class="scroll">
+                        <div class="scroll-text">HOME</div>
+                    </div>
                 </div>
             </div>
+
+            <div class="projector-light"></div>
         </div>
     </header>
 
-    <!-- Остальной контент (для примера) -->
-    <main>
-        <h1>BENDY CHRONICLES</h1>
+    <!-- Остальной контент -->
+    <main class="cinema-content">
+        <section id="home" class="cinema-page active">
+            <div class="page-content">
+                <div class="title-sequence">
+                    <h1 class="main-title">BENDY CHRONICLES</h1>
+                    <p class="subtitle">Where Animation Meets Mystery</p>
+                </div>
+                <div class="content-grid">
+                    <article class="feature-card">
+                        <div class="card-icon">🎬</div>
+                        <h3>Студия Джоуи Дрю</h3>
+                        <p>Исследуйте тайны легендарной анимационной студии и её созданий.</p>
+                    </article>
+                    <article class="feature-card">
+                        <div class="card-icon">📖</div>
+                        <h3>История</h3>
+                        <p>Погрузитесь в глубокий лор вселенной Bendy и её персонажей.</p>
+                    </article>
+                    <article class="feature-card">
+                        <div class="card-icon">🎭</div>
+                        <h3>Персонажи</h3>
+                        <p>Встретьтесь с Бенди, Борисом, Элис и другими обитателями студии.</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section id="products" class="cinema-page">
+            <div class="page-content">
+                <h2>Наши Издания</h2>
+                <div class="products-showcase">
+                    <div class="product-item"><h4>Графические романы</h4><p>Коллекционные издания комиксов</p></div>
+                    <div class="product-item"><h4>Артбуки</h4><p>Эксклюзивные арты и концепты</p></div>
+                    <div class="product-item"><h4>Мерчендайз</h4><p>Фигурки, постеры и коллекционные предметы</p></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="lore" class="cinema-page">
+            <div class="page-content">
+                <h2>Вселенная Bendy</h2>
+                <div class="lore-timeline">
+                    <div class="timeline-point"><h4>1920-е</h4><p>Основание студии Джоуи Дрю</p></div>
+                    <div class="timeline-point"><h4>1930-е</h4><p>Создание первых анимационных фильмов</p></div>
+                    <div class="timeline-point"><h4>1940-е</h4><p>Расцвет студии и появление культовых персонажей</p></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="timeline" class="cinema-page">
+            <div class="page-content">
+                <h2>Хронология Событий</h2>
+                <div class="chronicles">
+                    <div class="chronicle-item"><h4>Глава 1: Машина чернил</h4><p>Начало истории в старой студии</p></div>
+                    <div class="chronicle-item"><h4>Глава 2: Старые друзья</h4><p>Возвращение забытых персонажей</p></div>
+                    <div class="chronicle-item"><h4>Глава 3: Воскрешение</h4><p>Новые открытия и старые секреты</p></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="events" class="cinema-page">
+            <div class="page-content">
+                <h2>Предстоящие События</h2>
+                <div class="events-calendar">
+                    <div class="event-card"><h4>Comic-Con 2024</h4><p>Эксклюзивные анонсы и встречи</p></div>
+                    <div class="event-card"><h4>Выставка артов</h4><p>Работы создателей вселенной</p></div>
+                    <div class="event-card"><h4>Творческие встречи</h4><p>Обсуждение с разработчиками</p></div>
+                </div>
+            </div>
+        </section>
     </main>
 
+    <audio id="projectorSound" preload="auto">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-projector-click-1253.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="filmSound" preload="auto">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-film-reel-1251.mp3" type="audio/mpeg">
+    </audio>
+
+    <script src="js/script.js"></script>
 </body>
 </html>
