@@ -3,159 +3,557 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bendy Chronicles</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎬</text></svg>">
+    <title>Bendy Universe | Premium Archives</title>
+    <!-- Подключаем винтажный шрифт -->
+    <link href="https://fonts.googleapis.com/css2?family=Rye&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- CSS VARIABLES & RESET --- */
+        :root {
+            --bg-paper: #f4e4bc;
+            --ink-black: #0f0f0f;
+            --ink-light: #2a2a2a;
+            --accent-gold: #ffb700;
+            --text-main: #1a1a1a;
+            --overlay-grain: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZjRlNGJjIi8+CjxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9IiNkYWQwYTQiLz4KPC9zdmc+');
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--bg-paper);
+            background-image: var(--overlay-grain);
+            color: var(--text-main);
+            font-family: 'Rye', serif;
+            overflow-x: hidden;
+        }
+
+        /* --- UTILS & ANIMATIONS --- */
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        h1, h2, h3 { text-transform: uppercase; letter-spacing: 2px; }
+        
+        .ink-drip {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100px;
+            background: linear-gradient(to bottom, var(--ink-black) 10%, transparent 100%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* --- HEADER --- */
+        header {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: radial-gradient(circle, transparent 60%, var(--ink-black) 150%);
+            position: relative;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 5rem;
+            color: var(--ink-black);
+            text-shadow: 4px 4px 0px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+            z-index: 2;
+        }
+
+        header p {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 1.2rem;
+            margin-bottom: 40px;
+            z-index: 2;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+            z-index: 2;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--ink-black);
+            font-size: 1.5rem;
+            border-bottom: 3px solid transparent;
+            transition: 0.3s;
+        }
+
+        nav a:hover { border-color: var(--ink-black); transform: scale(1.1); }
+
+        /* --- SECTION COMMON --- */
+        section { padding: 100px 0; position: relative; border-bottom: 5px solid var(--ink-black); }
+        .section-title {
+            font-size: 3rem;
+            text-align: center;
+            margin-bottom: 60px;
+            position: relative;
+            display: inline-block;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 100%;
+            height: 5px;
+            background: var(--ink-black);
+            margin-top: 10px;
+            border-radius: 50%;
+        }
+
+        /* --- 1. TIMELINE (LORE CHRONOLOGY) --- */
+        .timeline {
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 0; bottom: 0; left: 50%;
+            width: 4px;
+            background: var(--ink-black);
+            transform: translateX(-50%);
+        }
+        .timeline-item {
+            padding: 20px 40px;
+            position: relative;
+            width: 50%;
+            background: transparent;
+        }
+        .timeline-item:nth-child(odd) { left: 0; text-align: right; }
+        .timeline-item:nth-child(even) { left: 50%; text-align: left; }
+        
+        .timeline-dot {
+            width: 20px; height: 20px;
+            background: var(--accent-gold);
+            border: 4px solid var(--ink-black);
+            border-radius: 50%;
+            position: absolute;
+            top: 25px;
+            right: -12px;
+            z-index: 2;
+        }
+        .timeline-item:nth-child(even) .timeline-dot { right: auto; left: -12px; }
+        
+        .timeline-content {
+            background: white;
+            padding: 20px;
+            border: 3px solid var(--ink-black);
+            box-shadow: 10px 10px 0px rgba(0,0,0,0.8);
+            transform: rotate(-1deg);
+            transition: transform 0.3s;
+        }
+        .timeline-item:nth-child(even) .timeline-content { transform: rotate(1deg); }
+        .timeline-content:hover { transform: rotate(0deg) scale(1.02); }
+        
+        .year { font-family: 'Roboto Mono', monospace; font-weight: bold; color: var(--ink-light); }
+
+        /* --- 2. CALENDAR --- */
+        #calendar-controls {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        select {
+            padding: 10px 20px;
+            font-family: 'Rye', serif;
+            font-size: 1.2rem;
+            background: var(--ink-black);
+            color: var(--bg-paper);
+            border: none;
+            cursor: pointer;
+        }
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--ink-black);
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .day-name {
+            color: var(--accent-gold);
+            text-align: center;
+            padding: 10px;
+            font-family: 'Roboto Mono';
+        }
+        .day-box {
+            background: var(--bg-paper);
+            height: 100px;
+            padding: 10px;
+            position: relative;
+            transition: 0.2s;
+            overflow: hidden;
+        }
+        .day-box:hover { background: #fff; }
+        .day-number { font-family: 'Roboto Mono'; font-weight: bold; opacity: 0.5; }
+        
+        .event-marker {
+            display: block;
+            margin-top: 5px;
+            font-size: 0.7rem;
+            background: var(--ink-black);
+            color: white;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: sans-serif;
+            cursor: help;
+        }
+        .event-marker.game { background: #8b0000; }
+        .event-marker.song { background: #2e4053; }
+
+        /* --- 3. GAMES LIBRARY (STEAM STYLE) --- */
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 30px;
+        }
+        .game-card {
+            background: var(--ink-black);
+            height: 400px;
+            position: relative;
+            overflow: hidden;
+            border: 4px solid var(--ink-black);
+            transition: 0.3s;
+            cursor: pointer;
+        }
+        .game-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.7;
+            transition: 0.3s;
+            filter: sepia(100%);
+        }
+        .game-card:hover img { opacity: 1; filter: sepia(0%); }
+        
+        .game-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(0,0,0,0.9);
+            color: white;
+            padding: 15px;
+            transform: translateY(100%);
+            transition: 0.3s;
+        }
+        .game-card:hover .game-info { transform: translateY(0); }
+        .game-title { color: var(--accent-gold); margin-bottom: 5px; }
+        .play-btn {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 5px 15px;
+            background: var(--accent-gold);
+            color: black;
+            text-decoration: none;
+            font-family: sans-serif;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        /* --- 4. LORE SECTION --- */
+        .lore-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 40px;
+            background: white;
+            padding: 40px;
+            border: 3px solid var(--ink-black);
+            box-shadow: 15px 15px 0 var(--ink-black);
+        }
+        .lore-menu button {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            text-align: left;
+            background: none;
+            border: 2px solid transparent;
+            border-bottom: 1px solid #ccc;
+            font-family: 'Rye';
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .lore-menu button:hover, .lore-menu button.active {
+            background: var(--ink-black);
+            color: var(--accent-gold);
+            padding-left: 25px;
+        }
+        .lore-content-area h3 { font-size: 2.5rem; margin-bottom: 20px; }
+        .lore-content-area p { font-family: 'Roboto Mono'; line-height: 1.6; margin-bottom: 15px; }
+
+        /* FOOTER */
+        footer {
+            background: var(--ink-black);
+            color: var(--bg-paper);
+            text-align: center;
+            padding: 40px;
+            font-family: 'Roboto Mono';
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .timeline::before { left: 20px; }
+            .timeline-item { width: 100%; padding-left: 50px; padding-right: 0; }
+            .timeline-item:nth-child(even) { left: 0; }
+            .timeline-item:nth-child(odd) { text-align: left; }
+            .timeline-dot { left: 11px; right: auto; }
+            .timeline-item:nth-child(even) .timeline-dot { left: 11px; }
+            
+            .lore-grid { grid-template-columns: 1fr; }
+            .calendar-grid { font-size: 0.8rem; }
+            .day-box { height: 60px; }
+        }
+    </style>
 </head>
 <body>
-    <div class="projector-overlay"></div>
-    
-    <header class="cinema-header">
-        <div class="header-container">
-            <!-- Левая бобина с надписью WELCOME -->
-            <div class="film-reel left-reel header-reel">
-                <div class="reel-base">
-                    <div class="hole"></div>
-                    <div class="hole"></div>
-                    <div class="hole"></div>
-                    <div class="hole"></div>
-                    <div class="hole"></div>
-                    <div class="hole"></div>
-                    <div class="scroll">
-                        <div class="scroll-text">WELCOME</div>
-                    </div>
-                </div>
-            </div>
 
-            <nav class="film-navigation">
-                <!-- Пленка с перфорациями -->
-                <div class="film-strip"></div>
-                
-                <!-- Кнопки навигации -->
-                <div class="nav-frames">
-                    <a href="#home" class="frame-cell active" data-page="home">
-                        <span class="frame-number">01</span>
-                        <span class="frame-title">Главная</span>
-                    </a>
-                    <a href="#products" class="frame-cell" data-page="products">
-                        <span class="frame-number">02</span>
-                        <span class="frame-title">Продукты</span>
-                    </a>
-                    <a href="#lore" class="frame-cell" data-page="lore">
-                        <span class="frame-number">03</span>
-                        <span class="frame-title">Лор</span>
-                    </a>
-                    <a href="#timeline" class="frame-cell" data-page="timeline">
-                        <span class="frame-number">04</span>
-                        <span class="frame-title">Хроники</span>
-                    </a>
-                    <a href="#events" class="frame-cell" data-page="events">
-                        <span class="frame-number">05</span>
-                        <span class="frame-title">События</span>
-                    </a>
-                </div>
-            </nav>
-
-            <!-- Правая бобина с надписью HOME -->
-            <div class="film-reel right-reel header-reel">
-                <div class="reel-base">
-                    <div class="hole"></div>
-                    <div class="hole"></div>
-                    <div class="hole"></div>
-                    <div class="hole"></div>
-                    <div class="hole"></div>
-                    <div class="hole"></div>
-                    <div class="scroll">
-                        <div class="scroll-text">HOME</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="projector-light"></div>
-        </div>
+    <!-- HEADER -->
+    <header>
+        <div class="ink-drip"></div>
+        <h1>Joey Drew Studios<br>Archives</h1>
+        <p>Dreams Come True.</p>
+        <nav>
+            <ul>
+                <li><a href="#timeline">Chronology</a></li>
+                <li><a href="#calendar">Events</a></li>
+                <li><a href="#games">Library</a></li>
+                <li><a href="#lore">Lore</a></li>
+            </ul>
+        </nav>
     </header>
 
-    <!-- Остальной контент -->
-    <main class="cinema-content">
-        <section id="home" class="cinema-page active">
-            <div class="page-content">
-                <div class="title-sequence">
-                    <h1 class="main-title">BENDY CHRONICLES</h1>
-                    <p class="subtitle">Where Animation Meets Mystery</p>
+    <div class="container">
+        
+        <!-- 1. CHRONOLOGY / TIMELINE -->
+        <section id="timeline">
+            <h2 class="section-title">The Cycle Timeline</h2>
+            <div class="timeline" id="timeline-container">
+                <!-- Content generated by JS -->
+            </div>
+        </section>
+
+        <!-- 2. CALENDAR -->
+        <section id="calendar">
+            <h2 class="section-title">Release History</h2>
+            <p style="text-align:center; margin-bottom:20px; font-family:'Roboto Mono'">Showing only months where Ink was spilled.</p>
+            
+            <div id="calendar-controls">
+                <select id="month-selector"></select>
+            </div>
+
+            <div class="calendar-grid">
+                <div class="day-name">Mon</div>
+                <div class="day-name">Tue</div>
+                <div class="day-name">Wed</div>
+                <div class="day-name">Thu</div>
+                <div class="day-name">Fri</div>
+                <div class="day-name">Sat</div>
+                <div class="day-name">Sun</div>
+                <!-- Days injected via JS -->
+            </div>
+            <div id="calendar-days" class="calendar-grid" style="margin-top:0; border-top:none; grid-template-rows: repeat(5, 1fr);"></div>
+        </section>
+
+        <!-- 3. GAMES LIBRARY -->
+        <section id="games">
+            <h2 class="section-title">Game Library</h2>
+            <div class="games-grid" id="games-container">
+                <!-- Games injected via JS -->
+            </div>
+        </section>
+
+        <!-- 4. LORE SECTION -->
+        <section id="lore">
+            <h2 class="section-title">Dark Secrets</h2>
+            <div class="lore-grid">
+                <div class="lore-menu" id="lore-menu">
+                    <!-- Menu Items injected via JS -->
                 </div>
-                <div class="content-grid">
-                    <article class="feature-card">
-                        <div class="card-icon">🎬</div>
-                        <h3>Студия Джоуи Дрю</h3>
-                        <p>Исследуйте тайны легендарной анимационной студии и её созданий.</p>
-                    </article>
-                    <article class="feature-card">
-                        <div class="card-icon">📖</div>
-                        <h3>История</h3>
-                        <p>Погрузитесь в глубокий лор вселенной Bendy и её персонажей.</p>
-                    </article>
-                    <article class="feature-card">
-                        <div class="card-icon">🎭</div>
-                        <h3>Персонажи</h3>
-                        <p>Встретьтесь с Бенди, Борисом, Элис и другими обитателями студии.</p>
-                    </article>
+                <div class="lore-content-area" id="lore-display">
+                    <h3>Select a Topic</h3>
+                    <p>Click on the left menu to reveal the secrets of the machine.</p>
                 </div>
             </div>
         </section>
 
-        <section id="products" class="cinema-page">
-            <div class="page-content">
-                <h2>Наши Издания</h2>
-                <div class="products-showcase">
-                    <div class="product-item"><h4>Графические романы</h4><p>Коллекционные издания комиксов</p></div>
-                    <div class="product-item"><h4>Артбуки</h4><p>Эксклюзивные арты и концепты</p></div>
-                    <div class="product-item"><h4>Мерчендайз</h4><p>Фигурки, постеры и коллекционные предметы</p></div>
+    </div>
+
+    <footer>
+        <p>Unofficial Bendy Fan Site.</p>
+        <p>"Bendy and the Ink Machine" is a trademark of Joey Drew Studios Inc.</p>
+    </footer>
+
+    <script>
+        // --- DATA STORAGE ---
+
+        // 1. Timeline Data
+        const timelineData = [
+            { year: "1929", title: "Studio Founded", desc: "Joey Drew and Henry Stein found Joey Drew Studios." },
+            { year: "1931", title: "Bendy Created", desc: "The character Bendy is created. The Ink Machine construction begins shortly after." },
+            { year: "1940s", title: "The Fall", desc: "The studio goes bankrupt. The Ink Machine creates the twisted ink creatures." },
+            { year: "1963", title: "Henry Returns", desc: "Henry Stein receives a letter from Joey to visit the old workshop." },
+            { year: "1970s", title: "Archgate Era", desc: "Archgate Pictures acquires the rights to Bendy." }
+        ];
+
+        // 2. Calendar Data (Months with events only)
+        const calendarData = [
+            {
+                id: "feb2017", label: "February 2017", year: 2017, month: 1, // Month is 0-indexed (1 = Feb)
+                events: [
+                    { day: 10, title: "BATIM Chapter 1", type: "game" }
+                ]
+            },
+            {
+                id: "apr2017", label: "April 2017", year: 2017, month: 3,
+                events: [
+                    { day: 18, title: "BATIM Chapter 2", type: "game" },
+                    { day: 25, title: "Build Our Machine (Song)", type: "song" }
+                ]
+            },
+            {
+                id: "nov2022", label: "November 2022", year: 2022, month: 10,
+                events: [
+                    { day: 15, title: "Dark Revival Release", type: "game" }
+                ]
+            }
+        ];
+
+        // 3. Games Data
+        const gamesData = [
+            { title: "Bendy and the Ink Machine", img: "https://placehold.co/400x600/1a1a1a/f4e4bc?text=BATIM", desc: "The first person puzzle action horror game that started it all.", link: "#" },
+            { title: "Bendy and the Dark Revival", img: "https://placehold.co/400x600/330000/f4e4bc?text=Dark+Revival", desc: "Return to the vintage cartoon studio in this sequel.", link: "#" },
+            { title: "Boris and the Dark Survival", img: "https://placehold.co/400x600/1a1a1a/f4e4bc?text=Boris", desc: "Play as Boris the Wolf in this survival game.", link: "#" },
+            { title: "Bendy: The Cage", img: "https://placehold.co/400x600/1a1a1a/fff?text=The+Cage", desc: "Upcoming dark title.", link: "#" }
+        ];
+
+        // 4. Lore Data
+        const loreData = [
+            { id: "ink-machine", title: "The Ink Machine", text: "A massive device created by Gent Corporation tailored to Joey Drew's specifications. It was intended to bring cartoons to life, but instead created soulless mockeries made of ink." },
+            { id: "bendy", title: "The Ink Demon", text: "The failed first attempt to bring Bendy to life. He has no soul and rules the studio with fear. He despises everything, especially the projectionist." },
+            { id: "alice", title: "Alice Angel", text: "Susie Campbell was the original voice, but was replaced by Allison Pendle. Twisted Alice is obsessed with beauty and harvesting organs to repair herself." },
+            { id: "joey", title: "Joey Drew", text: "The visionary behind the studio. A man of ideas who believed that with enough belief, anything is possible. Even cheating death." }
+        ];
+
+        // --- RENDERING FUNCTIONS ---
+
+        // Render Timeline
+        const timelineContainer = document.getElementById('timeline-container');
+        timelineData.forEach(item => {
+            const el = document.createElement('div');
+            el.className = 'timeline-item';
+            el.innerHTML = `
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <span class="year">${item.year}</span>
+                    <h3>${item.title}</h3>
+                    <p>${item.desc}</p>
                 </div>
-            </div>
-        </section>
+            `;
+            timelineContainer.appendChild(el);
+        });
 
-        <section id="lore" class="cinema-page">
-            <div class="page-content">
-                <h2>Вселенная Bendy</h2>
-                <div class="lore-timeline">
-                    <div class="timeline-point"><h4>1920-е</h4><p>Основание студии Джоуи Дрю</p></div>
-                    <div class="timeline-point"><h4>1930-е</h4><p>Создание первых анимационных фильмов</p></div>
-                    <div class="timeline-point"><h4>1940-е</h4><p>Расцвет студии и появление культовых персонажей</p></div>
+        // Render Calendar Logic
+        const monthSelect = document.getElementById('month-selector');
+        const calendarDays = document.getElementById('calendar-days');
+
+        // Populate Select Box
+        calendarData.forEach((m, index) => {
+            const opt = document.createElement('option');
+            opt.value = index;
+            opt.textContent = m.label;
+            monthSelect.appendChild(opt);
+        });
+
+        function renderCalendar(dataIndex) {
+            calendarDays.innerHTML = ''; // Clear
+            const data = calendarData[dataIndex];
+            
+            // Get days in month
+            const daysInMonth = new Date(data.year, data.month + 1, 0).getDate();
+            const firstDayIndex = new Date(data.year, data.month, 1).getDay(); // 0=Sun, 1=Mon...
+            
+            // Adjust for Mon start (standard in EU/RU)
+            let startOffset = firstDayIndex === 0 ? 6 : firstDayIndex - 1;
+
+            // Empty slots
+            for(let i=0; i<startOffset; i++) {
+                const empty = document.createElement('div');
+                calendarDays.appendChild(empty);
+            }
+
+            // Days
+            for(let i=1; i<=daysInMonth; i++) {
+                const dayBox = document.createElement('div');
+                dayBox.className = 'day-box';
+                dayBox.innerHTML = `<div class="day-number">${i}</div>`;
+                
+                // Check for events
+                const dayEvents = data.events.filter(e => e.day === i);
+                dayEvents.forEach(e => {
+                    const badge = document.createElement('span');
+                    badge.className = `event-marker ${e.type}`;
+                    badge.textContent = e.title;
+                    dayBox.appendChild(badge);
+                });
+
+                calendarDays.appendChild(dayBox);
+            }
+        }
+
+        // Init Calendar
+        renderCalendar(0);
+        monthSelect.addEventListener('change', (e) => renderCalendar(e.target.value));
+
+        // Render Games
+        const gamesContainer = document.getElementById('games-container');
+        gamesData.forEach(game => {
+            const card = document.createElement('div');
+            card.className = 'game-card';
+            card.innerHTML = `
+                <img src="${game.img}" alt="${game.title}">
+                <div class="game-info">
+                    <h3 class="game-title">${game.title}</h3>
+                    <p>${game.desc}</p>
+                    <a href="${game.link}" class="play-btn">Install</a>
                 </div>
-            </div>
-        </section>
+            `;
+            gamesContainer.appendChild(card);
+        });
 
-        <section id="timeline" class="cinema-page">
-            <div class="page-content">
-                <h2>Хронология Событий</h2>
-                <div class="chronicles">
-                    <div class="chronicle-item"><h4>Глава 1: Машина чернил</h4><p>Начало истории в старой студии</p></div>
-                    <div class="chronicle-item"><h4>Глава 2: Старые друзья</h4><p>Возвращение забытых персонажей</p></div>
-                    <div class="chronicle-item"><h4>Глава 3: Воскрешение</h4><p>Новые открытия и старые секреты</p></div>
-                </div>
-            </div>
-        </section>
+        // Render Lore
+        const loreMenu = document.getElementById('lore-menu');
+        const loreDisplay = document.getElementById('lore-display');
 
-        <section id="events" class="cinema-page">
-            <div class="page-content">
-                <h2>Предстоящие События</h2>
-                <div class="events-calendar">
-                    <div class="event-card"><h4>Comic-Con 2024</h4><p>Эксклюзивные анонсы и встречи</p></div>
-                    <div class="event-card"><h4>Выставка артов</h4><p>Работы создателей вселенной</p></div>
-                    <div class="event-card"><h4>Творческие встречи</h4><p>Обсуждение с разработчиками</p></div>
-                </div>
-            </div>
-        </section>
-    </main>
+        loreData.forEach((topic, index) => {
+            const btn = document.createElement('button');
+            btn.textContent = topic.title;
+            if(index === 0) btn.classList.add('active');
+            
+            btn.addEventListener('click', () => {
+                // Update Active State
+                document.querySelectorAll('.lore-menu button').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                // Update Content with Fade
+                loreDisplay.style.opacity = 0;
+                setTimeout(() => {
+                    loreDisplay.innerHTML = `<h3>${topic.title}</h3><p>${topic.text}</p>`;
+                    loreDisplay.style.opacity = 1;
+                }, 300);
+            });
+            loreMenu.appendChild(btn);
+        });
+        
+        // Load first lore item by default
+        loreDisplay.innerHTML = `<h3>${loreData[0].title}</h3><p>${loreData[0].text}</p>`;
 
-    <audio id="projectorSound" preload="auto">
-        <source src="https://assets.mixkit.co/sfx/preview/mixkit-projector-click-1253.mp3" type="audio/mpeg">
-    </audio>
-    <audio id="filmSound" preload="auto">
-        <source src="https://assets.mixkit.co/sfx/preview/mixkit-film-reel-1251.mp3" type="audio/mpeg">
-    </audio>
-
-    <script src="js/script.js"></script>
+    </script>
 </body>
 </html>
